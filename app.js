@@ -1,5 +1,5 @@
 /* ==========================
-   My WHO Thoughts Assessment™
+   My WHO Thoughts Assessment™ (Official)
    Static site + Google Form submit
    Emailing is handled by Google Apps Script on the response sheet.
    ========================== */
@@ -128,14 +128,18 @@ const DEFAULT_STATE = {
 let state = loadState();
 
 const elApp = document.getElementById("app");
-document.getElementById("year").textContent = new Date().getFullYear();
+const elYear = document.getElementById("year");
+if (elYear) elYear.textContent = new Date().getFullYear();
 
-document.getElementById("btnReset").addEventListener("click", () => {
-  if (!confirm("Reset all answers?")) return;
-  state = structuredClone(DEFAULT_STATE);
-  saveState();
-  render();
-});
+const btnReset = document.getElementById("btnReset");
+if (btnReset){
+  btnReset.addEventListener("click", () => {
+    if (!confirm("Reset all answers?")) return;
+    state = structuredClone(DEFAULT_STATE);
+    saveState();
+    render();
+  });
+}
 
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
@@ -167,8 +171,7 @@ function nextStep(){
 function prevStep(){ setStep(state.stepIndex - 1); }
 
 function progressPercent(){
-  // don't count "submitted" as a "step" in % completion
-  const effectiveMax = STEPS.length - 2; // snapshot index is last meaningful
+  const effectiveMax = STEPS.length - 2; // exclude "submitted"
   const idx = Math.min(state.stepIndex, effectiveMax);
   return Math.round((idx / effectiveMax) * 100);
 }
@@ -465,7 +468,7 @@ function stepValuesDiscover(){
       <div class="h1">Values</div>
       <p class="p">
         Two ways to uncover your Values: (1) your proudest moment, and (2) what makes you upset.
-        Build 3–6 candidate Values. :contentReference[oaicite:1]{index=1}
+        Build 3–6 candidate Values.
       </p>
 
       <div class="grid2">
@@ -777,7 +780,7 @@ function stepSnapshot(){
         </div>
 
         <div class="snapshotBox">
-          <h3>Trigger — Your warning signal</h3>
+          <h3>Trigger — your warning signal</h3>
           <ul class="ul">
             ${state.trigger.label ? `<li>${escapeHtml(state.trigger.label)}</li>` : `<li class="small">Not set.</li>`}
             ${state.trigger.feeling ? `<li>Feels like: ${escapeHtml(state.trigger.feeling)}</li>` : ``}
@@ -823,7 +826,7 @@ function stepSubmitted(){
   `;
 }
 
-/* ========== Events ========== */
+/* ========== Global Events ========== */
 
 document.addEventListener("input", (e) => {
   const id = e.target?.id;
@@ -840,4 +843,222 @@ document.addEventListener("input", (e) => {
 
   if (id === "idealDesire"){ state.idealEmotion.desireLevel = Number(e.target.value); saveState(); render(); }
 
-  if (id === "triggerFeeling"){ st
+  // ✅ THIS WAS THE BUG IN YOUR CURRENT FILE — fixed here:
+  if (id === "triggerFeeling"){
+    state.trigger.feeling = e.target.value;
+    saveState();
+    render();
+  }
+
+  if (id === "resetScript"){ state.trigger.resetScript = e.target.value; saveState(); }
+  if (id === "customTrigger"){
+    const v = e.target.value.trim();
+    if (v) state.trigger.label = v;
+    saveState(); render();
+  }
+});
+
+document.addEventListener("change", (e) => {
+  const id = e.target?.id;
+
+  if (id === "userConsent"){ state.user.consent = !!e.target.checked; saveState(); }
+  if (id === "idealPrimary"){ state.idealEmotion.primary = e.target.value; saveState(); render(); }
+  if (id === "idealSecondary"){ state.idealEmotion.secondary = e.target.value; saveState(); render(); }
+});
+
+document.addEventListener("click", (e) => {
+  const t = e.target;
+
+  if (t?.dataset?.value) toggleBoundedArray("values","candidates", t.dataset.value, 6);
+  if (t?.dataset?.pillar) toggleBoundedArray("pillars","candidates", t.dataset.pillar, 6);
+
+  if (t?.dataset?.removeValue){
+    const v = t.dataset.removeValue;
+    state.values.candidates = removeItem(state.values.candidates, v);
+    delete state.values.roadtestAnswers[v];
+    saveState(); render();
+  }
+  if (t?.dataset?.removePillar){
+    const p = t.dataset.removePillar;
+    state.pillars.candidates = removeItem(state.pillars.candidates, p);
+    delete state.pillars.roadtest1[p];
+    delete state.pillars.roadtest2[p];
+    saveState(); render();
+  }
+
+  if (t?.dataset?.vAns && t?.dataset?.v){
+    const v = t.dataset.v;
+    const isYes = t.dataset.vAns === "yes";
+    state.values.roadtestAnswers[v] = isYes;
+
+    if (!isYes){
+      state.values.candidates = removeItem(state.values.candidates, v);
+      delete state.values.roadtestAnswers[v];
+    }
+
+    saveState(); render();
+  }
+
+  if (t?.dataset?.p1Ans && t?.dataset?.p){
+    const p = t.dataset.p;
+    const isYes = t.dataset.p1Ans === "yes";
+    state.pillars.roadtest1[p] = isYes;
+    saveState(); render();
+  }
+
+  if (t?.dataset?.p2Ans && t?.dataset?.p){
+    const p = t.dataset.p;
+    const isYes = t.dataset.p2Ans === "yes";
+    state.pillars.roadtest2[p] = isYes;
+
+    if (!isYes){
+      state.pillars.candidates = removeItem(state.pillars.candidates, p);
+      delete state.pillars.roadtest1[p];
+      delete state.pillars.roadtest2[p];
+    }
+
+    saveState(); render();
+  }
+
+  if (t?.dataset?.trigger){
+    state.trigger.label = t.dataset.trigger;
+    saveState(); render();
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  const id = e.target?.id;
+  if (id === "addValue" && e.key === "Enter"){ e.preventDefault(); addBoundedArray("values","candidates", e.target.value, 6); }
+  if (id === "addPillar" && e.key === "Enter"){ e.preventDefault(); addBoundedArray("pillars","candidates", e.target.value, 6); }
+});
+
+/* ========== UI Helpers ========== */
+
+function renderCandidateList(list, group){
+  if (!list.length) return `<div class="small">None yet.</div>`;
+  return `
+    <div class="pills">
+      ${list.map(x => `
+        <span class="tag">
+          ${escapeHtml(x)}
+          <button class="ghost" type="button"
+            style="margin-left:8px; padding:0 6px; border-radius:10px;"
+            data-${group === "values" ? "removeValue" : "removePillar"}="${escapeHtmlAttr(x)}"
+            title="Remove">×</button>
+        </span>
+      `).join("")}
+    </div>
+  `;
+}
+
+function pill(v, on){ return `<button class="pill ${on ? "on" : ""}" data-value="${escapeHtmlAttr(v)}" type="button">${escapeHtml(v)}</button>`; }
+function pillPillar(p, on){ return `<button class="pill ${on ? "on" : ""}" data-pillar="${escapeHtmlAttr(p)}" type="button">${escapeHtml(p)}</button>`; }
+function li(x){ return `<li>${escapeHtml(x)}</li>`; }
+
+function liveConfirmedValues(){
+  const confirmed = [];
+  for (const v of state.values.candidates){
+    if (state.values.roadtestAnswers[v] === true) confirmed.push(v);
+  }
+  return uniq([...confirmed, ...(state.pillars.movedToValues || [])]);
+}
+
+function liveConfirmedPillars(){
+  const confirmed = [];
+  const remaining = state.pillars.candidates.filter(p => state.pillars.roadtest1[p] === false);
+  for (const p of remaining){
+    if (state.pillars.roadtest2[p] === true) confirmed.push(p);
+  }
+  return uniq(confirmed);
+}
+
+/* ========== Submission ========== */
+
+async function submitToDana(){
+  computePillarsOutcomes();
+  computeConfirmedValues();
+
+  state.lastSubmit = { status:"submitting", message:"Sending your results to Dana..." };
+  saveState();
+  setStep(STEPS.findIndex(s => s.key === "submitted"));
+
+  if (!GOOGLE_FORM.enabled){
+    state.lastSubmit = { status:"error", message:"GOOGLE_FORM.enabled is false." };
+    saveState(); render();
+    return;
+  }
+
+  try{
+    await postToGoogleForm(buildPayload());
+    state.lastSubmit = {
+      status:"success",
+      message:"Done. If you provided an email + checked consent, you’ll receive your results email shortly."
+    };
+    saveState(); render();
+  }catch(err){
+    console.warn(err);
+    state.lastSubmit = {
+      status:"error",
+      message:"Submission failed. Check Google Form URL + entry IDs in app.js."
+    };
+    saveState(); render();
+  }
+}
+
+function buildPayload(){
+  return {
+    name: state.user.name.trim(),
+    email: state.user.email.trim(),
+    consent: !!state.user.consent,
+
+    confirmedValues: (state.values.confirmed || []).join(", "),
+    confirmedPillars: (state.pillars.confirmed || []).join(", "),
+    movedToValues: (state.pillars.movedToValues || []).join(", "),
+
+    idealEmotionPrimary: state.idealEmotion.primary || "",
+    idealEmotionSecondary: state.idealEmotion.secondary || "",
+    idealEmotionDesire: String(state.idealEmotion.desireLevel || 0),
+    idealEmotionTarget: "8",
+
+    trigger: state.trigger.label || "",
+    triggerFeeling: state.trigger.feeling || "",
+    resetScript: state.trigger.resetScript || ""
+  };
+}
+
+async function postToGoogleForm(p){
+  const fd = new FormData();
+  fd.append(GOOGLE_FORM.entry.name, p.name);
+  fd.append(GOOGLE_FORM.entry.email, p.email);
+  fd.append(GOOGLE_FORM.entry.consent, p.consent ? "Yes" : "No");
+
+  fd.append(GOOGLE_FORM.entry.confirmedValues, p.confirmedValues);
+  fd.append(GOOGLE_FORM.entry.confirmedPillars, p.confirmedPillars);
+  fd.append(GOOGLE_FORM.entry.movedToValues, p.movedToValues);
+
+  fd.append(GOOGLE_FORM.entry.idealEmotionPrimary, p.idealEmotionPrimary);
+  fd.append(GOOGLE_FORM.entry.idealEmotionSecondary, p.idealEmotionSecondary);
+  fd.append(GOOGLE_FORM.entry.idealEmotionDesire, p.idealEmotionDesire);
+  fd.append(GOOGLE_FORM.entry.idealEmotionTarget, p.idealEmotionTarget);
+
+  fd.append(GOOGLE_FORM.entry.trigger, p.trigger);
+  fd.append(GOOGLE_FORM.entry.triggerFeeling, p.triggerFeeling);
+  fd.append(GOOGLE_FORM.entry.resetScript, p.resetScript);
+
+  await fetch(GOOGLE_FORM.formResponseUrl, { method:"POST", mode:"no-cors", body: fd });
+}
+
+/* ========== HTML escaping ========== */
+
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function escapeHtmlAttr(s){ return escapeHtml(s).replaceAll("\n"," "); }
+
+// Initial paint
+render();
