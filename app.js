@@ -1,12 +1,12 @@
-/* =====================================================
+/* =========================================================
    CONFIG
-===================================================== */
-const STORAGE_KEY = "who_assessment_pdf_exact";
-const WELCOME_IMAGE = "./welcome.jpg";
+========================================================= */
+const STORAGE_KEY = "who_assessment_complete_v1";
+const WELCOME_IMAGE = "./assets/welcome.jpg";
 
-/* =====================================================
+/* =========================================================
    DEFAULT STATE
-===================================================== */
+========================================================= */
 const DEFAULTS = {
   meta: { name: "", email: "", emailOptIn: false },
 
@@ -14,7 +14,7 @@ const DEFAULTS = {
   valuesConfirmed: [],
 
   pillars: [],
-  pillarsRemaining: [],
+  pillarsKept: [],
   pillarsMovedToValues: [],
 
   idealEmotion: "",
@@ -31,9 +31,9 @@ const DEFAULTS = {
 let state = loadState();
 let stepIndex = 0;
 
-/* =====================================================
+/* =========================================================
    OPTIONS (PDF EXACT)
-===================================================== */
+========================================================= */
 const VALUES = [
   "Accountability","Adventure","Authenticity","Considerate","Curiosity","Do-er",
   "Efficient","Empathy","Ethics","Excellence","Fairness","Gratitude","Honesty",
@@ -62,9 +62,9 @@ const TRIGGERS = [
   "Respected","Seen","Smart enough","Valued","Wanted"
 ];
 
-/* =====================================================
+/* =========================================================
    DOM
-===================================================== */
+========================================================= */
 const elTitle = document.getElementById("stepTitle");
 const elHint = document.getElementById("stepHint");
 const elBody = document.getElementById("stepBody");
@@ -72,9 +72,47 @@ const elBack = document.getElementById("backBtn");
 const elNext = document.getElementById("nextBtn");
 const elProgress = document.getElementById("progressBar");
 
-/* =====================================================
+/* =========================================================
+   STICKY NAV (BUTTON FIX)
+========================================================= */
+const navBar = document.createElement("div");
+navBar.style.position = "sticky";
+navBar.style.bottom = "0";
+navBar.style.background = "#fff";
+navBar.style.padding = "14px 16px";
+navBar.style.display = "flex";
+navBar.style.justifyContent = "space-between";
+navBar.style.borderTop = "1px solid #ddd";
+navBar.style.zIndex = "1000";
+
+elBack.style.minWidth = "110px";
+elNext.style.minWidth = "130px";
+elNext.style.fontWeight = "700";
+
+navBar.appendChild(elBack);
+navBar.appendChild(elNext);
+document.body.appendChild(navBar);
+
+/* =========================================================
+   FOOTER (PDF EXACT)
+========================================================= */
+const footer = document.createElement("footer");
+footer.style.marginTop = "40px";
+footer.style.padding = "24px";
+footer.style.fontSize = "13px";
+footer.style.textAlign = "center";
+footer.style.opacity = "0.85";
+footer.innerHTML = `
+  © ${new Date().getFullYear()} My WHO Thoughts Assessment™ — All rights reserved<br/>
+  <a href="http://MyWHOthoughts.com" target="_blank">www.MyWHOthoughts.com</a> •
+  <a href="https://bit.ly/3PxJ3MD" target="_blank">Book link</a><br/>
+  A portion of book proceeds support Girl Scouts
+`;
+document.body.appendChild(footer);
+
+/* =========================================================
    STEPS — PDF ORDER
-===================================================== */
+========================================================= */
 const steps = [
 
 /* PAGE 1 — WELCOME */
@@ -83,19 +121,59 @@ const steps = [
   hint: "Define Your WHO • Quick clarity. No fluff.",
   render(){
     elBody.innerHTML = `
-      <img src="${WELCOME_IMAGE}" style="width:100%;border-radius:16px;margin-bottom:20px"/>
+      <img src="${WELCOME_IMAGE}" style="width:100%;max-width:720px;margin:0 auto 24px;display:block;border-radius:18px"/>
 
-      <p>When your nervous system is regulated, you are powerful.  
-      You respond instead of react. You choose instead of spiral.</p>
+      <p><strong>When your nervous system is regulated, you are powerful.</strong></p>
+      <p>You respond instead of react. You choose instead of spiral.</p>
 
-      <p><strong>Self-command isn’t about perfection — it’s about awareness.</strong></p>
+      <p>
+        <strong>Self-command isn’t about perfection — it’s about awareness.</strong>
+        It’s about noticing when you’ve drifted from your WHO and knowing how to return.
+      </p>
 
-      <p>It’s about noticing when you’ve drifted from your WHO and knowing how to return.</p>
-
-      <p>This assessment is your invitation to reflect, reconnect, and reclaim the thoughts that shape your life.</p>
+      <p>
+        My goal is to help you uncover and celebrate the best parts of what make you you —
+        the strengths and natural qualities that already exist within you —
+        and show you how to use them to move through conflict with clarity and confidence.
+      </p>
 
       <p><strong>— Dana Lynn Bernstein, PMP, PCC</strong><br/>
       <em>The Conflict Resolution Coach</em></p>
+    `;
+  },
+  validate:()=>true
+},
+
+/* PAGE 2 — DEFINE WHO */
+{
+  title: "Define Your WHO",
+  hint: "Understanding your internal framework.",
+  render(){
+    elBody.innerHTML = `
+      <div class="result-box">
+        <p><strong>Conflict is best solved by breaking it into smaller parts.</strong></p>
+
+        <p>
+          External conflict focuses on what to do or how to do something.
+          Internal conflict focuses on your thoughts — why you labeled something a conflict.
+        </p>
+
+        <p>
+          Identity also has two components:
+          an external component (roles, titles, achievements)
+          and an internal component — your <strong>WHO</strong>.
+        </p>
+
+        <p><strong>Your WHO is defined by:</strong></p>
+        <ul>
+          <li><strong>Values</strong> — Your guardrails</li>
+          <li><strong>Pillars</strong> — Your energy source</li>
+          <li><strong>Ideal Emotion</strong> — Your compass</li>
+          <li><strong>Trigger</strong> — Your warning signal</li>
+        </ul>
+
+        <p><strong>Conflict happens when you believe your WHO has been threatened.</strong></p>
+      </div>
     `;
   },
   validate:()=>true
@@ -107,202 +185,10 @@ const steps = [
   hint: "Email is optional.",
   render(){
     elBody.innerHTML = `
-      <div class="field"><label>Your name</label>
-      <input value="${state.meta.name}"></div>
+      <div class="field">
+        <label>Your name</label>
+        <input value="${state.meta.name}">
+      </div>
 
-      <div class="field"><label>Your email</label>
-      <input value="${state.meta.email}"></div>
-
-      <label class="small">
-        <input type="checkbox" ${state.meta.emailOptIn?"checked":""}>
-        Email my results and bonus content
-      </label>
-    `;
-    const i = elBody.querySelectorAll("input");
-    i[0].oninput=e=>state.meta.name=e.target.value;
-    i[1].oninput=e=>state.meta.email=e.target.value;
-    i[2].onchange=e=>state.meta.emailOptIn=e.target.checked;
-  },
-  validate:()=>state.meta.name||"Enter your name"
-},
-
-/* PAGE 4 — VALUES DISCOVER */
-{
-  title:"Step 1 of 6 — Values (Discover)",
-  hint:"What are your non-negotiable rules?",
-  render(){
-    renderMulti("values", VALUES,
-      "Tap to select 3–6 Values OR add your own.");
-  },
-  validate:()=>state.values.length>=3||"Select at least 3 Values"
-},
-
-/* VALUES ROAD TEST */
-{
-  title:"Step 2 of 6 — Values (Road Test)",
-  hint:"Values evoke emotion when crossed.",
-  render(){
-    elBody.innerHTML="";
-    state.values.forEach(v=>{
-      const d=document.createElement("div");
-      d.className="result-box";
-      d.innerHTML=`
-        <strong>${v}</strong>
-        <p>If someone violates this, do you feel upset / angry / frustrated?</p>
-        <button class="btn yes">YES</button>
-        <button class="btn ghost">NO</button>
-      `;
-      d.querySelector(".yes").onclick=()=>{
-        if(!state.valuesConfirmed.includes(v))
-          state.valuesConfirmed.push(v);
-        save();
-      };
-      d.querySelector(".ghost").onclick=()=>{
-        state.valuesConfirmed=state.valuesConfirmed.filter(x=>x!==v);
-        save();
-      };
-      elBody.appendChild(d);
-    });
-  },
-  validate:()=>state.valuesConfirmed.length>=2||"Confirm at least 2 Values"
-},
-
-/* PAGE 5 — PILLARS DISCOVER */
-{
-  title:"Step 3 of 6 — Pillars (Discover)",
-  hint:"Who you are at your happiest and most YOU.",
-  render(){
-    renderMulti("pillars", PILLARS,
-      "Tap to select 3–6 Pillars OR add your own.");
-  },
-  validate:()=>state.pillars.length>=3||"Select at least 3 Pillars"
-},
-
-/* PILLARS ROAD TEST */
-{
-  title:"Step 4 of 6 — Pillars (Road Test)",
-  hint:"Test each characteristic.",
-  render(){
-    elBody.innerHTML="";
-    state.pillars.forEach(p=>{
-      const d=document.createElement("div");
-      d.className="result-box";
-      d.innerHTML=`
-        <strong>${p}</strong>
-        <p>If someone crosses this, do you feel upset?</p>
-        <button class="btn yes">YES → Move to Values</button>
-        <button class="btn ghost">NO → Keep</button>
-      `;
-      d.querySelector(".yes").onclick=()=>{
-        state.pillarsMovedToValues.push(p);
-        save();
-      };
-      d.querySelector(".ghost").onclick=()=>{
-        state.pillarsRemaining.push(p);
-        save();
-      };
-      elBody.appendChild(d);
-    });
-  },
-  validate:()=>state.pillarsRemaining.length>=2||"Keep at least 2 Pillars"
-},
-
-/* PAGE 6 — IDEAL EMOTION */
-{
-  title:"Step 5 of 6 — Ideal Emotion",
-  hint:"Your emotional compass.",
-  render(){
-    renderMultiSingle("idealEmotion", EMOTIONS);
-    elBody.innerHTML+=`
-      <label>How strongly do you feel it? (1–10)</label>
-      <input type="range" min="1" max="10" value="${state.idealEmotionLevel}">
-      <label>Optional second Ideal Emotion</label>
-      <input value="${state.idealEmotion2}">
-    `;
-    const i=elBody.querySelectorAll("input");
-    i[1].oninput=e=>state.idealEmotionLevel=+e.target.value;
-    i[2].oninput=e=>state.idealEmotion2=e.target.value;
-  },
-  validate:()=>state.idealEmotion||"Choose an Ideal Emotion"
-},
-
-/* PAGE 7 — TRIGGER */
-{
-  title:"Step 6 of 6 — Trigger (Anti-WHO)",
-  hint:"Recognize it before it hijacks you.",
-  render(){
-    elBody.innerHTML=`
-      <label>My Trigger is “I’m not ___ enough”</label>
-      <input value="${state.trigger.story}">
-      <label>It makes me feel</label>
-      <input value="${state.trigger.feeling}">
-      <label>Reset Script</label>
-      <textarea>${state.trigger.reset}</textarea>
-    `;
-    const i=elBody.querySelectorAll("input,textarea");
-    i[0].oninput=e=>state.trigger.story=e.target.value;
-    i[1].oninput=e=>state.trigger.feeling=e.target.value;
-    i[2].oninput=e=>state.trigger.reset=e.target.value;
-  },
-  validate:()=>state.trigger.story||"Define your Trigger"
-},
-
-/* PAGE 8 — SNAPSHOT */
-{
-  title:"Your WHO Snapshot",
-  hint:"Awareness builds self-command.",
-  render(){
-    elBody.innerHTML=`
-      <strong>Values</strong><br>${state.valuesConfirmed.join(", ")}<br><br>
-      <strong>Pillars</strong><br>${state.pillarsRemaining.join(", ")}<br><br>
-      <strong>Ideal Emotion</strong><br>${state.idealEmotion} (${state.idealEmotionLevel}/10)<br><br>
-      <strong>Trigger</strong><br>${state.trigger.story}
-    `;
-  },
-  validate:()=>true
-}
-
-];
-
-/* =====================================================
-   HELPERS
-===================================================== */
-function renderMulti(key,list,hint){
-  elBody.innerHTML=`<p>${hint}</p>`;
-  const s=new Set(state[key]);
-  list.forEach(w=>{
-    const p=document.createElement("div");
-    p.className="pill"+(s.has(w)?" selected":"");
-    p.textContent=w;
-    p.onclick=()=>{
-      s.has(w)?s.delete(w):s.add(w);
-      state[key]=[...s];
-      save(); renderStep();
-    };
-    elBody.appendChild(p);
-  });
-}
-
-function renderMultiSingle(key,list){
-  elBody.innerHTML="";
-  list.forEach(w=>{
-    const p=document.createElement("div");
-    p.className="pill"+(state[key]===w?" selected":"");
-    p.textContent=w;
-    p.onclick=()=>{state[key]=w;save();renderStep();};
-    elBody.appendChild(p);
-  });
-}
-
-function renderStep(){
-  const s=steps[stepIndex];
-  elTitle.textContent=s.title;
-  elHint.textContent=s.hint;
-  elBack.style.visibility=stepIndex?"visible":"hidden";
-  elProgress.style.width=`${(stepIndex/(steps.length-1))*100}%`;
-  elBody.innerHTML="";
-  s.render();
-}
-
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
-function loadState(){return JSON.parse(localStorage.getItem(STORAGE_KEY))||structuredClone(DEFAULTS);}
+      <div class="field">
+        <label>Your email</label>
