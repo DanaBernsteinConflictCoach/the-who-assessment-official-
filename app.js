@@ -532,8 +532,35 @@ document.addEventListener("input", (e) => {
   const id = e.target?.id;
 
   // ✅ Save-only typing (prevents cursor/focus drop)
-  if (id === "userName") { state.user.name = e.target.value; saveState(); return; }
-  if (id === "userEmail") { state.user.email = e.target.value; saveState(); return; }
+if (id === "userName") {
+  state.user.name = e.target.value;
+  saveState();
+  safeRenderKeepFocus(e.target);
+  return;
+}
+if (id === "userEmail") {
+  state.user.email = e.target.value;
+  saveState();
+  safeRenderKeepFocus(e.target);
+  return;
+}
+function safeRenderKeepFocus(activeEl){
+  const id = activeEl?.id;
+  const start = activeEl?.selectionStart ?? null;
+  const end = activeEl?.selectionEnd ?? null;
+
+  render();
+
+  // restore focus + caret
+  if (!id) return;
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.focus();
+  if (start !== null && end !== null && typeof el.setSelectionRange === "function"){
+    el.setSelectionRange(start, end);
+  }
+}
+
   if (id === "proudMoment") { state.values.proudMoment = e.target.value; saveState(); return; }
   if (id === "upsetMoment") { state.values.upsetMoment = e.target.value; saveState(); return; }
   if (id === "comments") { state.comments = e.target.value; saveState(); return; }
