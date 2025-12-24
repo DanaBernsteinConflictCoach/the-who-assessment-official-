@@ -1,378 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>My WHO Thoughts Assessment™</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
 :root{
-  --bg:#f4f6f8;
+  --bg:#f7f9f8;
   --card:#ffffff;
-  --primary:#1f6feb;
-  --accent:#0a1e14;
-  --muted:#6b7280;
-  --radius:16px;
+  --ink:#0b1f17;
+  --accent:#1f6f5c;
+  --muted:#5e6f68;
 }
 
-*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-
+*{box-sizing:border-box}
 body{
   margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   background:var(--bg);
-  color:#111;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
+  color:var(--ink);
+  line-height:1.5;
 }
 
 header{
-  background:linear-gradient(135deg,#0a1e14,#1f6feb);
-  color:white;
+  padding:20px;
   text-align:center;
-  padding:32px 20px 26px;
-}
-
-header img{
-  max-width:120px;
-  margin-bottom:14px;
-}
-
-header h1{
-  margin:0;
-  font-size:1.7rem;
-}
-
-header p{
-  margin-top:8px;
-  opacity:.92;
+  font-weight:800;
+  font-size:1.4rem;
 }
 
 main{
-  flex:1;
-  display:flex;
-  justify-content:center;
+  max-width:900px;
+  margin:0 auto;
   padding:20px;
 }
 
 .card{
-  width:100%;
-  max-width:760px;
   background:var(--card);
-  border-radius:var(--radius);
+  border-radius:16px;
   padding:28px;
-  box-shadow:0 12px 34px rgba(0,0,0,.1);
+  box-shadow:0 10px 30px rgba(0,0,0,.06);
 }
 
-#progressWrap{
-  height:6px;
-  background:#e5e7eb;
-  border-radius:4px;
-  overflow:hidden;
-  margin-bottom:22px;
+h2{margin-top:0}
+.small{color:var(--muted); font-size:.9rem}
+
+.pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
 }
 
-#progressBar{
-  height:100%;
-  width:0%;
-  background:var(--primary);
-  transition:.3s;
-}
-
-h2{margin:0 0 6px}
-.hint{color:var(--muted);margin-bottom:20px}
-
-.option{
-  border:1px solid #d1d5db;
-  border-radius:12px;
-  padding:12px 16px;
-  margin-bottom:10px;
+.pill{
+  padding:8px 14px;
+  border-radius:999px;
+  border:2px solid var(--accent);
   cursor:pointer;
-  transition:.15s;
+  user-select:none;
 }
 
-.option:hover{background:#f1f5f9}
-.option.selected{
-  background:#e6f0ff;
-  border-color:var(--primary);
-  font-weight:600;
+.pill.selected{
+  background:var(--accent);
+  color:white;
 }
 
-label{
-  font-weight:600;
-  margin-top:14px;
-  display:block;
-}
-
-input,textarea{
+.field{margin-bottom:16px}
+label{font-weight:700; display:block; margin-bottom:6px}
+input, textarea{
   width:100%;
   padding:10px;
   border-radius:10px;
-  border:1px solid #d1d5db;
-  font-size:15px;
-  margin-top:6px;
+  border:1px solid #ccc;
+  font-size:1rem;
 }
 
-textarea{min-height:90px}
+textarea{min-height:80px}
 
-.notice{
-  background:#f9fafb;
-  border-left:4px solid var(--primary);
-  padding:14px;
-  border-radius:8px;
-  margin:16px 0;
-}
-
-.nav{
+.footer-nav{
   position:sticky;
   bottom:0;
-  background:white;
-  border-top:1px solid #e5e7eb;
-  padding:14px 20px;
+  background:var(--bg);
+  padding:14px;
   display:flex;
   justify-content:space-between;
   gap:12px;
 }
 
 button{
-  border:none;
+  padding:12px 18px;
   border-radius:12px;
-  padding:12px 20px;
-  font-size:15px;
+  border:none;
+  font-size:1rem;
+  font-weight:700;
   cursor:pointer;
 }
 
-button.primary{
-  background:var(--primary);
-  color:white;
-  font-weight:700;
+.primary{background:var(--accent); color:white}
+.ghost{background:#e6efec}
+
+.progress{
+  height:8px;
+  background:#dde7e3;
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:20px;
 }
 
-button.secondary{
-  background:#e5e7eb;
+.progress > div{
+  height:100%;
+  background:var(--accent);
+  width:0%;
 }
 
 footer{
   text-align:center;
-  font-size:13px;
-  padding:24px 10px;
-  color:#374151;
+  padding:30px 10px;
+  font-size:.85rem;
+  color:var(--muted);
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <img src="images/who-hero.jpg" alt="My WHO Thoughts">
-  <h1>My WHO Thoughts Assessment™</h1>
-  <p>Self-command increases when you regulate who you are being</p>
-</header>
+<header>My WHO Thoughts Assessment™</header>
 
 <main>
-  <div class="card">
-    <div id="progressWrap"><div id="progressBar"></div></div>
-    <h2 id="stepTitle"></h2>
-    <div class="hint" id="stepHint"></div>
-    <div id="stepBody"></div>
-  </div>
+<div class="progress"><div id="bar"></div></div>
+<div class="card" id="app"></div>
 </main>
 
-<div class="nav">
-  <button id="backBtn" class="secondary">Back</button>
-  <button id="nextBtn" class="primary">Next</button>
+<div class="footer-nav">
+<button id="back" class="ghost">Back</button>
+<button id="next" class="primary">Next</button>
 </div>
 
 <footer>
-© 2025 My WHO Thoughts Assessment™ — All rights reserved<br>
-www.MyWHOthoughts.com • Book link<br>
-A portion of book proceeds support Girl Scouts
+© <span id="year"></span> My WHO Thoughts Assessment™ — All rights reserved<br>
+<a href="https://www.MyWHOthoughts.com" target="_blank">www.MyWHOthoughts.com</a> •
+<a href="https://bit.ly/3PxJ3MD" target="_blank">Book link</a>
 </footer>
 
 <script>
-const STORAGE="who_complete_v1";
+document.getElementById("year").textContent = new Date().getFullYear();
 
-const VALUES=["Accountability","Authenticity","Compassion","Curiosity","Empathy","Fairness","Gratitude","Honesty","Impact","Integrity","Kind","Respect","Service"];
-const PILLARS=["Adventurer","Builder","Caretaker","Confident","Creative","Faith","Family","Fun","Grounded","Helper","Listener","Love","Optimist","Patient","Playful","Present"];
-const EMOTIONS=["Calm","Clear","Connected","Content","Energized","Fulfilled","Inspired","Joy","Peace","Present"];
+const steps = [
+`<h2>Welcome</h2>
+<p>Thank you for taking the WHO Thoughts Assessment™.</p>
+<p>Take a moment to imagine what’s possible when you stay anchored in your Values, operate from your best self, and recognize the thoughts that quietly pull you off course.</p>
+<p>When your nervous system is regulated, you are powerful. You respond instead of react. You choose instead of spiral.</p>
+<p>Self-command isn’t about perfection — it’s about awareness.</p>
+<p>The WHO Thoughts Assessment™ is your invitation to reflect, reconnect, and reclaim the thoughts that shape your life.</p>
+<p><strong>— Dana Lynn Bernstein, PMP, PCC<br>The Conflict Resolution Coach</strong></p>`,
 
-const DEFAULT={
-name:"",email:"",
-values:[],valuesConfirmed:[],
-pillars:[],pillarsConfirmed:[],
-idealEmotion:"",
-trigger:{belief:"",feeling:"",reset:""}
-};
-
-let state=load(),step=0;
-
-const steps=[
-{
-title:"Welcome",
-hint:"Define your WHO",
-render(){
-body(`
-<p><strong>Self-command increases when you de-escalate the emotions that are evoked when you are not being your WHO.</strong></p>
-<p>This assessment helps you identify the internal framework that drives how you experience conflict.</p>
-`);
-},validate(){return true;}
-},
-{
-title:"Define Your WHO",
-hint:"Internal conflict creates external conflict",
-render(){
-body(`
-<p>External conflict focuses on what to do or how to do something.</p>
-<p>Internal conflict focuses on your thoughts — why you labeled something a conflict.</p>
+`<h2>Define Your WHO</h2>
+<p>Your WHO is defined by:</p>
 <ul>
-<li><strong>Values</strong> — your guardrails</li>
-<li><strong>Pillars</strong> — who you are at your best</li>
-<li><strong>Ideal Emotion</strong> — your compass</li>
-<li><strong>Trigger</strong> — your warning signal</li>
+<li><strong>Values — Your guardrails</strong></li>
+<li><strong>Pillars — Your energy source</strong></li>
+<li><strong>Ideal Emotion — Your compass</strong></li>
+<li><strong>Trigger — Your warning signal</strong></li>
 </ul>
-<p><strong>Conflict happens when you believe your WHO has been threatened.</strong></p>
-`);
-},validate(){return true;}
-},
-{
-title:"Start",
-hint:"Email optional",
-render(){
-body(`
-<label>Your name</label>
-<input id="n" value="${state.name}">
-<label>Your email (optional)</label>
-<input id="e" value="${state.email}">
-<div class="notice">Email is only used if you choose to send your results.</div>
-`);
-n.oninput=e=>{state.name=e.target.value;save();}
-e.oninput=e2=>{state.email=e2.target.value;save();}
-},validate(){return state.name||"Please enter your name";}
-},
-{
-title:"Values",
-hint:"What upsets you when crossed?",
-render(){list(VALUES,state.values,v=>toggle(state.values,v));},
-validate(){return state.values.length>=3||"Select at least 3 values";}
-},
-{
-title:"Values Road Test",
-hint:"Does this evoke emotion?",
-render(){
-state.values.forEach(v=>row(v,()=>add(state.valuesConfirmed,v),()=>remove(state.valuesConfirmed,v)));
-},validate(){return state.valuesConfirmed.length>=2||"Confirm at least 2 values";}
-},
-{
-title:"Pillars",
-hint:"Who you are at your best",
-render(){list(PILLARS,state.pillars,p=>toggle(state.pillars,p));},
-validate(){return state.pillars.length>=3||"Select at least 3 pillars";}
-},
-{
-title:"Pillars Road Test",
-hint:"If crossed, do you feel upset?",
-render(){
-state.pillars.forEach(p=>row(p,()=>add(state.valuesConfirmed,p),()=>add(state.pillarsConfirmed,p)));
-},validate(){return state.pillarsConfirmed.length>=2||"Keep at least 2 pillars";}
-},
-{
-title:"Ideal Emotion",
-hint:"Your emotional compass",
-render(){list(EMOTIONS,[state.idealEmotion],e=>{state.idealEmotion=e;save();});},
-validate(){return state.idealEmotion||"Choose an emotion";}
-},
-{
-title:"Trigger",
-hint:"Recognize the Anti-WHO",
-render(){
-body(`
-<label>I’m not ___ enough</label>
-<input value="${state.trigger.belief}" id="b">
-<label>It makes me feel</label>
-<input value="${state.trigger.feeling}" id="f">
-<label>Preferred response / reset</label>
-<textarea id="r">${state.trigger.reset}</textarea>
-`);
-b.oninput=e=>{state.trigger.belief=e.target.value;save();}
-f.oninput=e=>{state.trigger.feeling=e.target.value;save();}
-r.oninput=e=>{state.trigger.reset=e.target.value;save();}
-},validate(){return state.trigger.belief||"Define your trigger";}
-},
-{
-title:"Your WHO Snapshot",
-hint:"Save, copy, or email",
-render(){
-body(`
-<p><strong>Name:</strong> ${state.name}</p>
-<p><strong>Values:</strong> ${state.valuesConfirmed.join(", ")}</p>
-<p><strong>Pillars:</strong> ${state.pillarsConfirmed.join(", ")}</p>
-<p><strong>Ideal Emotion:</strong> ${state.idealEmotion}</p>
-<p><strong>Trigger:</strong> ${state.trigger.belief}</p>
-<button onclick="copyResults()">Copy</button>
-<button onclick="downloadResults()">Download</button>
-<button onclick="emailResults()">Email</button>
-`);
-},validate(){return true;}
-}
+<p>Conflict happens when you believe your WHO has been threatened.</p>`,
+
+`<h2>Step 1 of 6: Values (Discover)</h2>
+<p>There are two ways to uncover your Values:</p>
+<ul>
+<li>What is your proudest moment?</li>
+<li>What makes you upset?</li>
+</ul>
+<p><strong>Rules:</strong> Tap to select 3–6 of your Values OR add custom ones.</p>`,
+
+`<h2>Step 2 of 6: Values (Road Test)</h2>
+<p>If someone violates this, do you feel upset / angry / frustrated?</p>
+<p><strong>YES = it’s a Value</strong><br><strong>NO = remove it</strong></p>
+<p class="small">Practical Application: By identifying these candidates, you can more easily de-escalate your emotions.</p>`,
+
+`<h2>Step 3 of 6: Pillars (Discover)</h2>
+<p>Pillars are positive core characteristics that describe you at your best.</p>
+<p>When were you happiest and most YOU?</p>`,
+
+`<h2>Step 4 of 6: Pillars (Road Test)</h2>
+<p>If someone crosses this characteristic, do you get angry/frustrated/upset?</p>
+<p>YES = Move to Values<br>NO = Keep as a Pillar</p>
+<p>If you took these away, would you be a shell of yourself?</p>`,
+
+`<h2>Step 5 of 6: Ideal Emotion</h2>
+<p>Your Ideal Emotion is what you want to feel each day.</p>
+<p>When your Ideal Emotion dips, ask:</p>
+<ul>
+<li>Which Value did I compromise?</li>
+<li>Which Pillar am I not embodying?</li>
+<li>Is my Trigger leading?</li>
+</ul>`,
+
+`<h2>Step 6 of 6: Trigger (Anti-WHO)</h2>
+<p>Your Trigger is one loud “I’m not…” story.</p>
+<p>Optional Reset Script:</p>
+<p><em>“That’s my Trigger talking. I’m choosing [Pillar] and honoring [Value].”</em></p>`,
+
+`<h2>Your WHO Snapshot</h2>
+<p><strong>Values — Your guardrails</strong></p>
+<p><strong>Pillars — Your energy source</strong></p>
+<p><strong>Ideal Emotion — Your compass</strong></p>
+<p><strong>Trigger — Your warning signal</strong></p>
+<p class="small">Refine over time. Awareness builds self-command.</p>`
 ];
 
-function body(h){stepBody.innerHTML=h;}
-function list(arr,sel,cb){
-body("");
-arr.forEach(v=>{
-const d=document.createElement("div");
-d.className="option"+(sel.includes(v)?" selected":"");
-d.textContent=v;
-d.onclick=()=>{cb(v);save();render();};
-stepBody.appendChild(d);
-});
-}
-function row(txt,yes,no){
-const d=document.createElement("div");
-d.className="option";
-d.innerHTML=`<strong>${txt}</strong><br>`;
-const y=document.createElement("button");
-y.textContent="YES";
-const n=document.createElement("button");
-n.textContent="NO";
-y.onclick=()=>{yes();save();};
-n.onclick=()=>{no();save();};
-d.appendChild(y);d.appendChild(n);
-stepBody.appendChild(d);
-}
-function toggle(a,v){a.includes(v)?a.splice(a.indexOf(v),1):a.push(v);}
-function add(a,v){if(!a.includes(v))a.push(v);}
-function remove(a,v){a.splice(a.indexOf(v),1);}
+let i = 0;
+const app = document.getElementById("app");
+const bar = document.getElementById("bar");
+
 function render(){
-const s=steps[step];
-stepTitle.textContent=s.title;
-stepHint.textContent=s.hint;
-progressBar.style.width=(step/(steps.length-1))*100+"%";
-backBtn.style.visibility=step===0?"hidden":"visible";
-s.render();
+  app.innerHTML = steps[i];
+  bar.style.width = (i/(steps.length-1))*100 + "%";
+  back.style.visibility = i===0 ? "hidden":"visible";
+  next.textContent = i===steps.length-1 ? "Done":"Next";
 }
-backBtn.onclick=()=>{step=Math.max(0,step-1);render();};
-nextBtn.onclick=()=>{
-const r=steps[step].validate();
-if(r!==true)return alert(r);
-step=Math.min(steps.length-1,step+1);
-render();
-};
-function buildText(){
-return `WHO RESULTS\n\nName: ${state.name}\n\nValues: ${state.valuesConfirmed.join(", ")}\n\nPillars: ${state.pillarsConfirmed.join(", ")}\n\nIdeal Emotion: ${state.idealEmotion}\n\nTrigger: ${state.trigger.belief}\nResponse: ${state.trigger.reset}`;
-}
-function copyResults(){navigator.clipboard.writeText(buildText());alert("Copied");}
-function downloadResults(){
-const b=new Blob([buildText()],{type:"text/plain"});
-const a=document.createElement("a");
-a.href=URL.createObjectURL(b);a.download="WHO.txt";a.click();
-}
-function emailResults(){
-if(!state.email)return alert("Add email first");
-location.href=`mailto:${state.email}?subject=My WHO Results&body=${encodeURIComponent(buildText())}`;
-}
-function save(){localStorage.setItem(STORAGE,JSON.stringify(state));}
-function load(){try{return JSON.parse(localStorage.getItem(STORAGE))||DEFAULT;}catch{return DEFAULT;}}
+back.onclick = ()=>{ if(i>0){i--; render();}};
+next.onclick = ()=>{ if(i<steps.length-1){i++; render();}};
 render();
 </script>
 
