@@ -12,7 +12,6 @@
   <h1>My WHO Thoughts Assessment™</h1>
   <h2>Define Your WHO</h2>
   <p class="tagline">Quick clarity. No fluff.</p>
-
   <div class="font-controls">
     <button onclick="adjustFont(-1)">A−</button>
     <button onclick="adjustFont(1)">A+</button>
@@ -25,22 +24,18 @@
 
 <main id="app">
 
-  <!-- SCREEN 0 — WELCOME -->
+  <!-- WELCOME -->
   <section class="screen active">
     <p>Thank you for taking the WHO Thoughts Assessment™.</p>
     <p>Take a moment to imagine what’s possible when you stay anchored in your Values, operate from your best self, and recognize the thoughts that quietly pull you off course.</p>
     <p>When your nervous system is regulated, you are powerful. You respond instead of react. You choose instead of spiral.</p>
     <p>Self-command isn’t about perfection — it’s about awareness. It’s about noticing when you’ve drifted from your WHO and knowing how to return.</p>
     <p>My goal is to help you uncover and celebrate the best parts of what make you you — the strengths and natural qualities that already exist within you — and show you how to use them to move through conflict with clarity and confidence.</p>
-    <p>Now imagine a world where more of us faced challenges this way: grounded, intentional, and self-led.</p>
     <p>The WHO Thoughts Assessment™ is your invitation to reflect, reconnect, and reclaim the thoughts that shape your life.</p>
-    <p class="signature">— Dana Lynn Bernstein, PMP, PCC<br/>The Conflict Resolution Coach</p>
-    <p>Additional exercises and reflections in my book, <em>It’s the Thought That Counts: Mastering the Art of YOU vs You</em></p>
-    <p>A portion of book proceeds support Girl Scouts</p>
-    <button onclick="startAssessment()">Begin</button>
+    <button onclick="start()">Begin</button>
   </section>
 
-  <!-- STEP 1 -->
+  <!-- STEP 1 DEFINE WHO -->
   <section class="screen">
     <p>Conflict is best solved by breaking it into smaller parts. External conflict (tacticals about what to do/how to do something) and internal conflict (your thoughts about why you labeled something a conflict).</p>
     <p>Identity also has an external (physical attributes, roles, titles, achievements) and internal component (your WHO).</p>
@@ -52,95 +47,65 @@
       <li>Trigger — Your warning signal</li>
     </ul>
     <p>Conflict happens when you believe your WHO has been threatened.</p>
-    <p>In 6 steps, you’ll identify:</p>
-    <p><strong>Values:</strong> Your non-negotiables and how you think the world should act. When you are living in alignment with your Values, they are what help you to achieve your goals.</p>
-    <p><strong>Pillars:</strong> Your natural characteristics that describe who you are as your happiest, most relaxed self. They are your strengths, and when you are in a flow state.</p>
-    <p><strong>Ideal Emotion:</strong> What you want to feel each day. Your emotional compass.</p>
-    <p><strong>Trigger:</strong> The “I’m not ___ enough” story that pulls you off course.</p>
   </section>
 
-  <!-- STEP 2 -->
+  <!-- STEP 2 VALUES DISCOVER + BANK -->
   <section class="screen">
     <h3>Step 1 of 6: Values (Discover)</h3>
-    <label>Prompt A: Proud Moment</label>
-    <textarea></textarea>
-    <label>Why were you proud?</label>
-    <textarea></textarea>
-    <label>Prompt B: Upset / Anger / Frustrated Moment</label>
-    <textarea></textarea>
-    <label>What exactly bothered you / Why did the behavior bother you?</label>
-    <textarea></textarea>
-    <h3>Build your Values candidate list</h3>
-    <p>Reflect on what matters to you. What are the non-negotiable rules that drive your success? Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step.</p>
-    <input placeholder="Add a candidate (press Enter)" />
+    <textarea placeholder="Prompt A: Proud Moment"></textarea>
+    <textarea placeholder="Why were you proud?"></textarea>
+    <textarea placeholder="Prompt B: Upset / Anger / Frustrated Moment"></textarea>
+    <textarea placeholder="What exactly bothered you / Why did the behavior bother you?"></textarea>
+
+    <h4>Build your Values candidate list</h4>
+    <div id="valuesBank" class="bank"></div>
+    <input id="customValue" placeholder="Add a candidate (press Enter)" />
+    <h5>Current candidates</h5>
+    <div id="valuesSelected" class="selected"></div>
   </section>
 
-  <!-- STEP 3 -->
+  <!-- STEP 3 VALUES ROAD TEST -->
   <section class="screen">
     <h3>Step 2 of 6: Values Evoke Emotions (Road Test)</h3>
-    <p>Road test each candidate. Values, when crossed, evoke an emotion.</p>
-    <p>If someone violates this, do you feel upset / angry / frustrated?</p>
-    <p>YES = it’s a Value (keep)</p>
-    <p>NO = it’s not a Value (remove from the list)</p>
-    <p>Practical Application:</p>
-    <p>Clarity comes by identifying conflicting Values.</p>
-    <p>Use your Values as guardrails when making tough decisions.</p>
-    <p>Let them guide your boundaries in relationships and work.</p>
-    <p>By identifying these candidates, you can more easily de-escalate your emotions.</p>
+    <div id="valuesRoadTest"></div>
+    <h4>Confirmed Values</h4>
+    <div id="confirmedValues" class="selected"></div>
   </section>
 
-  <!-- STEP 4 -->
+  <!-- STEP 4 PILLARS -->
   <section class="screen">
     <h3>Step 3 of 6: Pillars (Discover)</h3>
-    <p>Are positive core characteristics that describe you at your best (they are not tied to accomplishment or how you think you "should be"). You are great as you are!</p>
-    <p>When were you your happiest and most YOU?</p>
-    <textarea></textarea>
+    <textarea placeholder="When were you your happiest and most YOU?"></textarea>
+    <div id="pillarsBank" class="bank"></div>
+    <input id="customPillar" placeholder="Add Pillar candidates (add a trait, then press enter)" />
     <h3>Step 4 of 6: Pillars (Road Test)</h3>
-    <p>If someone crosses this characteristic, do you get angry/frustrated/upset?</p>
-    <p>If you took these characteristics away, would you be a shell of yourself?</p>
-    <p>Practical Application:</p>
-    <p>Lead from your unique strengths.</p>
-    <p>Lean on your Pillars when challenges feel heavy.</p>
+    <div id="pillarsRoadTest"></div>
+    <h4>Confirmed Pillars</h4>
+    <div id="confirmedPillars" class="selected"></div>
+    <h4>Moved to Values</h4>
+    <div id="pillarsToValues" class="selected"></div>
   </section>
 
-  <!-- STEP 5 -->
+  <!-- STEP 5 IDEAL + TRIGGER -->
   <section class="screen">
-    <h3>Internal Conflict & Choice</h3>
-    <p>Internal conflict comes from Competing WHO traits.</p>
     <h3>Step 5 of 6: Ideal Emotion</h3>
-    <p>Your Ideal Emotion is what you want to feel each day.</p>
-    <select>
-      <option>Calm</option><option>Clear</option><option>Joy</option><option>Peace</option>
-    </select>
-    <input type="range" min="1" max="10" />
+    <div id="emotionBank" class="bank"></div>
+    <input type="range" min="1" max="10" value="5" oninput="setEmotionLevel(this.value)">
+    <p>Current: <span id="emotionLevel">5</span>/10</p>
+
     <h3>Step 6 of 6: Trigger (Anti-WHO)</h3>
-    <p>Your Trigger is one loud “I’m not...” story that surfaces when you feel under pressure.</p>
-    <input placeholder="I'm not..." />
+    <div id="triggerBank" class="bank"></div>
+    <input id="customTrigger" placeholder="I'm not..." />
     <textarea placeholder="Optional Reset Script"></textarea>
   </section>
 
-  <!-- STEP 6 -->
+  <!-- STEP 6 SNAPSHOT -->
   <section class="screen">
     <h3>Your WHO Snapshot</h3>
-    <p>Values — Your guardrails</p>
-    <p>Pillars — Your energy source</p>
-    <p>Ideal Emotion — Your compass</p>
-    <p>Trigger — Your warning signal</p>
-    <p>Refine over time. Awareness builds self-command.</p>
-  </section>
-
-  <!-- OPTIONAL POST COMPLETION -->
-  <section class="screen">
-    <h3>Food Check (Optional)</h3>
-    <input placeholder="My favorite food / meal is:" />
-    <input placeholder="I cannot stomach this food / consistency / beverage:" />
-    <p>The food you fill your stomach with is no different than the thoughts you fill your head with.</p>
-    <h3>Next Step</h3>
-    <p>This week, lead with:</p>
-    <p>One Value</p>
-    <p>One Pillar</p>
-    <p>Make the World a Better Place*</p>
-    <p>*Girl Scouts motto • Portion of book proceeds support Girl Scouts</p>
+    <p><strong>Values:</strong> <span id="snapValues"></span></p>
+    <p><strong>Pillars:</strong> <span id="snapPillars"></span></p>
+    <p><strong>Ideal Emotion:</strong> <span id="snapEmotion"></span></p>
+    <p><strong>Trigger:</strong> <span id="snapTrigger"></span></p>
   </section>
 
 </main>
@@ -149,12 +114,6 @@
   <button onclick="prev()">Back</button>
   <button onclick="next()">Next</button>
 </div>
-
-<footer>
-  © <span id="year"></span> My WHO Thoughts Assessment™ — All rights reserved<br/>
-  <a href="https://www.MyWHOthoughts.com">www.MyWHOthoughts.com</a> •
-  <a href="https://bit.ly/3PxJ3MD">Book Link</a>
-</footer>
 
 <script src="app.js"></script>
 </body>
