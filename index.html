@@ -2,36 +2,89 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>My WHO Thoughts Assessment™</title>
+  <title>WHO Thoughts Assessment™</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+  <main class="container">
 
-<header class="app-header">
-  <h1>My WHO Thoughts Assessment™</h1>
-  <p class="tagline">Define Your WHO<br><span>Quick clarity. No fluff.</span></p>
-</header>
+    <h1>WHO Thoughts Assessment™</h1>
 
-<div class="progress-wrap">
-  <div id="progressBar"></div>
-</div>
+    <p>
+      Thank you for taking the WHO Thoughts Assessment™.
+      Take a moment to imagine what’s possible when you consistently think, feel, and act as your WHO.
+    </p>
 
-<main id="app">
-  <section id="stepContent"></section>
-</main>
+    <!-- GOOGLE FORM EMBED -->
+    <section class="form-section">
+      <iframe
+        src="https://forms.gle/m5mMfQf71vsrxrt36"
+        width="100%"
+        height="900"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0"
+        loading="lazy">
+        Loading…
+      </iframe>
+    </section>
 
-<nav class="nav-buttons">
-  <button id="backBtn">Back</button>
-  <button id="nextBtn" class="primary">Next</button>
-</nav>
+    <!-- OPTIONAL WORD BANK (OPTION B) -->
+    <section class="optional-section">
+      <h2>Optional Word Bank</h2>
+      <p>
+        If helpful, use the words below to reflect on qualities that resonate with your WHO.
+      </p>
 
-<footer>
-  © <span id="year"></span> My WHO Thoughts Assessment™ — All rights reserved<br>
-  <a href="https://www.mywhothoughts.com" target="_blank">www.MyWHOthoughts.com</a> •
-  <a href="https://bit.ly/3PxJ3MD" target="_blank">Book Link</a>
-</footer>
+      <div class="word-bank">
+        <span>Adventurer</span>
+        <span>Bold</span>
+        <span>Builder</span>
+        <span>Caretaker</span>
+        <span>Community</span>
+        <span>Compassion</span>
+        <span>Confident</span>
+        <span>Connection</span>
+        <span>Connector</span>
+        <span>Considerate</span>
+        <span>Creative</span>
+        <span>Earthy</span>
+        <span>Empathy</span>
+        <span>Explorer</span>
+        <span>Faith</span>
+        <span>Family</span>
+        <span>Fierce</span>
+        <span>Fun</span>
+        <span>Goofy</span>
+        <span>Grounded</span>
+        <span>Gratitude</span>
+        <span>Helper</span>
+        <span>Humor</span>
+        <span>Introspective</span>
+        <span>Impact</span>
+        <span>Kind</span>
+        <span>Laughter</span>
+        <span>Limitless</span>
+        <span>Listener</span>
+        <span>Love</span>
+        <span>Nerd</span>
+      </div>
+    </section>
 
-<script src="app.js"></script>
+    <!-- NEXT STEPS -->
+    <section class="next-steps">
+      <h2>What Happens Next</h2>
+      <ul>
+        <li>You will receive a follow-up email with your reflection prompts.</li>
+        <li>You’ll be invited to practice thinking as your WHO.</li>
+        <li>You’ll begin strengthening self-command through awareness.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
