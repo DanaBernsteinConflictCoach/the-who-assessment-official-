@@ -1,1 +1,9 @@
+/who-assessment
+│
+├── index.html
+├── app.js
+├── styles.css
+│
+└── images/
+    └── welcome.jpg   ← (your welcome image)
 
