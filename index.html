@@ -1,43 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>My WHO Thoughts Assessment™</title>
-  <meta name="description" content="Define Your WHO — Quick clarity. No fluff." />
-  <link rel="stylesheet" href="./style.css" />
+  <title>The WHO Assessment (Official)</title>
+  <link rel="stylesheet" href="./style.css?v=7" />
 </head>
-
 <body>
   <header class="topbar">
-    <div class="brand">
-      <div class="brand__title">My WHO Thoughts Assessment™</div>
-      <div class="brand__subtitle">Define Your WHO</div>
-    </div>
+    <div class="wrap topbarInner">
+      <div class="brand">
+        <div class="logo">WHO</div>
+        <div class="brandText">
+          <div class="brandTitle">The WHO Assessment</div>
+          <div class="brandSub">Official</div>
+        </div>
+      </div>
 
-    <div class="topbar__right">
-      <button id="btnReset" class="ghost" type="button" title="Reset">Reset</button>
+      <div class="topActions">
+        <button id="btnReset" class="ghost" type="button" title="Reset all answers">Reset</button>
+      </div>
     </div>
   </header>
 
-  <main id="app" class="app" aria-live="polite"></main>
+  <main class="wrap">
+    <div id="app"></div>
+  </main>
 
-  <footer class="footer">
-    <div class="footer__inner">
-      <div class="footer__line">
-        © <span id="year"></span> My WHO Thoughts Assessment™ — All rights reserved
-      </div>
-      <div class="footer__line">
-        <a href="https://www.MyWHOthoughts.com" target="_blank" rel="noreferrer">www.MyWHOthoughts.com</a>
-        <span class="dot">•</span>
-        <a href="https://bit.ly/3PxJ3MD" target="_blank" rel="noreferrer">Book link</a>
-      </div>
-      <div class="footer__line footer__note">
-        Open, airy, visual-first • One exercise per scroll
-      </div>
-    </div>
+  <footer class="wrap footer">
+    <div class="small">© <span id="year"></span> • Dana Bernstein Conflict Coach</div>
   </footer>
 
-  <script defer src="./app.js"></script>
+  <script defer src="./app.js?v=7"></script>
 </body>
 </html>
