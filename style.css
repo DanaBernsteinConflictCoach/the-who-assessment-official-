@@ -9,7 +9,6 @@
   --accent:#19b36b;
   --accent2:#0ea75d;
   --danger:#ef4444;
-  --warn:#f59e0b;
   --pill:rgba(25,179,107,.14);
 }
 
@@ -132,22 +131,15 @@ button.primary{
   color:white;
   border-color:rgba(0,0,0,.06);
 }
-button.ghost{
-  background:transparent;
-}
+button.ghost{ background:transparent; }
 button.danger{
   background:rgba(239,68,68,.08);
   border-color:rgba(239,68,68,.30);
   color:var(--danger);
 }
-button:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-}
+button:disabled{ opacity:.55; cursor:not-allowed; }
 
-.progressWrap{
-  margin-top: 12px;
-}
+.progressWrap{ margin-top: 12px; }
 .progressBar{
   height:10px;
   border-radius:999px;
@@ -243,6 +235,15 @@ button:disabled{
   padding-left:18px;
   color:var(--muted);
 }
+
+.notice{
+  border:1px solid rgba(25,179,107,.25);
+  background:rgba(25,179,107,.07);
+  border-radius:14px;
+  padding:10px;
+  color:var(--muted);
+}
+
 .footer{
   border-top:1px solid var(--stroke);
   padding: 18px 16px 24px;
