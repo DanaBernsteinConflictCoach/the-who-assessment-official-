@@ -2,6 +2,7 @@
    WHO Assessment (Official)
    - Static GitHub Pages app
    - Submits final results to Dana’s Google Form
+   - FIX: Start step always advances (sync values from DOM)
    ========================== */
 
 const STORAGE_KEY = "who_assessment_official_v3";
@@ -103,15 +104,30 @@ function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 function uniq(arr){ return [...new Set(arr.map(x => String(x).trim()).filter(Boolean))]; }
 function removeItem(arr, item){ return arr.filter(x => x !== item); }
 
+/* ✅ FIX: Always sync Start step fields from DOM */
+function syncStartFromDOM(){
+  const nameEl = document.getElementById("userName");
+  const emailEl = document.getElementById("userEmail");
+
+  if (nameEl) state.user.name = nameEl.value || "";
+  if (emailEl) state.user.email = emailEl.value || "";
+
+  saveState();
+}
+
 function setStep(idx){
   state.stepIndex = clamp(idx, 0, STEPS.length - 1);
   saveState();
   render();
 }
+
 function nextStep(){
+  // ✅ ensure Start fields are captured even if input listeners fail/autofill
+  if (STEPS[state.stepIndex].key === "start") syncStartFromDOM();
   if (!canProceed()) return;
   setStep(state.stepIndex + 1);
 }
+
 function prevStep(){ setStep(state.stepIndex - 1); }
 
 function progressPercent(){
@@ -123,7 +139,11 @@ function progressPercent(){
 function canProceed(){
   const k = STEPS[state.stepIndex].key;
 
-  if (k === "start") return state.user.name.trim().length > 0;
+  // ✅ Start step: read from DOM so Next always works
+  if (k === "start"){
+    syncStartFromDOM();
+    return state.user.name.trim().length > 0;
+  }
 
   if (k === "values"){
     const c = state.values.candidates;
@@ -168,8 +188,9 @@ function renderProgress(step){
 function renderNav(key){
   const isSubmitted = key === "submitted";
   const isSnapshot = key === "snapshot";
-
   const canBack = state.stepIndex > 0 && !isSubmitted;
+
+  // ✅ On start step, compute proceed after syncing DOM
   const proceed = canProceed();
 
   return `
@@ -183,7 +204,9 @@ function renderNav(key){
             : `<button id="btnNext" class="primary" type="button" ${proceed ? "" : "disabled"}>Next</button>`
         }
       </div>
-      ${(!proceed && !isSubmitted && !isSnapshot) ? `<div class="small">Complete the required items to continue.</div>` : ""}
+      ${(!proceed && !isSubmitted && !isSnapshot)
+        ? `<div class="small">${key === "start" ? "Enter your name to continue." : "Complete the required items to continue."}</div>`
+        : ""}
     </section>
   `;
 }
@@ -195,7 +218,7 @@ function wireNav(){
   const restart = document.getElementById("btnRestart");
 
   if (back) back.addEventListener("click", prevStep);
-  if (next) next.addEventListener("click", () => { nextStep(); });
+  if (next) next.addEventListener("click", nextStep);
   if (submit) submit.addEventListener("click", submitToDana);
   if (restart) restart.addEventListener("click", () => {
     state = structuredClone(DEFAULT_STATE);
@@ -413,61 +436,10 @@ function renderSelected(list, kind){
 
 function li(x){ return `<li>${escapeHtml(x)}</li>`; }
 
-/* =========================
-   EVENTS
-   - Fixes focus-loss bug
-   - Also enables Next live on Start step
-   ========================= */
-
-/**
- * Re-render without breaking typing focus:
- * - capture active element + cursor
- * - render on next frame
- * - restore focus + cursor
- */
-function rerenderKeepFocus(){
-  const active = document.activeElement;
-  const activeId = active?.id;
-  const isTextField = active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA");
-
-  let start = null, end = null;
-  if (isTextField && typeof active.selectionStart === "number") {
-    start = active.selectionStart;
-    end = active.selectionEnd;
-  }
-
-  requestAnimationFrame(() => {
-    render();
-    if (activeId) {
-      const el = document.getElementById(activeId);
-      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) {
-        el.focus();
-        if (start !== null && typeof el.setSelectionRange === "function") {
-          el.setSelectionRange(start, end ?? start);
-        }
-      }
-    }
-  });
-}
-
+/* Events */
 document.addEventListener("input", (e) => {
   const id = e.target?.id;
 
-  // ✅ START step: update Next button live without losing focus
-  if (id === "userName") {
-    state.user.name = e.target.value;
-    saveState();
-    rerenderKeepFocus();
-    return;
-  }
-  if (id === "userEmail") {
-    state.user.email = e.target.value;
-    saveState();
-    rerenderKeepFocus();
-    return;
-  }
-
-  // ✅ slider can re-render normally
   if (id === "idealDesire") {
     state.ideal.desireLevel = Number(e.target.value);
     saveState();
@@ -475,13 +447,13 @@ document.addEventListener("input", (e) => {
     return;
   }
 
-  // ✅ trigger custom + comments: save only (Next enables when you click Next anyway)
   if (id === "customTrigger") {
     const v = e.target.value.trim();
     if (v) state.trigger.label = v;
     saveState();
     return;
   }
+
   if (id === "comments") {
     state.trigger.comments = e.target.value;
     saveState();
@@ -588,6 +560,9 @@ function addCustom(section, raw){
 async function submitToDana(){
   if (!GOOGLE_FORM.enabled) return;
 
+  // ✅ ensure latest Start values are captured before submit
+  syncStartFromDOM();
+
   state.submit = { status:"submitting", message:"Sending your results..." };
   saveState();
   setStep(STEPS.findIndex(s => s.key === "submitted"));
@@ -614,6 +589,9 @@ async function submitToDana(){
 }
 
 function buildPayload(){
+  // ✅ make sure start fields are up to date
+  syncStartFromDOM();
+
   const values = (state.values.candidates || []).join(", ");
   const pillars = (state.pillars.candidates || []).join(", ");
   const idealEmotion = state.ideal.primary
