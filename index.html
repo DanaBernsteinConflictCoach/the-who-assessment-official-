@@ -1,90 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>WHO Thoughts Assessment™</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>My WHO Thoughts Assessment™</title>
+  <meta name="description" content="Define Your WHO — Quick clarity. No fluff." />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 
 <body>
-  <main class="container">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand__title">My WHO Thoughts Assessment™</div>
+      <div class="brand__subtitle">Define Your WHO</div>
+    </div>
 
-    <h1>WHO Thoughts Assessment™</h1>
+    <div class="topbar__right">
+      <button id="btnReset" class="ghost" type="button" title="Reset">Reset</button>
+    </div>
+  </header>
 
-    <p>
-      Thank you for taking the WHO Thoughts Assessment™.
-      Take a moment to imagine what’s possible when you consistently think, feel, and act as your WHO.
-    </p>
+  <main id="app" class="app" aria-live="polite"></main>
 
-    <!-- GOOGLE FORM EMBED -->
-    <section class="form-section">
-      <iframe
-        src="https://forms.gle/m5mMfQf71vsrxrt36"
-        width="100%"
-        height="900"
-        frameborder="0"
-        marginheight="0"
-        marginwidth="0"
-        loading="lazy">
-        Loading…
-      </iframe>
-    </section>
-
-    <!-- OPTIONAL WORD BANK (OPTION B) -->
-    <section class="optional-section">
-      <h2>Optional Word Bank</h2>
-      <p>
-        If helpful, use the words below to reflect on qualities that resonate with your WHO.
-      </p>
-
-      <div class="word-bank">
-        <span>Adventurer</span>
-        <span>Bold</span>
-        <span>Builder</span>
-        <span>Caretaker</span>
-        <span>Community</span>
-        <span>Compassion</span>
-        <span>Confident</span>
-        <span>Connection</span>
-        <span>Connector</span>
-        <span>Considerate</span>
-        <span>Creative</span>
-        <span>Earthy</span>
-        <span>Empathy</span>
-        <span>Explorer</span>
-        <span>Faith</span>
-        <span>Family</span>
-        <span>Fierce</span>
-        <span>Fun</span>
-        <span>Goofy</span>
-        <span>Grounded</span>
-        <span>Gratitude</span>
-        <span>Helper</span>
-        <span>Humor</span>
-        <span>Introspective</span>
-        <span>Impact</span>
-        <span>Kind</span>
-        <span>Laughter</span>
-        <span>Limitless</span>
-        <span>Listener</span>
-        <span>Love</span>
-        <span>Nerd</span>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__line">
+        © <span id="year"></span> My WHO Thoughts Assessment™ — All rights reserved
       </div>
-    </section>
+      <div class="footer__line">
+        <a href="https://www.MyWHOthoughts.com" target="_blank" rel="noreferrer">www.MyWHOthoughts.com</a>
+        <span class="dot">•</span>
+        <a href="https://bit.ly/3PxJ3MD" target="_blank" rel="noreferrer">Book link</a>
+      </div>
+      <div class="footer__line footer__note">
+        Open, airy, visual-first • One exercise per scroll
+      </div>
+    </div>
+  </footer>
 
-    <!-- NEXT STEPS -->
-    <section class="next-steps">
-      <h2>What Happens Next</h2>
-      <ul>
-        <li>You will receive a follow-up email with your reflection prompts.</li>
-        <li>You’ll be invited to practice thinking as your WHO.</li>
-        <li>You’ll begin strengthening self-command through awareness.</li>
-      </ul>
-    </section>
-
-  </main>
-
-  <script src="script.js"></script>
+  <script defer src="./app.js"></script>
 </body>
 </html>
