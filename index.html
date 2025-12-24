@@ -1,120 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>My WHO Thoughts Assessment™</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<title>My WHO Thoughts Assessment™</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#f4f6f8;
+  --card:#ffffff;
+  --primary:#1f6feb;
+  --accent:#0a1e14;
+  --muted:#6b7280;
+  --radius:16px;
+}
+
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:#111;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+header{
+  background:linear-gradient(135deg,#0a1e14,#1f6feb);
+  color:white;
+  text-align:center;
+  padding:32px 20px 26px;
+}
+
+header img{
+  max-width:120px;
+  margin-bottom:14px;
+}
+
+header h1{
+  margin:0;
+  font-size:1.7rem;
+}
+
+header p{
+  margin-top:8px;
+  opacity:.92;
+}
+
+main{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  padding:20px;
+}
+
+.card{
+  width:100%;
+  max-width:760px;
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:28px;
+  box-shadow:0 12px 34px rgba(0,0,0,.1);
+}
+
+#progressWrap{
+  height:6px;
+  background:#e5e7eb;
+  border-radius:4px;
+  overflow:hidden;
+  margin-bottom:22px;
+}
+
+#progressBar{
+  height:100%;
+  width:0%;
+  background:var(--primary);
+  transition:.3s;
+}
+
+h2{margin:0 0 6px}
+.hint{color:var(--muted);margin-bottom:20px}
+
+.option{
+  border:1px solid #d1d5db;
+  border-radius:12px;
+  padding:12px 16px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.option:hover{background:#f1f5f9}
+.option.selected{
+  background:#e6f0ff;
+  border-color:var(--primary);
+  font-weight:600;
+}
+
+label{
+  font-weight:600;
+  margin-top:14px;
+  display:block;
+}
+
+input,textarea{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  font-size:15px;
+  margin-top:6px;
+}
+
+textarea{min-height:90px}
+
+.notice{
+  background:#f9fafb;
+  border-left:4px solid var(--primary);
+  padding:14px;
+  border-radius:8px;
+  margin:16px 0;
+}
+
+.nav{
+  position:sticky;
+  bottom:0;
+  background:white;
+  border-top:1px solid #e5e7eb;
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+button{
+  border:none;
+  border-radius:12px;
+  padding:12px 20px;
+  font-size:15px;
+  cursor:pointer;
+}
+
+button.primary{
+  background:var(--primary);
+  color:white;
+  font-weight:700;
+}
+
+button.secondary{
+  background:#e5e7eb;
+}
+
+footer{
+  text-align:center;
+  font-size:13px;
+  padding:24px 10px;
+  color:#374151;
+}
+</style>
 </head>
+
 <body>
 
-<header class="app-header">
+<header>
+  <img src="images/who-hero.jpg" alt="My WHO Thoughts">
   <h1>My WHO Thoughts Assessment™</h1>
-  <h2>Define Your WHO</h2>
-  <p class="tagline">Quick clarity. No fluff.</p>
-  <div class="font-controls">
-    <button onclick="adjustFont(-1)">A−</button>
-    <button onclick="adjustFont(1)">A+</button>
-  </div>
+  <p>Self-command increases when you regulate who you are being</p>
 </header>
 
-<div class="progress-container">
-  <div id="progressBar"></div>
-</div>
-
-<main id="app">
-
-  <!-- WELCOME -->
-  <section class="screen active">
-    <p>Thank you for taking the WHO Thoughts Assessment™.</p>
-    <p>Take a moment to imagine what’s possible when you stay anchored in your Values, operate from your best self, and recognize the thoughts that quietly pull you off course.</p>
-    <p>When your nervous system is regulated, you are powerful. You respond instead of react. You choose instead of spiral.</p>
-    <p>Self-command isn’t about perfection — it’s about awareness. It’s about noticing when you’ve drifted from your WHO and knowing how to return.</p>
-    <p>My goal is to help you uncover and celebrate the best parts of what make you you — the strengths and natural qualities that already exist within you — and show you how to use them to move through conflict with clarity and confidence.</p>
-    <p>The WHO Thoughts Assessment™ is your invitation to reflect, reconnect, and reclaim the thoughts that shape your life.</p>
-    <button onclick="start()">Begin</button>
-  </section>
-
-  <!-- STEP 1 DEFINE WHO -->
-  <section class="screen">
-    <p>Conflict is best solved by breaking it into smaller parts. External conflict (tacticals about what to do/how to do something) and internal conflict (your thoughts about why you labeled something a conflict).</p>
-    <p>Identity also has an external (physical attributes, roles, titles, achievements) and internal component (your WHO).</p>
-    <p>Your WHO is defined by:</p>
-    <ul>
-      <li>Values — Your guardrails</li>
-      <li>Pillars — Your energy source</li>
-      <li>Ideal Emotion — Your compass</li>
-      <li>Trigger — Your warning signal</li>
-    </ul>
-    <p>Conflict happens when you believe your WHO has been threatened.</p>
-  </section>
-
-  <!-- STEP 2 VALUES DISCOVER + BANK -->
-  <section class="screen">
-    <h3>Step 1 of 6: Values (Discover)</h3>
-    <textarea placeholder="Prompt A: Proud Moment"></textarea>
-    <textarea placeholder="Why were you proud?"></textarea>
-    <textarea placeholder="Prompt B: Upset / Anger / Frustrated Moment"></textarea>
-    <textarea placeholder="What exactly bothered you / Why did the behavior bother you?"></textarea>
-
-    <h4>Build your Values candidate list</h4>
-    <div id="valuesBank" class="bank"></div>
-    <input id="customValue" placeholder="Add a candidate (press Enter)" />
-    <h5>Current candidates</h5>
-    <div id="valuesSelected" class="selected"></div>
-  </section>
-
-  <!-- STEP 3 VALUES ROAD TEST -->
-  <section class="screen">
-    <h3>Step 2 of 6: Values Evoke Emotions (Road Test)</h3>
-    <div id="valuesRoadTest"></div>
-    <h4>Confirmed Values</h4>
-    <div id="confirmedValues" class="selected"></div>
-  </section>
-
-  <!-- STEP 4 PILLARS -->
-  <section class="screen">
-    <h3>Step 3 of 6: Pillars (Discover)</h3>
-    <textarea placeholder="When were you your happiest and most YOU?"></textarea>
-    <div id="pillarsBank" class="bank"></div>
-    <input id="customPillar" placeholder="Add Pillar candidates (add a trait, then press enter)" />
-    <h3>Step 4 of 6: Pillars (Road Test)</h3>
-    <div id="pillarsRoadTest"></div>
-    <h4>Confirmed Pillars</h4>
-    <div id="confirmedPillars" class="selected"></div>
-    <h4>Moved to Values</h4>
-    <div id="pillarsToValues" class="selected"></div>
-  </section>
-
-  <!-- STEP 5 IDEAL + TRIGGER -->
-  <section class="screen">
-    <h3>Step 5 of 6: Ideal Emotion</h3>
-    <div id="emotionBank" class="bank"></div>
-    <input type="range" min="1" max="10" value="5" oninput="setEmotionLevel(this.value)">
-    <p>Current: <span id="emotionLevel">5</span>/10</p>
-
-    <h3>Step 6 of 6: Trigger (Anti-WHO)</h3>
-    <div id="triggerBank" class="bank"></div>
-    <input id="customTrigger" placeholder="I'm not..." />
-    <textarea placeholder="Optional Reset Script"></textarea>
-  </section>
-
-  <!-- STEP 6 SNAPSHOT -->
-  <section class="screen">
-    <h3>Your WHO Snapshot</h3>
-    <p><strong>Values:</strong> <span id="snapValues"></span></p>
-    <p><strong>Pillars:</strong> <span id="snapPillars"></span></p>
-    <p><strong>Ideal Emotion:</strong> <span id="snapEmotion"></span></p>
-    <p><strong>Trigger:</strong> <span id="snapTrigger"></span></p>
-  </section>
-
+<main>
+  <div class="card">
+    <div id="progressWrap"><div id="progressBar"></div></div>
+    <h2 id="stepTitle"></h2>
+    <div class="hint" id="stepHint"></div>
+    <div id="stepBody"></div>
+  </div>
 </main>
 
 <div class="nav">
-  <button onclick="prev()">Back</button>
-  <button onclick="next()">Next</button>
+  <button id="backBtn" class="secondary">Back</button>
+  <button id="nextBtn" class="primary">Next</button>
 </div>
 
-<script src="app.js"></script>
+<footer>
+© 2025 My WHO Thoughts Assessment™ — All rights reserved<br>
+www.MyWHOthoughts.com • Book link<br>
+A portion of book proceeds support Girl Scouts
+</footer>
+
+<script>
+const STORAGE="who_complete_v1";
+
+const VALUES=["Accountability","Authenticity","Compassion","Curiosity","Empathy","Fairness","Gratitude","Honesty","Impact","Integrity","Kind","Respect","Service"];
+const PILLARS=["Adventurer","Builder","Caretaker","Confident","Creative","Faith","Family","Fun","Grounded","Helper","Listener","Love","Optimist","Patient","Playful","Present"];
+const EMOTIONS=["Calm","Clear","Connected","Content","Energized","Fulfilled","Inspired","Joy","Peace","Present"];
+
+const DEFAULT={
+name:"",email:"",
+values:[],valuesConfirmed:[],
+pillars:[],pillarsConfirmed:[],
+idealEmotion:"",
+trigger:{belief:"",feeling:"",reset:""}
+};
+
+let state=load(),step=0;
+
+const steps=[
+{
+title:"Welcome",
+hint:"Define your WHO",
+render(){
+body(`
+<p><strong>Self-command increases when you de-escalate the emotions that are evoked when you are not being your WHO.</strong></p>
+<p>This assessment helps you identify the internal framework that drives how you experience conflict.</p>
+`);
+},validate(){return true;}
+},
+{
+title:"Define Your WHO",
+hint:"Internal conflict creates external conflict",
+render(){
+body(`
+<p>External conflict focuses on what to do or how to do something.</p>
+<p>Internal conflict focuses on your thoughts — why you labeled something a conflict.</p>
+<ul>
+<li><strong>Values</strong> — your guardrails</li>
+<li><strong>Pillars</strong> — who you are at your best</li>
+<li><strong>Ideal Emotion</strong> — your compass</li>
+<li><strong>Trigger</strong> — your warning signal</li>
+</ul>
+<p><strong>Conflict happens when you believe your WHO has been threatened.</strong></p>
+`);
+},validate(){return true;}
+},
+{
+title:"Start",
+hint:"Email optional",
+render(){
+body(`
+<label>Your name</label>
+<input id="n" value="${state.name}">
+<label>Your email (optional)</label>
+<input id="e" value="${state.email}">
+<div class="notice">Email is only used if you choose to send your results.</div>
+`);
+n.oninput=e=>{state.name=e.target.value;save();}
+e.oninput=e2=>{state.email=e2.target.value;save();}
+},validate(){return state.name||"Please enter your name";}
+},
+{
+title:"Values",
+hint:"What upsets you when crossed?",
+render(){list(VALUES,state.values,v=>toggle(state.values,v));},
+validate(){return state.values.length>=3||"Select at least 3 values";}
+},
+{
+title:"Values Road Test",
+hint:"Does this evoke emotion?",
+render(){
+state.values.forEach(v=>row(v,()=>add(state.valuesConfirmed,v),()=>remove(state.valuesConfirmed,v)));
+},validate(){return state.valuesConfirmed.length>=2||"Confirm at least 2 values";}
+},
+{
+title:"Pillars",
+hint:"Who you are at your best",
+render(){list(PILLARS,state.pillars,p=>toggle(state.pillars,p));},
+validate(){return state.pillars.length>=3||"Select at least 3 pillars";}
+},
+{
+title:"Pillars Road Test",
+hint:"If crossed, do you feel upset?",
+render(){
+state.pillars.forEach(p=>row(p,()=>add(state.valuesConfirmed,p),()=>add(state.pillarsConfirmed,p)));
+},validate(){return state.pillarsConfirmed.length>=2||"Keep at least 2 pillars";}
+},
+{
+title:"Ideal Emotion",
+hint:"Your emotional compass",
+render(){list(EMOTIONS,[state.idealEmotion],e=>{state.idealEmotion=e;save();});},
+validate(){return state.idealEmotion||"Choose an emotion";}
+},
+{
+title:"Trigger",
+hint:"Recognize the Anti-WHO",
+render(){
+body(`
+<label>I’m not ___ enough</label>
+<input value="${state.trigger.belief}" id="b">
+<label>It makes me feel</label>
+<input value="${state.trigger.feeling}" id="f">
+<label>Preferred response / reset</label>
+<textarea id="r">${state.trigger.reset}</textarea>
+`);
+b.oninput=e=>{state.trigger.belief=e.target.value;save();}
+f.oninput=e=>{state.trigger.feeling=e.target.value;save();}
+r.oninput=e=>{state.trigger.reset=e.target.value;save();}
+},validate(){return state.trigger.belief||"Define your trigger";}
+},
+{
+title:"Your WHO Snapshot",
+hint:"Save, copy, or email",
+render(){
+body(`
+<p><strong>Name:</strong> ${state.name}</p>
+<p><strong>Values:</strong> ${state.valuesConfirmed.join(", ")}</p>
+<p><strong>Pillars:</strong> ${state.pillarsConfirmed.join(", ")}</p>
+<p><strong>Ideal Emotion:</strong> ${state.idealEmotion}</p>
+<p><strong>Trigger:</strong> ${state.trigger.belief}</p>
+<button onclick="copyResults()">Copy</button>
+<button onclick="downloadResults()">Download</button>
+<button onclick="emailResults()">Email</button>
+`);
+},validate(){return true;}
+}
+];
+
+function body(h){stepBody.innerHTML=h;}
+function list(arr,sel,cb){
+body("");
+arr.forEach(v=>{
+const d=document.createElement("div");
+d.className="option"+(sel.includes(v)?" selected":"");
+d.textContent=v;
+d.onclick=()=>{cb(v);save();render();};
+stepBody.appendChild(d);
+});
+}
+function row(txt,yes,no){
+const d=document.createElement("div");
+d.className="option";
+d.innerHTML=`<strong>${txt}</strong><br>`;
+const y=document.createElement("button");
+y.textContent="YES";
+const n=document.createElement("button");
+n.textContent="NO";
+y.onclick=()=>{yes();save();};
+n.onclick=()=>{no();save();};
+d.appendChild(y);d.appendChild(n);
+stepBody.appendChild(d);
+}
+function toggle(a,v){a.includes(v)?a.splice(a.indexOf(v),1):a.push(v);}
+function add(a,v){if(!a.includes(v))a.push(v);}
+function remove(a,v){a.splice(a.indexOf(v),1);}
+function render(){
+const s=steps[step];
+stepTitle.textContent=s.title;
+stepHint.textContent=s.hint;
+progressBar.style.width=(step/(steps.length-1))*100+"%";
+backBtn.style.visibility=step===0?"hidden":"visible";
+s.render();
+}
+backBtn.onclick=()=>{step=Math.max(0,step-1);render();};
+nextBtn.onclick=()=>{
+const r=steps[step].validate();
+if(r!==true)return alert(r);
+step=Math.min(steps.length-1,step+1);
+render();
+};
+function buildText(){
+return `WHO RESULTS\n\nName: ${state.name}\n\nValues: ${state.valuesConfirmed.join(", ")}\n\nPillars: ${state.pillarsConfirmed.join(", ")}\n\nIdeal Emotion: ${state.idealEmotion}\n\nTrigger: ${state.trigger.belief}\nResponse: ${state.trigger.reset}`;
+}
+function copyResults(){navigator.clipboard.writeText(buildText());alert("Copied");}
+function downloadResults(){
+const b=new Blob([buildText()],{type:"text/plain"});
+const a=document.createElement("a");
+a.href=URL.createObjectURL(b);a.download="WHO.txt";a.click();
+}
+function emailResults(){
+if(!state.email)return alert("Add email first");
+location.href=`mailto:${state.email}?subject=My WHO Results&body=${encodeURIComponent(buildText())}`;
+}
+function save(){localStorage.setItem(STORAGE,JSON.stringify(state));}
+function load(){try{return JSON.parse(localStorage.getItem(STORAGE))||DEFAULT;}catch{return DEFAULT;}}
+render();
+</script>
+
 </body>
 </html>
