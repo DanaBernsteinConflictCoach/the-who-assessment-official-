@@ -1,227 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>My WHO Thoughts Assessment™</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<style>
-:root{
-  --bg:#f7f9f8;
-  --card:#ffffff;
-  --ink:#0b1f17;
-  --accent:#1f6f5c;
-  --muted:#5e6f68;
-}
-
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-  line-height:1.5;
-}
-
-header{
-  padding:20px;
-  text-align:center;
-  font-weight:800;
-  font-size:1.4rem;
-}
-
-main{
-  max-width:900px;
-  margin:0 auto;
-  padding:20px;
-}
-
-.card{
-  background:var(--card);
-  border-radius:16px;
-  padding:28px;
-  box-shadow:0 10px 30px rgba(0,0,0,.06);
-}
-
-h2{margin-top:0}
-.small{color:var(--muted); font-size:.9rem}
-
-.pills{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
-
-.pill{
-  padding:8px 14px;
-  border-radius:999px;
-  border:2px solid var(--accent);
-  cursor:pointer;
-  user-select:none;
-}
-
-.pill.selected{
-  background:var(--accent);
-  color:white;
-}
-
-.field{margin-bottom:16px}
-label{font-weight:700; display:block; margin-bottom:6px}
-input, textarea{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  font-size:1rem;
-}
-
-textarea{min-height:80px}
-
-.footer-nav{
-  position:sticky;
-  bottom:0;
-  background:var(--bg);
-  padding:14px;
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-}
-
-button{
-  padding:12px 18px;
-  border-radius:12px;
-  border:none;
-  font-size:1rem;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.primary{background:var(--accent); color:white}
-.ghost{background:#e6efec}
-
-.progress{
-  height:8px;
-  background:#dde7e3;
-  border-radius:999px;
-  overflow:hidden;
-  margin-bottom:20px;
-}
-
-.progress > div{
-  height:100%;
-  background:var(--accent);
-  width:0%;
-}
-
-footer{
-  text-align:center;
-  padding:30px 10px;
-  font-size:.85rem;
-  color:var(--muted);
-}
-</style>
+  <meta charset="UTF-8" />
+  <title>My WHO Thoughts Assessment™</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
 
-<header>My WHO Thoughts Assessment™</header>
+<header class="app-header">
+  <h1>My WHO Thoughts Assessment™</h1>
+  <p class="tagline">Define Your WHO<br><span>Quick clarity. No fluff.</span></p>
+</header>
 
-<main>
-<div class="progress"><div id="bar"></div></div>
-<div class="card" id="app"></div>
-</main>
-
-<div class="footer-nav">
-<button id="back" class="ghost">Back</button>
-<button id="next" class="primary">Next</button>
+<div class="progress-wrap">
+  <div id="progressBar"></div>
 </div>
 
+<main id="app">
+  <section id="stepContent"></section>
+</main>
+
+<nav class="nav-buttons">
+  <button id="backBtn">Back</button>
+  <button id="nextBtn" class="primary">Next</button>
+</nav>
+
 <footer>
-© <span id="year"></span> My WHO Thoughts Assessment™ — All rights reserved<br>
-<a href="https://www.MyWHOthoughts.com" target="_blank">www.MyWHOthoughts.com</a> •
-<a href="https://bit.ly/3PxJ3MD" target="_blank">Book link</a>
+  © <span id="year"></span> My WHO Thoughts Assessment™ — All rights reserved<br>
+  <a href="https://www.mywhothoughts.com" target="_blank">www.MyWHOthoughts.com</a> •
+  <a href="https://bit.ly/3PxJ3MD" target="_blank">Book Link</a>
 </footer>
 
-<script>
-document.getElementById("year").textContent = new Date().getFullYear();
-
-const steps = [
-`<h2>Welcome</h2>
-<p>Thank you for taking the WHO Thoughts Assessment™.</p>
-<p>Take a moment to imagine what’s possible when you stay anchored in your Values, operate from your best self, and recognize the thoughts that quietly pull you off course.</p>
-<p>When your nervous system is regulated, you are powerful. You respond instead of react. You choose instead of spiral.</p>
-<p>Self-command isn’t about perfection — it’s about awareness.</p>
-<p>The WHO Thoughts Assessment™ is your invitation to reflect, reconnect, and reclaim the thoughts that shape your life.</p>
-<p><strong>— Dana Lynn Bernstein, PMP, PCC<br>The Conflict Resolution Coach</strong></p>`,
-
-`<h2>Define Your WHO</h2>
-<p>Your WHO is defined by:</p>
-<ul>
-<li><strong>Values — Your guardrails</strong></li>
-<li><strong>Pillars — Your energy source</strong></li>
-<li><strong>Ideal Emotion — Your compass</strong></li>
-<li><strong>Trigger — Your warning signal</strong></li>
-</ul>
-<p>Conflict happens when you believe your WHO has been threatened.</p>`,
-
-`<h2>Step 1 of 6: Values (Discover)</h2>
-<p>There are two ways to uncover your Values:</p>
-<ul>
-<li>What is your proudest moment?</li>
-<li>What makes you upset?</li>
-</ul>
-<p><strong>Rules:</strong> Tap to select 3–6 of your Values OR add custom ones.</p>`,
-
-`<h2>Step 2 of 6: Values (Road Test)</h2>
-<p>If someone violates this, do you feel upset / angry / frustrated?</p>
-<p><strong>YES = it’s a Value</strong><br><strong>NO = remove it</strong></p>
-<p class="small">Practical Application: By identifying these candidates, you can more easily de-escalate your emotions.</p>`,
-
-`<h2>Step 3 of 6: Pillars (Discover)</h2>
-<p>Pillars are positive core characteristics that describe you at your best.</p>
-<p>When were you happiest and most YOU?</p>`,
-
-`<h2>Step 4 of 6: Pillars (Road Test)</h2>
-<p>If someone crosses this characteristic, do you get angry/frustrated/upset?</p>
-<p>YES = Move to Values<br>NO = Keep as a Pillar</p>
-<p>If you took these away, would you be a shell of yourself?</p>`,
-
-`<h2>Step 5 of 6: Ideal Emotion</h2>
-<p>Your Ideal Emotion is what you want to feel each day.</p>
-<p>When your Ideal Emotion dips, ask:</p>
-<ul>
-<li>Which Value did I compromise?</li>
-<li>Which Pillar am I not embodying?</li>
-<li>Is my Trigger leading?</li>
-</ul>`,
-
-`<h2>Step 6 of 6: Trigger (Anti-WHO)</h2>
-<p>Your Trigger is one loud “I’m not…” story.</p>
-<p>Optional Reset Script:</p>
-<p><em>“That’s my Trigger talking. I’m choosing [Pillar] and honoring [Value].”</em></p>`,
-
-`<h2>Your WHO Snapshot</h2>
-<p><strong>Values — Your guardrails</strong></p>
-<p><strong>Pillars — Your energy source</strong></p>
-<p><strong>Ideal Emotion — Your compass</strong></p>
-<p><strong>Trigger — Your warning signal</strong></p>
-<p class="small">Refine over time. Awareness builds self-command.</p>`
-];
-
-let i = 0;
-const app = document.getElementById("app");
-const bar = document.getElementById("bar");
-
-function render(){
-  app.innerHTML = steps[i];
-  bar.style.width = (i/(steps.length-1))*100 + "%";
-  back.style.visibility = i===0 ? "hidden":"visible";
-  next.textContent = i===steps.length-1 ? "Done":"Next";
-}
-back.onclick = ()=>{ if(i>0){i--; render();}};
-next.onclick = ()=>{ if(i<steps.length-1){i++; render();}};
-render();
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>
