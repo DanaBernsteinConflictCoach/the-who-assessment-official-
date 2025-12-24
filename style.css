@@ -1,14 +1,13 @@
 :root {
   --mint: #ECFBEB;
-  --text: #1f2937;
   --surface: #ffffff;
+  --text: #1f2937;
 }
 
 body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
   background: var(--mint);
-  color: var(--text);
+  font-family: system-ui, sans-serif;
+  margin: 0;
 }
 
 .app-header {
@@ -24,15 +23,15 @@ body {
 #progressBar {
   height: 100%;
   width: 0%;
-  background: #4b5563;
+  background: #374151;
 }
 
 .screen {
   display: none;
   background: var(--surface);
-  padding: 2.5rem;
-  margin: 2rem auto;
+  padding: 2rem;
   max-width: 760px;
+  margin: 2rem auto;
   border-radius: 16px;
 }
 
@@ -40,19 +39,27 @@ body {
   display: block;
 }
 
-textarea, input, select {
+.bank, .selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin: 1rem 0;
+}
+
+.bank span, .selected span {
+  padding: .4rem .7rem;
+  background: #e0f2fe;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+textarea, input {
   width: 100%;
-  margin: .5rem 0 1.5rem;
+  margin: .5rem 0 1rem;
 }
 
 .nav {
   display: flex;
   justify-content: space-between;
   padding: 1rem 2rem;
-}
-
-footer {
-  text-align: center;
-  padding: 1rem;
-  font-size: .85rem;
 }
