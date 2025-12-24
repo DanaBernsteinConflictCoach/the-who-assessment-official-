@@ -1,30 +1,43 @@
 /* ==========================
    My WHO Thoughts Assessment™
-   Single-page, state-driven app
+   Static site + Google Form submit
+   Emailing is handled by Google Apps Script on the response sheet.
    ========================== */
 
-const STORAGE_KEY = "who_assessment_official_v1";
+const STORAGE_KEY = "who_assessment_official_v2";
 
 /**
- * IMPORTANT:
- * Google Forms needs entry IDs (entry.123456...).
- * You must fill these in once you grab them.
+ * REQUIRED CONFIG (you must fill these):
+ * 1) formResponseUrl must be the Google Form "formResponse" endpoint
+ * 2) entry IDs must match your Form questions
+ *
+ * How to get entry IDs:
+ * - Open Google Form > Preview
+ * - View page source
+ * - Search for "entry."
  */
 const GOOGLE_FORM = {
-  enabled: false,
+  enabled: true,
   formResponseUrl: "https://docs.google.com/forms/d/e/PASTE_YOUR_FORM_ID/formResponse",
   entry: {
+    // Basics
     name: "entry.0000000000",
     email: "entry.0000000001",
     consent: "entry.0000000002",
-    values: "entry.0000000003",
-    pillars: "entry.0000000004",
-    idealEmotionPrimary: "entry.0000000005",
-    idealEmotionSecondary: "entry.0000000006",
-    idealEmotionTarget: "entry.0000000007",
-    trigger: "entry.0000000008",
-    triggerFeeling: "entry.0000000009",
-    resetScript: "entry.0000000010"
+
+    // Results
+    confirmedValues: "entry.0000000003",
+    confirmedPillars: "entry.0000000004",
+    movedToValues: "entry.0000000005",
+
+    idealEmotionPrimary: "entry.0000000006",
+    idealEmotionSecondary: "entry.0000000007",
+    idealEmotionDesire: "entry.0000000008",   // 1–10
+    idealEmotionTarget: "entry.0000000009",   // always 8
+
+    trigger: "entry.0000000010",
+    triggerFeeling: "entry.0000000011",
+    resetScript: "entry.0000000012"
   }
 };
 
@@ -65,7 +78,8 @@ const STEPS = [
   { key:"pillars_roadtest", title:"Step 4 of 6: Pillars (Road Test)" },
   { key:"ideal_emotion", title:"Step 5 of 6: Ideal Emotion" },
   { key:"trigger", title:"Step 6 of 6: Trigger (Anti-WHO)" },
-  { key:"snapshot", title:"Your WHO Snapshot" }
+  { key:"snapshot", title:"Your WHO Snapshot" },
+  { key:"submitted", title:"Submitted" }
 ];
 
 const DEFAULT_STATE = {
@@ -88,8 +102,8 @@ const DEFAULT_STATE = {
     candidates: [],
     confirmed: [],
     movedToValues: [],
-    roadtest1: {}, // {pillar: true/false} (true => move to values)
-    roadtest2: {}  // {pillar: true/false} (true => keep)
+    roadtest1: {}, // {pillar: true/false} true => move to values
+    roadtest2: {}  // {pillar: true/false} true => keep
   },
 
   idealEmotion: {
@@ -103,6 +117,11 @@ const DEFAULT_STATE = {
     label: "",
     feeling: "",
     resetScript: ""
+  },
+
+  lastSubmit: {
+    status: "idle", // idle | submitting | success | error
+    message: ""
   }
 };
 
@@ -118,16 +137,13 @@ document.getElementById("btnReset").addEventListener("click", () => {
   render();
 });
 
-function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return structuredClone(DEFAULT_STATE);
     const parsed = JSON.parse(raw);
-    // Shallow merge to handle future changes
     return { ...structuredClone(DEFAULT_STATE), ...parsed };
   }catch{
     return structuredClone(DEFAULT_STATE);
@@ -148,56 +164,43 @@ function nextStep(){
   if (!canProceed()) return;
   setStep(state.stepIndex + 1);
 }
-
-function prevStep(){
-  setStep(state.stepIndex - 1);
-}
+function prevStep(){ setStep(state.stepIndex - 1); }
 
 function progressPercent(){
-  return Math.round((state.stepIndex / (STEPS.length - 1)) * 100);
+  // don't count "submitted" as a "step" in % completion
+  const effectiveMax = STEPS.length - 2; // snapshot index is last meaningful
+  const idx = Math.min(state.stepIndex, effectiveMax);
+  return Math.round((idx / effectiveMax) * 100);
 }
 
 function canProceed(){
   const k = STEPS[state.stepIndex].key;
 
   if (k === "start"){
-    // Email optional, name required
     return state.user.name.trim().length > 0;
   }
-
   if (k === "values_discover"){
-    // Candidates 3-6 required
     return state.values.candidates.length >= 3 && state.values.candidates.length <= 6;
   }
-
   if (k === "values_roadtest"){
-    // Must answer all candidates
     const c = state.values.candidates;
     return c.length > 0 && c.every(v => typeof state.values.roadtestAnswers[v] === "boolean");
   }
-
   if (k === "pillars_discover"){
     return state.pillars.candidates.length >= 3 && state.pillars.candidates.length <= 6;
   }
-
   if (k === "pillars_roadtest"){
-    // Road test 1: answer all pillar candidates
     const c = state.pillars.candidates;
     if (!(c.length > 0 && c.every(p => typeof state.pillars.roadtest1[p] === "boolean"))) return false;
-
-    // Road test 2: must answer all remaining pillars after road test 1
     const remaining = c.filter(p => state.pillars.roadtest1[p] === false);
     return remaining.every(p => typeof state.pillars.roadtest2[p] === "boolean");
   }
-
   if (k === "ideal_emotion"){
     return state.idealEmotion.primary.trim().length > 0 && state.idealEmotion.desireLevel >= 1;
   }
-
   if (k === "trigger"){
     return state.trigger.label.trim().length > 0 && state.trigger.feeling.trim().length > 0;
   }
-
   return true;
 }
 
@@ -207,10 +210,7 @@ function computeConfirmedValues(){
     if (state.values.roadtestAnswers[v] === true) confirmed.push(v);
   }
   state.values.confirmed = uniq(confirmed);
-
-  // Add pillars moved to values
-  const moved = state.pillars.movedToValues || [];
-  state.values.confirmed = uniq([...state.values.confirmed, ...moved]);
+  state.values.confirmed = uniq([...state.values.confirmed, ...(state.pillars.movedToValues || [])]);
 }
 
 function computePillarsOutcomes(){
@@ -230,41 +230,43 @@ function computePillarsOutcomes(){
   state.pillars.movedToValues = uniq(movedToValues);
   state.pillars.confirmed = uniq(confirmed);
 
-  // Keep values updated
   computeConfirmedValues();
 }
 
-function pillToggle(arrKey, value){
-  const arr = state[arrKey.group][arrKey.field];
+function toggleBoundedArray(group, field, value, max){
+  const arr = state[group][field];
   if (arr.includes(value)){
-    state[arrKey.group][arrKey.field] = removeItem(arr, value);
+    state[group][field] = removeItem(arr, value);
   } else {
-    state[arrKey.group][arrKey.field] = uniq([...arr, value]);
+    if (arr.length >= max) return;
+    state[group][field] = uniq([...arr, value]);
   }
-  saveState();
-  render();
+  saveState(); render();
 }
 
-function addCustom(arrKey, raw){
+function addBoundedArray(group, field, raw, max){
   const v = String(raw || "").trim();
   if (!v) return;
 
-  const arr = state[arrKey.group][arrKey.field];
-  state[arrKey.group][arrKey.field] = uniq([...arr, v]);
+  const arr = state[group][field];
+  if (!arr.includes(v) && arr.length >= max) return;
 
-  saveState();
-  render();
+  state[group][field] = uniq([...arr, v]);
+  saveState(); render();
+
+  setTimeout(() => {
+    const el = document.getElementById(group === "values" ? "addValue" : "addPillar");
+    if (el) el.value = "";
+  }, 0);
 }
 
 function render(){
   const step = STEPS[state.stepIndex];
-
   elApp.innerHTML = `
     ${renderProgress()}
     ${renderStep(step.key)}
     ${renderNav()}
   `;
-
   wireCommonHandlers();
 }
 
@@ -273,12 +275,12 @@ function renderProgress(){
   const step = STEPS[state.stepIndex];
   return `
     <section class="card">
-      <div class="kicker">${step.title}</div>
+      <div class="kicker">${escapeHtml(step.title)}</div>
       <div class="progressWrap">
         <div class="progressBar"><div class="progressFill" style="width:${pct}%"></div></div>
         <div class="progressMeta">
           <div>${pct}% complete</div>
-          <div>${state.stepIndex + 1} / ${STEPS.length}</div>
+          <div>${Math.min(state.stepIndex + 1, STEPS.length - 1)} / ${STEPS.length - 1}</div>
         </div>
       </div>
     </section>
@@ -286,11 +288,14 @@ function renderProgress(){
 }
 
 function renderNav(){
-  const canBack = state.stepIndex > 0;
-  const canNext = state.stepIndex < STEPS.length - 1;
+  const key = STEPS[state.stepIndex].key;
+  const isSubmitted = key === "submitted";
+
+  const canBack = state.stepIndex > 0 && !isSubmitted;
+  const canNext = state.stepIndex < STEPS.length - 1 && !isSubmitted;
   const proceed = canProceed();
 
-  const isLast = state.stepIndex === STEPS.length - 1;
+  const isSnapshot = key === "snapshot";
 
   return `
     <section class="card">
@@ -300,14 +305,13 @@ function renderNav(){
         </div>
 
         <div class="leftBtns">
-          ${isLast ? `<button id="btnSubmit" class="primary" type="button">Submit / Copy Results</button>` : ""}
-          <button id="btnNext" class="primary" type="button" ${canNext && proceed ? "" : "disabled"}>
-            ${isLast ? "Done" : "Next"}
-          </button>
+          ${isSnapshot ? `<button id="btnFinalSubmit" class="primary" type="button">Submit Results</button>` : ""}
+          ${!isSnapshot && !isSubmitted ? `<button id="btnNext" class="primary" type="button" ${canNext && proceed ? "" : "disabled"}>Next</button>` : ""}
+          ${isSubmitted ? `<button id="btnRestart" class="ghost" type="button">Start Over</button>` : ""}
         </div>
       </div>
 
-      ${!proceed && !isLast ? `<div class="small">Complete the required items on this step to continue.</div>` : ""}
+      ${(!proceed && canNext) ? `<div class="small">Complete the required items on this step to continue.</div>` : ""}
     </section>
   `;
 }
@@ -315,22 +319,26 @@ function renderNav(){
 function wireCommonHandlers(){
   const btnBack = document.getElementById("btnBack");
   const btnNext = document.getElementById("btnNext");
+  const btnFinalSubmit = document.getElementById("btnFinalSubmit");
+  const btnRestart = document.getElementById("btnRestart");
+
   if (btnBack) btnBack.addEventListener("click", prevStep);
+
   if (btnNext) btnNext.addEventListener("click", () => {
-    // Step-specific recompute before moving forward
     const k = STEPS[state.stepIndex].key;
     if (k === "values_roadtest") computeConfirmedValues();
     if (k === "pillars_roadtest") computePillarsOutcomes();
     nextStep();
   });
 
-  const btnSubmit = document.getElementById("btnSubmit");
-  if (btnSubmit) btnSubmit.addEventListener("click", submitAll);
-}
+  if (btnFinalSubmit) btnFinalSubmit.addEventListener("click", submitToDana);
 
-/* ==========================
-   Step renderers
-   ========================== */
+  if (btnRestart) btnRestart.addEventListener("click", () => {
+    state = structuredClone(DEFAULT_STATE);
+    saveState();
+    render();
+  });
+}
 
 function renderStep(key){
   switch(key){
@@ -344,9 +352,12 @@ function renderStep(key){
     case "ideal_emotion": return stepIdealEmotion();
     case "trigger": return stepTrigger();
     case "snapshot": return stepSnapshot();
+    case "submitted": return stepSubmitted();
     default: return `<section class="card"><div class="h1">Missing step</div></section>`;
   }
 }
+
+/* ========== Steps ========== */
 
 function stepWelcome(){
   return `
@@ -412,6 +423,10 @@ function stepDefine(){
           </ul>
         </div>
       </div>
+      <hr class="sep" />
+      <div class="notice">
+        Dana receives your results when you submit. If you enter an email and check consent, you’ll receive a copy too.
+      </div>
     </section>
   `;
 }
@@ -435,7 +450,7 @@ function stepStart(){
           </span>
         </label>
         <div class="small">
-          (Your info can be sent to a Google Form when you connect entry IDs.)
+          If you provide an email + check consent, Dana’s system will send you a copy of your results.
         </div>
       </div>
     </section>
@@ -450,7 +465,7 @@ function stepValuesDiscover(){
       <div class="h1">Values</div>
       <p class="p">
         Two ways to uncover your Values: (1) your proudest moment, and (2) what makes you upset.
-        Build 3–6 candidate Values.
+        Build 3–6 candidate Values. :contentReference[oaicite:1]{index=1}
       </p>
 
       <div class="grid2">
@@ -488,7 +503,7 @@ function stepValuesDiscover(){
 
       <div style="margin-top:14px;">
         <div class="h2">Current candidates</div>
-        ${renderCandidateList(selected, "values", "candidates")}
+        ${renderCandidateList(selected, "values")}
         <div class="small">Selected: ${selected.length} / 6</div>
       </div>
     </section>
@@ -502,12 +517,9 @@ function stepValuesRoadtest(){
     <section class="card">
       <div class="h1">Values Road Test</div>
       <p class="p">
-        Road test each candidate. Values, when crossed, evoke emotion.
-        If you don’t actually get bothered when others violate it, it’s not a Value.
+        Road test each candidate.
+        <span class="small">YES = keep • NO = remove</span>
       </p>
-      <div class="small">
-        • YES = it’s a Value (keep) • NO = remove
-      </div>
 
       <div class="list" style="margin-top:12px;">
         ${candidates.map(v => {
@@ -539,13 +551,13 @@ function stepValuesRoadtest(){
           <ul class="ul">${liveConfirmedValues().map(li).join("") || `<li class="small">Answer YES/NO above.</li>`}</ul>
         </div>
         <div class="snapshotBox">
-          <h3>Not Values (removed)</h3>
-          <ul class="ul">${liveRemovedValues().map(li).join("") || `<li class="small">Answer YES/NO above.</li>`}</ul>
+          <h3>Practical Application</h3>
+          <ul class="ul">
+            <li>These are your guardrails.</li>
+            <li>When crossed, emotions spike.</li>
+            <li>Use them to de-escalate faster.</li>
+          </ul>
         </div>
-      </div>
-
-      <div class="small" style="margin-top:10px;">
-        Practical Application: By identifying these, you can more easily de-escalate emotions.
       </div>
     </section>
   `;
@@ -559,7 +571,6 @@ function stepPillarsDiscover(){
       <div class="h1">Pillars</div>
       <p class="p">
         Pillars are positive core characteristics that describe you at your best (not tied to achievement).
-        Think of a moment when time melted away and you felt most YOU.
       </p>
 
       <div class="h2">Prompt: Happiest / Best Self</div>
@@ -581,7 +592,7 @@ function stepPillarsDiscover(){
 
       <div style="margin-top:14px;">
         <div class="h2">Current candidates</div>
-        ${renderCandidateList(selected, "pillars", "candidates")}
+        ${renderCandidateList(selected, "pillars")}
         <div class="small">Selected: ${selected.length} / 6</div>
       </div>
     </section>
@@ -590,15 +601,14 @@ function stepPillarsDiscover(){
 
 function stepPillarsRoadtest(){
   const candidates = state.pillars.candidates;
-
   const remaining = candidates.filter(p => state.pillars.roadtest1[p] === false);
-  const moved = candidates.filter(p => state.pillars.roadtest1[p] === true);
 
   return `
     <section class="card">
       <div class="h1">Pillars Road Test</div>
+
       <p class="p">
-        Road Test 1: If someone crosses this characteristic, do you get angry/frustrated/upset?
+        <b>Road Test 1</b>: If someone crosses this characteristic, do you get angry/frustrated/upset?
         <br/><span class="small">YES = move to Values • NO = keep as a Pillar</span>
       </p>
 
@@ -612,7 +622,7 @@ function stepPillarsRoadtest(){
             <div class="row">
               <div>
                 <div class="name">${escapeHtml(p)}</div>
-                <div class="small">Road Test 1: If someone crosses this, do you get upset?</div>
+                <div class="small">Road Test 1</div>
               </div>
               <div class="actions">
                 <button class="${yesOn ? "primary" : ""}" data-p1-ans="yes" data-p="${escapeHtmlAttr(p)}" type="button">YES</button>
@@ -626,9 +636,8 @@ function stepPillarsRoadtest(){
       <hr class="sep" />
 
       <p class="p">
-        Road Test 2: For the remaining Pillars, if you took these characteristics away,
-        would you be a shell of yourself?
-        <br/><span class="small">YES = keep as a Pillar • NO = remove</span>
+        <b>Road Test 2</b>: For remaining Pillars, if you took these away, would you be a shell of yourself?
+        <br/><span class="small">YES = keep • NO = remove</span>
       </p>
 
       <div class="list">
@@ -641,7 +650,7 @@ function stepPillarsRoadtest(){
             <div class="row">
               <div>
                 <div class="name">${escapeHtml(p)}</div>
-                <div class="small">Road Test 2: Without this, would you be a shell?</div>
+                <div class="small">Road Test 2</div>
               </div>
               <div class="actions">
                 <button class="${yesOn ? "primary" : ""}" data-p2-ans="yes" data-p="${escapeHtmlAttr(p)}" type="button">YES</button>
@@ -649,12 +658,11 @@ function stepPillarsRoadtest(){
               </div>
             </div>
           `;
-        }).join("") || `<div class="small">Answer Road Test 1 first — remaining Pillars will show here.</div>`}
+        }).join("") || `<div class="small">Answer Road Test 1 first.</div>`}
       </div>
 
       <hr class="sep" />
 
-      <div class="h2">Live results</div>
       <div class="snapshot">
         <div class="snapshotBox">
           <h3>Confirmed Pillars</h3>
@@ -662,12 +670,8 @@ function stepPillarsRoadtest(){
         </div>
         <div class="snapshotBox">
           <h3>Moved to Values</h3>
-          <ul class="ul">${uniq(moved).map(li).join("") || `<li class="small">Answer above.</li>`}</ul>
+          <ul class="ul">${uniq(candidates.filter(p => state.pillars.roadtest1[p] === true)).map(li).join("") || `<li class="small">Answer above.</li>`}</ul>
         </div>
-      </div>
-
-      <div class="small" style="margin-top:10px;">
-        Practical Application: Lead from your unique strengths.
       </div>
     </section>
   `;
@@ -679,7 +683,6 @@ function stepIdealEmotion(){
       <div class="h1">Ideal Emotion</div>
       <p class="p">
         Your Ideal Emotion is what you want to feel each day (it’s okay to have 2).
-        When you’re not feeling it, revisit your Values and Pillars to see where you’re not aligned.
       </p>
 
       <label class="lbl">Pick one (or your closest)</label>
@@ -690,16 +693,15 @@ function stepIdealEmotion(){
 
       <label class="lbl">How much do you want to feel your Ideal Emotion? (1–10)</label>
       <input id="idealDesire" type="range" min="1" max="10" value="${state.idealEmotion.desireLevel}" style="width:100%;" />
-      <div class="small">Current: <b>${state.idealEmotion.desireLevel}/10</b> (Target: <b>${state.idealEmotion.targetLevel}/10</b>)</div>
+      <div class="small">Current: <b>${state.idealEmotion.desireLevel}/10</b> (Target: <b>8/10</b>)</div>
 
-      <label class="lbl">If you have a second Ideal Emotion, list it (optional)</label>
+      <label class="lbl">Second Ideal Emotion (optional)</label>
       <select id="idealSecondary" class="sel">
         <option value="">Select…</option>
         ${IDEAL_EMOTION_OPTIONS.map(o => `<option ${state.idealEmotion.secondary === o ? "selected" : ""}>${escapeHtml(o)}</option>`).join("")}
       </select>
 
       <hr class="sep" />
-
       <div class="h2">Alignment Check</div>
       <ul class="ul">
         <li>Which Value did I compromise?</li>
@@ -718,11 +720,9 @@ function stepTrigger(){
     <section class="card">
       <div class="h1">Trigger (Anti-WHO)</div>
       <p class="p">
-        Your Trigger is one loud “I’m not...” story that shows up under pressure.
-        Recognize it so it doesn’t hijack your response.
+        Pick one from the list OR add a custom one.
       </p>
 
-      <label class="lbl">Pick one OR add custom</label>
       <div class="pills">
         ${TRIGGER_OPTIONS.map(t => {
           const full = `I'm not ${t}`;
@@ -734,66 +734,50 @@ function stepTrigger(){
       <div style="margin-top:12px;">
         <label class="lbl">Custom trigger (optional)</label>
         <input id="customTrigger" class="txt" placeholder="Example: I'm not safe / I'm not in control..." value="${escapeHtml(label.startsWith("I'm not ") ? "" : label)}" />
-        <div class="small">If you type a custom trigger, it will override the selection.</div>
+        <div class="small">Typing here overrides the selection.</div>
       </div>
 
       <label class="lbl">Name how it makes you feel</label>
-      <input id="triggerFeeling" class="txt" placeholder="Example: demoralized, anxious, small..." value="${escapeHtml(state.trigger.feeling)}" />
+      <input id="triggerFeeling" class="txt" placeholder="Example: anxious, small, demoralized..." value="${escapeHtml(state.trigger.feeling)}" />
 
-      <label class="lbl">Optional Reset Script (simple plan)</label>
+      <label class="lbl">Optional Reset Script</label>
       <textarea id="resetScript" class="ta" placeholder="That’s my Trigger talking. I’m choosing [Pillar] and honoring [Value].">${escapeHtml(state.trigger.resetScript)}</textarea>
-
-      <div class="small">
-        Tip: “That’s my Trigger talking. I’m choosing <b>${escapeHtml(guessPillar() || "[Pillar]")}</b> and honoring <b>${escapeHtml(guessValue() || "[Value]")}</b>.”
-      </div>
     </section>
   `;
 }
 
 function stepSnapshot(){
-  // Ensure computations are current
   computePillarsOutcomes();
   computeConfirmedValues();
 
   const values = state.values.confirmed;
   const pillars = state.pillars.confirmed;
-  const ideal1 = state.idealEmotion.primary;
-  const ideal2 = state.idealEmotion.secondary;
-  const desire = state.idealEmotion.desireLevel;
 
   return `
     <section class="card">
       <div class="h1">Your WHO Snapshot</div>
-      <p class="p">
-        Refine over time. Awareness builds self-command. Test your Values and Pillars in real situations,
-        notice what holds or shifts, and refine.
-      </p>
 
       <div class="snapshot">
         <div class="snapshotBox">
           <h3>Values — Your guardrails</h3>
-          <div class="small">Revisit your Values when you feel conflicted to see what you’re honoring.</div>
           <ul class="ul">${values.map(li).join("") || `<li class="small">None confirmed yet.</li>`}</ul>
         </div>
 
         <div class="snapshotBox">
           <h3>Pillars — Your energy source</h3>
-          <div class="small">When depleted, feed one or more Pillars with activity or self-care.</div>
           <ul class="ul">${pillars.map(li).join("") || `<li class="small">None confirmed yet.</li>`}</ul>
         </div>
 
         <div class="snapshotBox">
           <h3>Ideal Emotion — Your compass</h3>
-          <div class="small">Target: 8/10. Current desire: ${desire}/10.</div>
           <ul class="ul">
-            ${ideal1 ? `<li>${escapeHtml(ideal1)} (${desire}/10)</li>` : `<li class="small">Not set.</li>`}
-            ${ideal2 ? `<li>${escapeHtml(ideal2)}</li>` : ``}
+            ${state.idealEmotion.primary ? `<li>${escapeHtml(state.idealEmotion.primary)} (${state.idealEmotion.desireLevel}/10)</li>` : `<li class="small">Not set.</li>`}
+            ${state.idealEmotion.secondary ? `<li>${escapeHtml(state.idealEmotion.secondary)}</li>` : ``}
           </ul>
         </div>
 
         <div class="snapshotBox">
           <h3>Trigger — Your warning signal</h3>
-          <div class="small">Silently identify it. Pause. Choose WHO.</div>
           <ul class="ul">
             ${state.trigger.label ? `<li>${escapeHtml(state.trigger.label)}</li>` : `<li class="small">Not set.</li>`}
             ${state.trigger.feeling ? `<li>Feels like: ${escapeHtml(state.trigger.feeling)}</li>` : ``}
@@ -810,373 +794,50 @@ function stepSnapshot(){
         <li>If your Ideal Emotion dips, check what you compromised.</li>
       </ul>
 
-      <div class="small" style="margin-top:12px;">
-        Use “Submit / Copy Results” below to copy your results and (optionally) send them to Google Forms.
+      <div class="notice" style="margin-top:12px;">
+        When you click <b>Submit Results</b>, Dana will receive your results.
+        If you provided an email + checked consent, you’ll receive a “thank you” email with your results too.
       </div>
     </section>
   `;
 }
 
-/* ==========================
-   Event wiring (step-specific)
-   ========================== */
+function stepSubmitted(){
+  const msg = state.lastSubmit.message || "";
+  const ok = state.lastSubmit.status === "success";
+  const err = state.lastSubmit.status === "error";
+
+  return `
+    <section class="card">
+      <div class="h1">${ok ? "Submitted!" : err ? "Submission Issue" : "Submitting..."}</div>
+      <p class="p">
+        ${ok
+          ? "Your results were sent successfully."
+          : err
+            ? "We couldn’t submit your results. Try again or refresh."
+            : "Sending your results now..."}
+      </p>
+      ${msg ? `<div class="notice">${escapeHtml(msg)}</div>` : ""}
+      ${err ? `<div class="small" style="margin-top:10px;">Most common fix: Google Form entry IDs aren’t set correctly.</div>` : ""}
+    </section>
+  `;
+}
+
+/* ========== Events ========== */
 
 document.addEventListener("input", (e) => {
   const id = e.target?.id;
 
-  if (id === "userName"){
-    state.user.name = e.target.value;
-    saveState(); render();
-  }
-  if (id === "userEmail"){
-    state.user.email = e.target.value;
-    saveState(); render();
-  }
-  if (id === "proudMoment"){
-    state.values.proudMoment = e.target.value;
-    saveState();
-  }
-  if (id === "proudWhy"){
-    state.values.proudWhy = e.target.value;
-    saveState();
-  }
-  if (id === "upsetMoment"){
-    state.values.upsetMoment = e.target.value;
-    saveState();
-  }
-  if (id === "upsetWhy"){
-    state.values.upsetWhy = e.target.value;
-    saveState();
-  }
-  if (id === "bestMoment"){
-    state.pillars.bestMoment = e.target.value;
-    saveState();
-  }
-  if (id === "idealDesire"){
-    state.idealEmotion.desireLevel = Number(e.target.value);
-    saveState(); render();
-  }
-  if (id === "triggerFeeling"){
-    state.trigger.feeling = e.target.value;
-    saveState(); render();
-  }
-  if (id === "resetScript"){
-    state.trigger.resetScript = e.target.value;
-    saveState();
-  }
-  if (id === "customTrigger"){
-    const v = e.target.value.trim();
-    if (v){
-      state.trigger.label = v;
-    }
-    saveState(); render();
-  }
-});
+  if (id === "userName"){ state.user.name = e.target.value; saveState(); render(); }
+  if (id === "userEmail"){ state.user.email = e.target.value; saveState(); render(); }
 
-document.addEventListener("change", (e) => {
-  const id = e.target?.id;
+  if (id === "proudMoment"){ state.values.proudMoment = e.target.value; saveState(); }
+  if (id === "proudWhy"){ state.values.proudWhy = e.target.value; saveState(); }
+  if (id === "upsetMoment"){ state.values.upsetMoment = e.target.value; saveState(); }
+  if (id === "upsetWhy"){ state.values.upsetWhy = e.target.value; saveState(); }
 
-  if (id === "userConsent"){
-    state.user.consent = !!e.target.checked;
-    saveState();
-  }
-  if (id === "idealPrimary"){
-    state.idealEmotion.primary = e.target.value;
-    saveState(); render();
-  }
-  if (id === "idealSecondary"){
-    state.idealEmotion.secondary = e.target.value;
-    saveState(); render();
-  }
-});
+  if (id === "bestMoment"){ state.pillars.bestMoment = e.target.value; saveState(); }
 
-document.addEventListener("click", (e) => {
-  const t = e.target;
+  if (id === "idealDesire"){ state.idealEmotion.desireLevel = Number(e.target.value); saveState(); render(); }
 
-  // Values selection pills
-  if (t?.dataset?.value){
-    const v = t.dataset.value;
-    toggleBoundedArray("values", "candidates", v, 6);
-  }
-
-  // Pillars selection pills
-  if (t?.dataset?.pillar){
-    const p = t.dataset.pillar;
-    toggleBoundedArray("pillars", "candidates", p, 6);
-  }
-
-  // Remove candidate chips
-  if (t?.dataset?.removeValue){
-    const v = t.dataset.removeValue;
-    state.values.candidates = removeItem(state.values.candidates, v);
-    delete state.values.roadtestAnswers[v];
-    saveState(); render();
-  }
-  if (t?.dataset?.removePillar){
-    const p = t.dataset.removePillar;
-    state.pillars.candidates = removeItem(state.pillars.candidates, p);
-    delete state.pillars.roadtest1[p];
-    delete state.pillars.roadtest2[p];
-    saveState(); render();
-  }
-
-  // Values roadtest YES/NO
-  if (t?.dataset?.vAns && t?.dataset?.v){
-    const v = t.dataset.v;
-    const isYes = t.dataset.vAns === "yes";
-    state.values.roadtestAnswers[v] = isYes;
-    // If NO, remove from candidates list (spec says remove)
-    if (!isYes){
-      state.values.candidates = removeItem(state.values.candidates, v);
-      delete state.values.roadtestAnswers[v];
-    }
-    saveState(); render();
-  }
-
-  // Pillars roadtest1 YES/NO
-  if (t?.dataset?.p1Ans && t?.dataset?.p){
-    const p = t.dataset.p;
-    const isYes = t.dataset.p1Ans === "yes";
-    state.pillars.roadtest1[p] = isYes;
-    saveState(); render();
-  }
-
-  // Pillars roadtest2 YES/NO
-  if (t?.dataset?.p2Ans && t?.dataset?.p){
-    const p = t.dataset.p;
-    const isYes = t.dataset.p2Ans === "yes";
-    state.pillars.roadtest2[p] = isYes;
-    // If NO, remove from candidates
-    if (!isYes){
-      state.pillars.candidates = removeItem(state.pillars.candidates, p);
-      delete state.pillars.roadtest1[p];
-      delete state.pillars.roadtest2[p];
-    }
-    saveState(); render();
-  }
-
-  // Trigger buttons
-  if (t?.dataset?.trigger){
-    state.trigger.label = t.dataset.trigger;
-    saveState(); render();
-  }
-});
-
-document.addEventListener("keydown", (e) => {
-  const id = e.target?.id;
-
-  if (id === "addValue" && e.key === "Enter"){
-    e.preventDefault();
-    addBoundedArray("values", "candidates", e.target.value, 6);
-  }
-  if (id === "addPillar" && e.key === "Enter"){
-    e.preventDefault();
-    addBoundedArray("pillars", "candidates", e.target.value, 6);
-  }
-});
-
-/* ==========================
-   Helpers for bounded arrays
-   ========================== */
-
-function toggleBoundedArray(group, field, value, max){
-  const arr = state[group][field];
-  if (arr.includes(value)){
-    state[group][field] = removeItem(arr, value);
-  } else {
-    if (arr.length >= max) return; // enforce 3-6 max (we enforce min via canProceed)
-    state[group][field] = uniq([...arr, value]);
-  }
-  saveState(); render();
-}
-
-function addBoundedArray(group, field, raw, max){
-  const v = String(raw || "").trim();
-  if (!v) return;
-
-  const arr = state[group][field];
-  if (!arr.includes(v) && arr.length >= max) return;
-
-  state[group][field] = uniq([...arr, v]);
-  saveState(); render();
-
-  // clear input after render
-  setTimeout(() => {
-    const el = document.getElementById(group === "values" ? "addValue" : "addPillar");
-    if (el) el.value = "";
-  }, 0);
-}
-
-function renderCandidateList(list, group, field){
-  if (!list.length) return `<div class="small">None yet.</div>`;
-  return `
-    <div class="pills">
-      ${list.map(x => `
-        <span class="tag">
-          ${escapeHtml(x)}
-          <button class="ghost" type="button"
-            style="margin-left:8px; padding:0 6px; border-radius:10px;"
-            data-${group === "values" ? "removeValue" : "removePillar"}="${escapeHtmlAttr(x)}"
-            title="Remove">×</button>
-        </span>
-      `).join("")}
-    </div>
-  `;
-}
-
-function pill(v, on){
-  return `<button class="pill ${on ? "on" : ""}" data-value="${escapeHtmlAttr(v)}" type="button">${escapeHtml(v)}</button>`;
-}
-function pillPillar(p, on){
-  return `<button class="pill ${on ? "on" : ""}" data-pillar="${escapeHtmlAttr(p)}" type="button">${escapeHtml(p)}</button>`;
-}
-
-function liveConfirmedValues(){
-  const confirmed = [];
-  for (const v of state.values.candidates){
-    if (state.values.roadtestAnswers[v] === true) confirmed.push(v);
-  }
-  // add moved pillars
-  return uniq([...confirmed, ...(state.pillars.movedToValues || [])]);
-}
-function liveRemovedValues(){
-  // Removed are those answered NO (we remove them immediately) — so this is mainly empty.
-  // Keeping for completeness.
-  return [];
-}
-
-function liveConfirmedPillars(){
-  const confirmed = [];
-  const remaining = state.pillars.candidates.filter(p => state.pillars.roadtest1[p] === false);
-  for (const p of remaining){
-    if (state.pillars.roadtest2[p] === true) confirmed.push(p);
-  }
-  return uniq(confirmed);
-}
-
-function guessValue(){ return (state.values.confirmed && state.values.confirmed[0]) || (state.values.candidates[0] || ""); }
-function guessPillar(){ return (state.pillars.confirmed && state.pillars.confirmed[0]) || (state.pillars.candidates[0] || ""); }
-
-function li(x){ return `<li>${escapeHtml(x)}</li>`; }
-
-/* ==========================
-   Submit: copy results + optional Google Form POST
-   ========================== */
-
-async function submitAll(){
-  computePillarsOutcomes();
-  computeConfirmedValues();
-
-  const payload = buildPayload();
-  const text = buildCopyText(payload);
-
-  // Copy to clipboard
-  try{
-    await navigator.clipboard.writeText(text);
-    alert("Copied results to clipboard.");
-  }catch{
-    // fallback
-    prompt("Copy your results:", text);
-  }
-
-  // Optional Google Form submission
-  if (GOOGLE_FORM.enabled){
-    try{
-      await postToGoogleForm(payload);
-      alert("Submitted to Google Form.");
-    }catch(err){
-      console.warn(err);
-      alert("Google Form submission failed. Check entry IDs + formResponse URL.");
-    }
-  }
-}
-
-function buildPayload(){
-  return {
-    name: state.user.name.trim(),
-    email: state.user.email.trim(),
-    consent: !!state.user.consent,
-
-    values: state.values.confirmed,
-    pillars: state.pillars.confirmed,
-    movedToValues: state.pillars.movedToValues,
-
-    idealEmotionPrimary: state.idealEmotion.primary,
-    idealEmotionSecondary: state.idealEmotion.secondary,
-    idealEmotionTarget: 8,
-    idealEmotionDesire: state.idealEmotion.desireLevel,
-
-    trigger: state.trigger.label,
-    triggerFeeling: state.trigger.feeling,
-    resetScript: state.trigger.resetScript
-  };
-}
-
-function buildCopyText(p){
-  return [
-    `WHO Thoughts Assessment™ نتائج / Results`,
-    ``,
-    `Name: ${p.name}`,
-    `Email: ${p.email || "(not provided)"}`,
-    `Consent to email: ${p.consent ? "Yes" : "No"}`,
-    ``,
-    `VALUES (Guardrails):`,
-    ...(p.values.length ? p.values.map(v => `- ${v}`) : [`- (none)`]),
-    ``,
-    `PILLARS (Energy Source):`,
-    ...(p.pillars.length ? p.pillars.map(v => `- ${v}`) : [`- (none)`]),
-    ``,
-    `IDEAL EMOTION (Compass):`,
-    `- Primary: ${p.idealEmotionPrimary || "(not set)"} (${p.idealEmotionDesire}/10)`,
-    `- Secondary: ${p.idealEmotionSecondary || "(none)"}`,
-    `- Target: ${p.idealEmotionTarget}/10`,
-    ``,
-    `TRIGGER (Warning Signal):`,
-    `- ${p.trigger || "(not set)"}`,
-    `- Feeling: ${p.triggerFeeling || "(not set)"}`,
-    ``,
-    `RESET SCRIPT:`,
-    `${p.resetScript || "(not provided)"}`,
-    ``,
-    `Next step: This week, lead with one Value + one Pillar. If Ideal Emotion dips, check alignment.`,
-  ].join("\n");
-}
-
-async function postToGoogleForm(p){
-  const fd = new FormData();
-  fd.append(GOOGLE_FORM.entry.name, p.name);
-  fd.append(GOOGLE_FORM.entry.email, p.email);
-  fd.append(GOOGLE_FORM.entry.consent, p.consent ? "Yes" : "No");
-  fd.append(GOOGLE_FORM.entry.values, p.values.join(", "));
-  fd.append(GOOGLE_FORM.entry.pillars, p.pillars.join(", "));
-  fd.append(GOOGLE_FORM.entry.idealEmotionPrimary, p.idealEmotionPrimary);
-  fd.append(GOOGLE_FORM.entry.idealEmotionSecondary, p.idealEmotionSecondary);
-  fd.append(GOOGLE_FORM.entry.idealEmotionTarget, String(p.idealEmotionTarget));
-  fd.append(GOOGLE_FORM.entry.trigger, p.trigger);
-  fd.append(GOOGLE_FORM.entry.triggerFeeling, p.triggerFeeling);
-  fd.append(GOOGLE_FORM.entry.resetScript, p.resetScript);
-
-  // Google Forms blocks CORS from fetch() sometimes.
-  // no-cors lets it submit "fire and forget".
-  await fetch(GOOGLE_FORM.formResponseUrl, { method:"POST", mode:"no-cors", body: fd });
-}
-
-/* ==========================
-   Utilities
-   ========================== */
-
-function escapeHtml(s){
-  return String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-function escapeHtmlAttr(s){
-  // minimal safe attr escaping
-  return escapeHtml(s).replaceAll("\n"," ");
-}
-
-// Initial paint
-render();
+  if (id === "triggerFeeling"){ st
