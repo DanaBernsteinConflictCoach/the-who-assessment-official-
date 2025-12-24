@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>The WHO Assessment (Official)</title>
-  <link rel="stylesheet" href="./style.css?v=7" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <header class="topbar">
@@ -31,6 +31,7 @@
     <div class="small">© <span id="year"></span> • Dana Bernstein Conflict Coach</div>
   </footer>
 
-  <script defer src="./app.js?v=7"></script>
+  <!-- IMPORTANT: put script at bottom (not defer) so it always finds #app -->
+  <script src="./app.js"></script>
 </body>
 </html>
