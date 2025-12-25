@@ -1,695 +1,787 @@
 /* =========================================================
-   The WHO Assessment — Official (app.js)
-   - Static-site safe Google Form submission (hidden iframe)
-   - 13-step flow with validation + word banks
-   - Saves progress to localStorage
+   WHO Assessment — app.js (FULL REPLACEMENT)
+   Fixes:
+   - “typing 1 char then stops” (no full re-render on input)
+   - Google Form submission via formResponse (Option B)
+   Notes:
+   - Uses your entry IDs from the prefill URL you pasted.
+   - If Dana changes the Google Form, entry IDs may change.
    ========================================================= */
 
-/* ===================== GOOGLE FORM CONFIG ===================== */
+/** =======================
+ *  1) CONFIG (EDIT THESE)
+ *  ======================= */
+
+// Google Form "formResponse" endpoint (IMPORTANT: formResponse, not viewform)
 const GOOGLE_FORM = {
+  // From your live form id:
+  // https://docs.google.com/forms/d/e/1FAIpQLSdbX-tdTyMU6ad9rWum1rcO83TqYwXRwXs4GKE7x1AJECvKaw/viewform
+  // formResponse endpoint:
   formResponseUrl:
     "https://docs.google.com/forms/d/e/1FAIpQLSdbX-tdTyMU6ad9rWum1rcO83TqYwXRwXs4GKE7x1AJECvKaw/formResponse",
-  entry: {
+
+  // Entry IDs (from your prefill URL)
+  entries: {
     name: "entry.2005620554",
     email: "entry.1045781291",
     values: "entry.1065046570",
     pillars: "entry.1010525839",
     idealEmotion: "entry.1060481030",
-    triggers: "entry.2079481635",
+    trigger: "entry.2079481635",
     comments: "entry.839337160",
   },
+
+  // Optional: where to send Dana a copy (ONLY if you later add Apps Script)
+  coachEmail: "",
 };
 
-/* ===================== BANKS ===================== */
-const VALUE_OPTIONS = [
-  "Health","Freedom","Growth","Family","Friendship","Love","Discipline","Adventure","Curiosity",
-  "Creativity","Faith","Integrity","Mastery","Stability","Wealth","Impact","Service","Leadership",
-  "Peace","Joy","Authenticity","Courage","Excellence","Humor"
-];
-
-const PILLAR_OPTIONS = [
-  "Body","Mind","Relationships","Work/Craft","Money","Faith/Spirit","Home/Environment","Fun/Play",
-  "Learning","Community","Routine","Adventure"
-];
-
-const IDEAL_EMOTIONS = [
-  "Peace","Confidence","Happiness","Clarity","Calm","Connection","Freedom","Joy","Grounded","Inspired"
-];
-
-const TRIGGER_OPTIONS = [
-  "I’m not heard",
-  "I’m not respected",
-  "I’m not valued",
-  "I’m not safe",
-  "I’m not capable",
-  "I’m not important",
-  "I’m losing control",
-  "I’m being judged",
-];
-
-/* ===================== STATE ===================== */
 const STORAGE_KEY = "who_assessment_official_v2";
 
-function defaultState() {
-  return {
-    stepIndex: 0,
-    submitted: false,
-    user: { name: "", email: "" },
+/** =======================
+ *  2) WORD BANKS
+ *  ======================= */
 
-    values: {
-      proudMoment: "",
-      proudWhy: "",
-      upsetMoment: "",
-      upsetWhy: "",
-      selected: [], // 3-6
-      custom: [],
-    },
+const VALUE_BANK = [
+  "Health","Freedom","Growth","Family","Friendship","Love","Discipline","Adventure","Curiosity",
+  "Creativity","Faith","Integrity","Mastery","Stability","Wealth","Impact","Service","Leadership",
+  "Peace","Joy","Authenticity","Courage","Excellence","Humor","Gratitude","Patience","Empathy",
+  "Justice","Balance","Resilience","Trust","Loyalty","Accountability","Confidence","Kindness"
+];
 
-    pillars: {
-      bestMoment: "",
-      bestWhy: "",
-      selected: [], // 1-3
-      custom: [],
-    },
+const PILLAR_BANK = [
+  "Body","Mind","Relationships","Work/Craft","Money","Faith/Spirit","Home/Environment","Fun/Play",
+  "Learning","Community","Routine","Adventure","Creativity","Rest","Nutrition","Movement"
+];
 
-    idealEmotion: {
-      emotion: "",
-      desire: 8,
-      why: "",
-    },
+const TRIGGER_BANK = [
+  "I'm not Capable",
+  "I'm not Enough",
+  "I'm not Important",
+  "I'm not Safe",
+  "I'm not Loved",
+  "I'm not Respected",
+  "I'm Trapped",
+  "I'm Failing",
+  "I'm Being Judged",
+  "I'm Being Controlled"
+];
 
-    trigger: {
-      trigger: "",
-      response: "",
-      notes: "",
-    },
+const IDEAL_EMOTION_BANK = [
+  "Peace","Confidence","Joy","Freedom","Calm","Love","Gratitude","Happiness","Courage","Clarity"
+];
 
-    comments: "",
-  };
-}
+/** =======================
+ *  3) STATE
+ *  ======================= */
+
+const DEFAULT_STATE = {
+  step: 0,
+
+  user: { name: "", email: "" },
+
+  // Values section
+  values: {
+    proudMoment: "",
+    upsetMoment: "",
+    selected: [], // 3–6
+    notes: "",
+  },
+
+  // Pillars section
+  pillars: {
+    bestMoment: "",
+    selected: [], // 1–3
+    notes: "",
+  },
+
+  // Ideal emotion
+  idealEmotion: {
+    label: "",
+    desireLevel: 7, // 1–10
+    why: "",
+  },
+
+  // Trigger
+  trigger: {
+    selected: "",
+    response: "",
+    notes: "",
+  },
+
+  // Final
+  comments: "",
+  submitStatus: { ok: false, error: "" },
+};
 
 let state = loadState();
 
-/* ===================== STEPS ===================== */
-const STEPS = [
-  { key: "start", title: "Start", subtitle: "Define your WHO", render: renderStart, canNext: canNextStart },
+/** =======================
+ *  4) BOOT
+ *  ======================= */
 
-  { key: "values_discover", title: "Values (Discover)", subtitle: "Values show up in moments of pride — and moments of frustration.", render: renderValuesDiscover, canNext: () => true },
-  { key: "values_bank", title: "Values (Word Bank)", subtitle: "Browse the word bank to spark ideas.", render: renderValuesBank, canNext: () => true },
-  { key: "values_pick", title: "Values (Pick 3–6)", subtitle: "Pick 3–6 Values that best represent you.", render: renderValuesPick, canNext: canNextValuesPick },
-
-  { key: "pillars_discover", title: "Pillars (Discover)", subtitle: "Pillars are where you feel energized and alive.", render: renderPillarsDiscover, canNext: () => true },
-  { key: "pillars_bank", title: "Pillars (Word Bank)", subtitle: "Browse the word bank to spark ideas.", render: renderPillarsBank, canNext: () => true },
-  { key: "pillars_pick", title: "Pillars (Pick 1–3)", subtitle: "Pick 1–3 Pillars that strengthen your WHO.", render: renderPillarsPick, canNext: canNextPillarsPick },
-
-  { key: "ideal_emotion", title: "Ideal Emotion", subtitle: "Your compass: how you want to feel most often.", render: renderIdealEmotion, canNext: canNextIdealEmotion },
-
-  { key: "trigger", title: "Trigger", subtitle: "Your warning signal: what sets you off.", render: renderTrigger, canNext: canNextTrigger },
-
-  { key: "snapshot", title: "Your WHO Snapshot", subtitle: "A simple summary of what you discovered.", render: renderSnapshot, canNext: () => true },
-
-  { key: "submit", title: "Submit", subtitle: "Save your results.", render: renderSubmit, canNext: () => true },
-
-  { key: "submitted", title: "Submitted", subtitle: "Your responses have been saved successfully.", render: renderSubmitted, canNext: () => false },
-];
-
-/* ===================== MOUNT ===================== */
 const elApp = document.getElementById("app");
-if (!elApp) console.error("Missing #app element in index.html");
-render();
 
-/* ===================== RENDER ===================== */
+document.addEventListener("DOMContentLoaded", () => {
+  render();
+  wireGlobal();
+});
+
+/** =======================
+ *  5) RENDER
+ *  ======================= */
+
 function render() {
-  const step = STEPS[state.stepIndex] || STEPS[0];
-  const total = STEPS.length;
-  const num = state.stepIndex + 1;
-  const pct = Math.round((num / total) * 100);
+  // Render ONLY when step changes / buttons pressed (not on every keystroke)
+  const totalSteps = 6; // 0..5
+  const pct = Math.round(((state.step + 1) / totalSteps) * 100);
 
   elApp.innerHTML = `
-    ${progressCard(step.title, pct, num, total)}
+    <section class="container">
+      ${progressCard(pct, state.step + 1, totalSteps)}
+      ${stepCard()}
+      ${navCard()}
+    </section>
+  `;
+
+  // After render, wire step-specific handlers
+  wireStep();
+  updateNavDisabled();
+}
+
+function progressCard(pct, current, total) {
+  return `
+    <div class="card progressCard">
+      <div class="progressTop">
+        <div class="progressLabel">${labelForStep(state.step)}</div>
+        <div class="progressCount">${current} / ${total}</div>
+      </div>
+      <div class="progressBar">
+        <div class="progressFill" style="width:${pct}%"></div>
+      </div>
+      <div class="progressMeta">${pct}% complete</div>
+    </div>
+  `;
+}
+
+function labelForStep(step) {
+  switch (step) {
+    case 0: return "START";
+    case 1: return "VALUES";
+    case 2: return "PILLARS";
+    case 3: return "IDEAL EMOTION";
+    case 4: return "TRIGGER";
+    case 5: return "YOUR WHO SNAPSHOT";
+    default: return "WHO";
+  }
+}
+
+function stepCard() {
+  switch (state.step) {
+    case 0: return stepStart();
+    case 1: return stepValues();
+    case 2: return stepPillars();
+    case 3: return stepIdealEmotion();
+    case 4: return stepTrigger();
+    case 5: return stepSnapshot();
+    default: return stepStart();
+  }
+}
+
+function navCard() {
+  const isFirst = state.step === 0;
+  const isLast = state.step === 5;
+
+  return `
+    <div class="card navCard">
+      <button class="btn btnGhost" id="btnBack" ${isFirst ? "disabled" : ""}>Back</button>
+      <div class="navHint" id="navHint">Complete this step to continue.</div>
+      <button class="btn btnPrimary" id="btnNext">${isLast ? "Submit" : "Next"}</button>
+    </div>
+  `;
+}
+
+/** =======================
+ *  6) STEP MARKUP
+ *  ======================= */
+
+function stepStart() {
+  return `
     <div class="card">
-      <div class="cardHead">
-        <h1>${escapeHtml(step.title)}</h1>
-        <p class="muted">${escapeHtml(step.subtitle || "")}</p>
-      </div>
-      <div class="cardBody">
-        ${step.render()}
-      </div>
-    </div>
-    ${navCard(step)}
-  `;
+      <h1>Start</h1>
+      <p class="muted">Define your WHO</p>
 
-  wireEvents();
-}
-
-function progressCard(label, pct, num, total) {
-  return `
-    <div class="card slim">
-      <div class="row between">
-        <div class="kicker">${escapeHtml(label).toUpperCase()}</div>
-        <div class="muted">${num} / ${total}</div>
+      <div class="field">
+        <label>Your name <span class="req">(required)</span></label>
+        <input id="userName" class="input" type="text" value="${escapeAttr(state.user.name)}" placeholder="Your name" />
       </div>
-      <div class="bar"><div class="barFill" style="width:${pct}%;"></div></div>
-      <div class="row between">
-        <div class="muted">${pct}% complete</div>
-        <div></div>
+
+      <div class="field">
+        <label>Your email <span class="muted">(optional)</span></label>
+        <input id="userEmail" class="input" type="email" value="${escapeAttr(state.user.email)}" placeholder="you@email.com" />
+      </div>
+
+      <div class="callout">
+        Your name and email (if provided) will be stored with your results.
       </div>
     </div>
   `;
 }
 
-function navCard(step) {
-  const isFirst = state.stepIndex === 0;
-  const isSubmitted = step.key === "submitted";
-  const nextLabel = step.key === "submit" ? "Submit" : "Next";
-  const nextDisabled = isSubmitted ? true : !step.canNext();
-
+function stepValues() {
   return `
-    <div class="card slim">
-      <div class="row between">
-        <button class="btn" id="btnBack" ${isFirst || isSubmitted ? "disabled" : ""}>Back</button>
-        <div class="muted">${(!isSubmitted && nextDisabled) ? "Complete this step to continue." : ""}</div>
-        <button class="btn primary" id="btnNext" ${nextDisabled ? "disabled" : ""}>${isSubmitted ? "Done" : nextLabel}</button>
+    <div class="card">
+      <h1>Values (Discover)</h1>
+      <p class="muted">Values show up in moments of pride — and moments of frustration.</p>
+
+      <div class="field">
+        <label>Proud moment <span class="muted">(optional)</span></label>
+        <textarea id="proudMoment" class="textarea" rows="3" placeholder="Describe a moment you felt proud...">${escapeHtml(state.values.proudMoment)}</textarea>
+      </div>
+
+      <div class="field">
+        <label>Upset moment <span class="muted">(optional)</span></label>
+        <textarea id="upsetMoment" class="textarea" rows="3" placeholder="Describe a moment you felt upset...">${escapeHtml(state.values.upsetMoment)}</textarea>
+      </div>
+
+      <hr class="hr"/>
+
+      <h2>Pick 3–6 Values</h2>
+      <div class="field">
+        <input id="valueSearch" class="input" type="text" placeholder="Search values..." />
+      </div>
+
+      <div class="pillGrid" id="valueBank">
+        ${renderPills(VALUE_BANK, state.values.selected, "value")}
+      </div>
+
+      <div class="selectedLine">
+        <strong>Selected:</strong> <span id="valueSelected">${escapeHtml(state.values.selected.join(", ")) || "None yet"}</span>
+      </div>
+
+      <div class="field">
+        <label>Notes <span class="muted">(optional)</span></label>
+        <textarea id="valuesNotes" class="textarea" rows="2" placeholder="Any notes about your values...">${escapeHtml(state.values.notes)}</textarea>
+      </div>
+
+      <p class="muted">Next, we’ll choose the pillars that fuel your energy.</p>
+    </div>
+  `;
+}
+
+function stepPillars() {
+  return `
+    <div class="card">
+      <h1>Pillars (Discover)</h1>
+      <p class="muted">Pillars are the areas of life that power you when you invest in them.</p>
+
+      <div class="field">
+        <label>Best moment recently <span class="muted">(optional)</span></label>
+        <textarea id="bestMoment" class="textarea" rows="3" placeholder="Describe a moment you felt at your best...">${escapeHtml(state.pillars.bestMoment)}</textarea>
+      </div>
+
+      <hr class="hr"/>
+
+      <h2>Pick 1–3 Pillars</h2>
+      <div class="field">
+        <input id="pillarSearch" class="input" type="text" placeholder="Search pillars..." />
+      </div>
+
+      <div class="pillGrid" id="pillarBank">
+        ${renderPills(PILLAR_BANK, state.pillars.selected, "pillar")}
+      </div>
+
+      <div class="selectedLine">
+        <strong>Selected:</strong> <span id="pillarSelected">${escapeHtml(state.pillars.selected.join(", ")) || "None yet"}</span>
+      </div>
+
+      <div class="field">
+        <label>Notes <span class="muted">(optional)</span></label>
+        <textarea id="pillarsNotes" class="textarea" rows="2" placeholder="Any notes about your pillars...">${escapeHtml(state.pillars.notes)}</textarea>
       </div>
     </div>
   `;
 }
 
-/* ===================== STEP UI ===================== */
-function renderStart() {
-  return `
-    <div class="field">
-      <label>Your name <span class="req">(required)</span></label>
-      <input id="userName" type="text" value="${escapeHtmlAttr(state.user.name)}" placeholder="Your name" />
-    </div>
-
-    <div class="field">
-      <label>Your email <span class="muted">(optional)</span></label>
-      <input id="userEmail" type="email" value="${escapeHtmlAttr(state.user.email)}" placeholder="you@email.com" />
-    </div>
-
-    <div class="note">
-      Your name and email (if provided) will be stored with your results.
-    </div>
-  `;
-}
-
-function renderValuesDiscover() {
-  return `
-    <div class="field">
-      <label>Proud moment <span class="muted">(optional)</span></label>
-      <textarea id="proudMoment" rows="3">${escapeHtml(state.values.proudMoment)}</textarea>
-    </div>
-    <div class="field">
-      <label>Why did it matter? <span class="muted">(optional)</span></label>
-      <textarea id="proudWhy" rows="3">${escapeHtml(state.values.proudWhy)}</textarea>
-    </div>
-
-    <div class="field">
-      <label>Upset moment <span class="muted">(optional)</span></label>
-      <textarea id="upsetMoment" rows="3">${escapeHtml(state.values.upsetMoment)}</textarea>
-    </div>
-    <div class="field">
-      <label>Why did it matter? <span class="muted">(optional)</span></label>
-      <textarea id="upsetWhy" rows="3">${escapeHtml(state.values.upsetWhy)}</textarea>
-    </div>
-
-    <div class="muted small">Next: browse the Values word bank.</div>
-  `;
-}
-
-function renderValuesBank() {
-  return `
-    <div class="muted small">Tap a word to quickly add it to your selection list (max 6).</div>
-    <div class="pillGrid">
-      ${VALUE_OPTIONS.map(v => pill("addValue", v, state.values.selected.includes(v))).join("")}
-    </div>
-    <div class="note">Next: pick your final 3–6 Values.</div>
-  `;
-}
-
-function renderValuesPick() {
-  return `
-    <div class="muted small">Selected: <b>${state.values.selected.length}</b> (choose 3–6)</div>
-
-    <div class="pillGrid">
-      ${state.values.selected.map(v => pill("removeValue", v, true)).join("") || `<div class="muted">No Values selected yet.</div>`}
-    </div>
-
-    <div class="field">
-      <label>Add a custom Value <span class="muted">(optional)</span></label>
-      <input id="customValue" type="text" placeholder="Type a value and press Enter" />
-    </div>
-
-    <div class="muted small">Tip: tap a selected Value to remove it.</div>
-  `;
-}
-
-function renderPillarsDiscover() {
-  return `
-    <div class="field">
-      <label>Best moment <span class="muted">(optional)</span></label>
-      <textarea id="bestMoment" rows="3">${escapeHtml(state.pillars.bestMoment)}</textarea>
-    </div>
-
-    <div class="field">
-      <label>Why did it feel good? <span class="muted">(optional)</span></label>
-      <textarea id="bestWhy" rows="3">${escapeHtml(state.pillars.bestWhy)}</textarea>
-    </div>
-
-    <div class="muted small">Next: browse the Pillars word bank.</div>
-  `;
-}
-
-function renderPillarsBank() {
-  return `
-    <div class="muted small">Tap a word to quickly add it to your selection list (max 3).</div>
-    <div class="pillGrid">
-      ${PILLAR_OPTIONS.map(p => pill("addPillar", p, state.pillars.selected.includes(p))).join("")}
-    </div>
-    <div class="note">Next: pick your final 1–3 Pillars.</div>
-  `;
-}
-
-function renderPillarsPick() {
-  return `
-    <div class="muted small">Selected: <b>${state.pillars.selected.length}</b> (choose 1–3)</div>
-
-    <div class="pillGrid">
-      ${state.pillars.selected.map(p => pill("removePillar", p, true)).join("") || `<div class="muted">No Pillars selected yet.</div>`}
-    </div>
-
-    <div class="field">
-      <label>Add a custom Pillar <span class="muted">(optional)</span></label>
-      <input id="customPillar" type="text" placeholder="Type a pillar and press Enter" />
-    </div>
-
-    <div class="muted small">Tip: tap a selected Pillar to remove it.</div>
-  `;
-}
-
-function renderIdealEmotion() {
-  return `
-    <div class="field">
-      <label>Ideal emotion <span class="req">(required)</span></label>
-      <select id="idealEmotionSelect">
-        <option value="">Select one...</option>
-        ${IDEAL_EMOTIONS.map(e => `<option value="${escapeHtmlAttr(e)}" ${state.idealEmotion.emotion===e?"selected":""}>${escapeHtml(e)}</option>`).join("")}
-      </select>
-    </div>
-
-    <div class="field">
-      <label>Target level <span class="muted">(1–10)</span></label>
-      <input id="idealDesire" type="range" min="1" max="10" value="${Number(state.idealEmotion.desire||8)}" />
-      <div class="muted small">Target: <b>${Number(state.idealEmotion.desire||8)}/10</b></div>
-    </div>
-
-    <div class="field">
-      <label>Why this emotion? <span class="muted">(optional)</span></label>
-      <textarea id="idealWhy" rows="3">${escapeHtml(state.idealEmotion.why)}</textarea>
-    </div>
-  `;
-}
-
-function renderTrigger() {
-  return `
-    <div class="field">
-      <label>Your trigger <span class="req">(required)</span></label>
-      <select id="triggerSelect">
-        <option value="">Select one...</option>
-        ${TRIGGER_OPTIONS.map(t => `<option value="${escapeHtmlAttr(t)}" ${state.trigger.trigger===t?"selected":""}>${escapeHtml(t)}</option>`).join("")}
-      </select>
-    </div>
-
-    <div class="field">
-      <label>When triggered, I want to respond by… <span class="muted">(optional)</span></label>
-      <textarea id="triggerResponse" rows="3">${escapeHtml(state.trigger.response)}</textarea>
-    </div>
-
-    <div class="field">
-      <label>Notes <span class="muted">(optional)</span></label>
-      <textarea id="triggerNotes" rows="3">${escapeHtml(state.trigger.notes)}</textarea>
-    </div>
-  `;
-}
-
-function renderSnapshot() {
-  const values = state.values.selected.length ? state.values.selected : ["—"];
-  const pillars = state.pillars.selected.length ? state.pillars.selected : ["—"];
-  const ideal = state.idealEmotion.emotion
-    ? `${state.idealEmotion.emotion} (target: ${Number(state.idealEmotion.desire||8)}/10)`
-    : "—";
-  const trig = state.trigger.trigger || "—";
+function stepIdealEmotion() {
+  const label = state.idealEmotion.label || "";
+  const level = Number(state.idealEmotion.desireLevel || 7);
 
   return `
-    <div class="grid2">
-      <div class="box">
-        <h3>Values — Your guardrails</h3>
-        <ul>${values.map(v => `<li>${escapeHtml(v)}</li>`).join("")}</ul>
+    <div class="card">
+      <h1>Ideal Emotion</h1>
+      <p class="muted">This is your compass — what you’re ultimately trying to feel more often.</p>
+
+      <h2>Choose one</h2>
+      <div class="pillGrid" id="emotionBank">
+        ${renderPills(IDEAL_EMOTION_BANK, label ? [label] : [], "emotion", true)}
       </div>
 
-      <div class="box">
-        <h3>Pillars — Your energy source</h3>
-        <ul>${pillars.map(p => `<li>${escapeHtml(p)}</li>`).join("")}</ul>
+      <div class="field">
+        <label>Target intensity (1–10)</label>
+        <input id="idealLevel" class="range" type="range" min="1" max="10" value="${level}" />
+        <div class="rangeMeta"><span>1</span><strong id="idealLevelLabel">${level}/10</strong><span>10</span></div>
       </div>
 
-      <div class="box">
-        <h3>Ideal Emotion — Your compass</h3>
-        <ul><li>${escapeHtml(ideal)}</li></ul>
-      </div>
-
-      <div class="box">
-        <h3>Trigger — Your warning signal</h3>
-        <ul><li>${escapeHtml(trig)}</li></ul>
+      <div class="field">
+        <label>Why this emotion? <span class="muted">(optional)</span></label>
+        <textarea id="idealWhy" class="textarea" rows="3" placeholder="What would change if you felt this more often?">${escapeHtml(state.idealEmotion.why)}</textarea>
       </div>
     </div>
-
-    <div class="note">Refine over time. Awareness builds self-command.</div>
   `;
 }
 
-function renderSubmit() {
+function stepTrigger() {
   return `
-    <div class="note">
-      Clicking <b>Submit</b> will save your results to Dana’s private response sheet.
-      <br/><span class="muted small">No email is sent automatically.</span>
-    </div>
+    <div class="card">
+      <h1>Trigger</h1>
+      <p class="muted">Your trigger is your warning signal — the story your mind tells in tense moments.</p>
 
-    <div class="field">
-      <label>Any final comments? <span class="muted">(optional)</span></label>
-      <textarea id="finalComments" rows="4">${escapeHtml(state.comments)}</textarea>
+      <h2>Pick one</h2>
+      <div class="pillGrid" id="triggerBank">
+        ${renderPills(TRIGGER_BANK, state.trigger.selected ? [state.trigger.selected] : [], "trigger", true)}
+      </div>
+
+      <div class="field">
+        <label>Best response when this trigger shows up <span class="muted">(optional)</span></label>
+        <textarea id="triggerResponse" class="textarea" rows="3" placeholder="What would you like to say/do instead?">${escapeHtml(state.trigger.response)}</textarea>
+      </div>
+
+      <div class="field">
+        <label>Notes <span class="muted">(optional)</span></label>
+        <textarea id="triggerNotes" class="textarea" rows="2" placeholder="Anything else about this trigger...">${escapeHtml(state.trigger.notes)}</textarea>
+      </div>
     </div>
   `;
 }
 
-function renderSubmitted() {
+function stepSnapshot() {
+  const values = state.values.selected;
+  const pillars = state.pillars.selected;
+  const ideal = state.idealEmotion.label ? `${state.idealEmotion.label} (target: ${state.idealEmotion.desireLevel}/10)` : "";
+  const trig = state.trigger.selected || "";
+
   return `
-    <div class="note">
-      Your responses have been saved successfully.
-    </div>
+    <div class="card">
+      <h1>Your WHO Snapshot</h1>
 
-    <div class="row end">
-      <button class="btn" id="btnStartOver">Start Over</button>
+      <div class="grid2">
+        <div class="miniCard">
+          <h3>Values — Your guardrails</h3>
+          <ul>${values.map(v => `<li>${escapeHtml(v)}</li>`).join("") || `<li class="muted">None selected</li>`}</ul>
+        </div>
+
+        <div class="miniCard">
+          <h3>Pillars — Your energy source</h3>
+          <ul>${pillars.map(p => `<li>${escapeHtml(p)}</li>`).join("") || `<li class="muted">None selected</li>`}</ul>
+        </div>
+
+        <div class="miniCard">
+          <h3>Ideal Emotion — Your compass</h3>
+          <ul>${ideal ? `<li>${escapeHtml(ideal)}</li>` : `<li class="muted">Not selected</li>`}</ul>
+        </div>
+
+        <div class="miniCard">
+          <h3>Trigger — Your warning signal</h3>
+          <ul>${trig ? `<li>${escapeHtml(trig)}</li>` : `<li class="muted">Not selected</li>`}</ul>
+        </div>
+      </div>
+
+      <div class="callout">
+        Refine over time. Awareness builds self-command.
+      </div>
+
+      <div class="field">
+        <label>Any final comments? <span class="muted">(optional)</span></label>
+        <textarea id="finalComments" class="textarea" rows="3" placeholder="Anything you want Dana to know...">${escapeHtml(state.comments)}</textarea>
+      </div>
+
+      ${
+        state.submitStatus.error
+          ? `<div class="errorBox"><strong>Submission Issue</strong><div>${escapeHtml(state.submitStatus.error)}</div></div>`
+          : ""
+      }
+      ${
+        state.submitStatus.ok
+          ? `<div class="successBox"><strong>Submitted</strong><div>Your results were saved successfully.</div></div>`
+          : ""
+      }
     </div>
   `;
 }
 
-/* ===================== VALIDATION ===================== */
-function canNextStart() {
-  return (state.user.name || "").trim().length > 0;
-}
-function canNextValuesPick() {
-  return state.values.selected.length >= 3 && state.values.selected.length <= 6;
-}
-function canNextPillarsPick() {
-  return state.pillars.selected.length >= 1 && state.pillars.selected.length <= 3;
-}
-function canNextIdealEmotion() {
-  return (state.idealEmotion.emotion || "").trim().length > 0;
-}
-function canNextTrigger() {
-  return (state.trigger.trigger || "").trim().length > 0;
-}
+/** =======================
+ *  7) WIRING (EVENTS)
+ *  ======================= */
 
-/* ===================== EVENTS ===================== */
-function wireEvents() {
-  // Reset button (top right) if it exists
+function wireGlobal() {
+  // Reset button in your header (if present)
   const resetBtn = document.getElementById("resetBtn");
-  if (resetBtn) resetBtn.onclick = hardReset;
+  if (resetBtn) resetBtn.addEventListener("click", hardReset);
+}
 
-  // Back/Next
+function wireStep() {
   const back = document.getElementById("btnBack");
   const next = document.getElementById("btnNext");
-  if (back) back.onclick = goBack;
-  if (next) next.onclick = goNext;
+  if (back) back.addEventListener("click", goBack);
+  if (next) next.addEventListener("click", goNextOrSubmit);
 
-  // Start over
-  const so = document.getElementById("btnStartOver");
-  if (so) so.onclick = hardReset;
+  // Step-specific input handlers — IMPORTANT:
+  // We update state + save, BUT do NOT call render() on every keystroke.
+  // That prevents the “one character then stops typing” bug.
+  switch (state.step) {
+    case 0:
+      wireInput("userName", v => (state.user.name = v));
+      wireInput("userEmail", v => (state.user.email = v));
+      break;
 
-  // Inputs
-  document.querySelectorAll("input, textarea, select").forEach((el) => {
-    el.addEventListener("input", onInputChange);
-    el.addEventListener("change", onInputChange);
-  });
+    case 1:
+      wireTextArea("proudMoment", v => (state.values.proudMoment = v));
+      wireTextArea("upsetMoment", v => (state.values.upsetMoment = v));
+      wireTextArea("valuesNotes", v => (state.values.notes = v));
+      wireSearchFilter("valueSearch", "valueBank", VALUE_BANK, state.values.selected, "value");
+      wirePillClicks("valueBank", "value", (label) => toggleMulti(state.values.selected, label, 6));
+      break;
 
-  // Pills
-  document.querySelectorAll("[data-action]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      const action = e.currentTarget.getAttribute("data-action");
-      const value = e.currentTarget.getAttribute("data-value");
-      onPillClick(action, value);
-    });
-  });
+    case 2:
+      wireTextArea("bestMoment", v => (state.pillars.bestMoment = v));
+      wireTextArea("pillarsNotes", v => (state.pillars.notes = v));
+      wireSearchFilter("pillarSearch", "pillarBank", PILLAR_BANK, state.pillars.selected, "pillar");
+      wirePillClicks("pillarBank", "pillar", (label) => toggleMulti(state.pillars.selected, label, 3));
+      break;
 
-  // Custom value/pillar entry
-  const cv = document.getElementById("customValue");
-  if (cv) {
-    cv.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const v = (cv.value || "").trim();
-        if (!v) return;
-        addValue(v);
-        cv.value = "";
+    case 3:
+      wireTextArea("idealWhy", v => (state.idealEmotion.why = v));
+      const range = document.getElementById("idealLevel");
+      if (range) {
+        range.addEventListener("input", (e) => {
+          state.idealEmotion.desireLevel = Number(e.target.value || 7);
+          saveState();
+          const lbl = document.getElementById("idealLevelLabel");
+          if (lbl) lbl.textContent = `${state.idealEmotion.desireLevel}/10`;
+          updateNavDisabled();
+        });
       }
-    });
+      wirePillClicks("emotionBank", "emotion", (label) => {
+        state.idealEmotion.label = label;
+        saveState();
+        // For single-select pills we *do* re-render that step (safe)
+        render();
+      });
+      break;
+
+    case 4:
+      wireTextArea("triggerResponse", v => (state.trigger.response = v));
+      wireTextArea("triggerNotes", v => (state.trigger.notes = v));
+      wirePillClicks("triggerBank", "trigger", (label) => {
+        state.trigger.selected = label;
+        saveState();
+        render();
+      });
+      break;
+
+    case 5:
+      wireTextArea("finalComments", v => (state.comments = v));
+      break;
   }
 
-  const cp = document.getElementById("customPillar");
-  if (cp) {
-    cp.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const v = (cp.value || "").trim();
-        if (!v) return;
-        addPillar(v);
-        cp.value = "";
-      }
-    });
-  }
+  updateNavDisabled();
 }
 
-function onInputChange(e) {
-  const id = e.target.id;
-  const val = e.target.value ?? "";
-
-  if (id === "userName") state.user.name = val;
-  if (id === "userEmail") state.user.email = val;
-
-  if (id === "proudMoment") state.values.proudMoment = val;
-  if (id === "proudWhy") state.values.proudWhy = val;
-  if (id === "upsetMoment") state.values.upsetMoment = val;
-  if (id === "upsetWhy") state.values.upsetWhy = val;
-
-  if (id === "bestMoment") state.pillars.bestMoment = val;
-  if (id === "bestWhy") state.pillars.bestWhy = val;
-
-  if (id === "idealEmotionSelect") state.idealEmotion.emotion = val;
-  if (id === "idealDesire") state.idealEmotion.desire = Number(val);
-  if (id === "idealWhy") state.idealEmotion.why = val;
-
-  if (id === "triggerSelect") state.trigger.trigger = val;
-  if (id === "triggerResponse") state.trigger.response = val;
-  if (id === "triggerNotes") state.trigger.notes = val;
-
-  if (id === "finalComments") state.comments = val;
-
-  saveState();
-  render();
-}
-
-function onPillClick(action, value) {
-  if (action === "addValue") addValue(value);
-  if (action === "removeValue") removeValue(value);
-
-  if (action === "addPillar") addPillar(value);
-  if (action === "removePillar") removePillar(value);
-
-  saveState();
-  render();
-}
-
-/* ===================== SELECTION HELPERS ===================== */
-function addValue(v) {
-  if (state.values.selected.includes(v)) return;
-  if (state.values.selected.length >= 6) return;
-  state.values.selected.push(v);
-  saveState();
-  render();
-}
-function removeValue(v) {
-  state.values.selected = state.values.selected.filter(x => x !== v);
-}
-
-function addPillar(p) {
-  if (state.pillars.selected.includes(p)) return;
-  if (state.pillars.selected.length >= 3) return;
-  state.pillars.selected.push(p);
-  saveState();
-  render();
-}
-function removePillar(p) {
-  state.pillars.selected = state.pillars.selected.filter(x => x !== p);
-}
-
-/* ===================== NAV ===================== */
-function goBack() {
-  if (state.stepIndex > 0) {
-    state.stepIndex -= 1;
+function wireInput(id, setter) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener("input", (e) => {
+    setter(e.target.value);
     saveState();
-    render();
+    updateNavDisabled(); // just enable/disable buttons, no rerender
+  });
+}
+
+function wireTextArea(id, setter) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener("input", (e) => {
+    setter(e.target.value);
+    saveState();
+    // do NOT re-render
+    updateNavDisabled();
+  });
+}
+
+function wirePillClicks(containerId, type, onPick) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  box.addEventListener("click", (e) => {
+    const btn = e.target.closest(`[data-pill-type="${type}"]`);
+    if (!btn) return;
+    const label = btn.getAttribute("data-pill-label");
+    if (!label) return;
+
+    onPick(label);
+
+    // For multi-selects, update selected line without full rerender
+    if (type === "value") {
+      const line = document.getElementById("valueSelected");
+      if (line) line.textContent = state.values.selected.join(", ") || "None yet";
+      // update pill active states in-place
+      btn.classList.toggle("pillActive");
+    }
+    if (type === "pillar") {
+      const line = document.getElementById("pillarSelected");
+      if (line) line.textContent = state.pillars.selected.join(", ") || "None yet";
+      btn.classList.toggle("pillActive");
+    }
+
+    saveState();
+    updateNavDisabled();
+  });
+}
+
+function wireSearchFilter(inputId, containerId, bank, selectedArr, type) {
+  const input = document.getElementById(inputId);
+  const container = document.getElementById(containerId);
+  if (!input || !container) return;
+
+  input.addEventListener("input", () => {
+    const q = (input.value || "").trim().toLowerCase();
+    const filtered = q ? bank.filter(x => x.toLowerCase().includes(q)) : bank;
+    container.innerHTML = renderPills(filtered, selectedArr, type);
+  });
+}
+
+/** =======================
+ *  8) NAV / VALIDATION
+ *  ======================= */
+
+function canContinue() {
+  switch (state.step) {
+    case 0:
+      return (state.user.name || "").trim().length > 0;
+
+    case 1:
+      return state.values.selected.length >= 3 && state.values.selected.length <= 6;
+
+    case 2:
+      return state.pillars.selected.length >= 1 && state.pillars.selected.length <= 3;
+
+    case 3:
+      return (state.idealEmotion.label || "").trim().length > 0;
+
+    case 4:
+      return (state.trigger.selected || "").trim().length > 0;
+
+    case 5:
+      // allow submit if everything earlier is valid
+      return true;
+
+    default:
+      return false;
   }
 }
 
-async function goNext() {
-  const step = STEPS[state.stepIndex];
+function updateNavDisabled() {
+  const next = document.getElementById("btnNext");
+  const hint = document.getElementById("navHint");
+  if (!next || !hint) return;
 
-  if (step.key === "submit") {
-    // build payload + submit
-    const payload = buildPayload();
-    await submitToGoogleIframe(payload);
+  const ok = canContinue();
 
-    state.submitted = true;
-    state.stepIndex = STEPS.findIndex(s => s.key === "submitted");
+  // On final step, keep enabled (submit), but show issues if earlier invalid
+  if (state.step === 5) {
+    next.disabled = false;
+    hint.textContent = "Review and submit.";
+    return;
+  }
+
+  next.disabled = !ok;
+
+  hint.textContent = ok ? "Ready." : "Complete this step to continue.";
+}
+
+function goBack() {
+  if (state.step <= 0) return;
+  state.step -= 1;
+  saveState();
+  render();
+}
+
+async function goNextOrSubmit() {
+  // If disabled, do nothing
+  const next = document.getElementById("btnNext");
+  if (next && next.disabled) return;
+
+  // Clear submit messages when navigating
+  state.submitStatus.ok = false;
+  state.submitStatus.error = "";
+  saveState();
+
+  if (state.step < 5) {
+    state.step += 1;
     saveState();
     render();
     return;
   }
 
-  if (step.canNext()) {
-    state.stepIndex = Math.min(state.stepIndex + 1, STEPS.length - 1);
-    saveState();
-    render();
-  }
-}
-
-function hardReset() {
-  state = defaultState();
+  // Submit
+  await submitToGoogleForm();
   saveState();
   render();
 }
 
-/* ===================== GOOGLE SUBMIT (IFRAME) ===================== */
-function submitToGoogleIframe(payload) {
-  return new Promise((resolve) => {
-    // iframe target
-    let iframe = document.getElementById("hidden_iframe");
-    if (!iframe) {
-      iframe = document.createElement("iframe");
-      iframe.name = "hidden_iframe";
-      iframe.id = "hidden_iframe";
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
-    }
+/** =======================
+ *  9) SUBMISSION (OPTION B)
+ *  ======================= */
 
-    // build form
-    const form = document.createElement("form");
-    form.action = GOOGLE_FORM.formResponseUrl;
-    form.method = "POST";
-    form.target = "hidden_iframe";
-    form.style.display = "none";
+async function submitToGoogleForm() {
+  // Basic validation before submit
+  if ((state.user.name || "").trim().length === 0) {
+    state.submitStatus.ok = false;
+    state.submitStatus.error = "Name is required.";
+    return;
+  }
+  if (state.values.selected.length < 3) {
+    state.submitStatus.ok = false;
+    state.submitStatus.error = "Please select at least 3 values.";
+    return;
+  }
+  if (state.pillars.selected.length < 1) {
+    state.submitStatus.ok = false;
+    state.submitStatus.error = "Please select at least 1 pillar.";
+    return;
+  }
+  if (!state.idealEmotion.label) {
+    state.submitStatus.ok = false;
+    state.submitStatus.error = "Please select an ideal emotion.";
+    return;
+  }
+  if (!state.trigger.selected) {
+    state.submitStatus.ok = false;
+    state.submitStatus.error = "Please select a trigger.";
+    return;
+  }
 
-    const add = (name, value) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = name;
-      input.value = value ?? "";
-      form.appendChild(input);
-    };
+  // Build FormData for Google Forms
+  const fd = new FormData();
 
-    add(GOOGLE_FORM.entry.name, payload.name);
-    add(GOOGLE_FORM.entry.email, payload.email);
-    add(GOOGLE_FORM.entry.values, payload.values);
-    add(GOOGLE_FORM.entry.pillars, payload.pillars);
-    add(GOOGLE_FORM.entry.idealEmotion, payload.idealEmotion);
-    add(GOOGLE_FORM.entry.triggers, payload.triggers);
-    add(GOOGLE_FORM.entry.comments, payload.comments);
+  fd.append(GOOGLE_FORM.entries.name, state.user.name.trim());
+  fd.append(GOOGLE_FORM.entries.email, (state.user.email || "").trim());
 
-    document.body.appendChild(form);
-    form.submit();
+  // Combine into strings
+  fd.append(GOOGLE_FORM.entries.values, state.values.selected.join(", "));
+  fd.append(GOOGLE_FORM.entries.pillars, state.pillars.selected.join(", "));
+  fd.append(
+    GOOGLE_FORM.entries.idealEmotion,
+    `${state.idealEmotion.label} (target: ${state.idealEmotion.desireLevel}/10)`
+  );
+  fd.append(GOOGLE_FORM.entries.trigger, state.trigger.selected);
 
-    setTimeout(() => {
-      form.remove();
-      resolve(true);
-    }, 1200);
-  });
-}
-
-/* ===================== PAYLOAD ===================== */
-function buildPayload() {
-  const valuesText = [
-    `Selected Values: ${state.values.selected.join(", ")}`,
+  // Comments: combine all narrative text
+  const combinedComments = [
     state.values.proudMoment ? `Proud moment: ${state.values.proudMoment}` : "",
-    state.values.proudWhy ? `Why it mattered: ${state.values.proudWhy}` : "",
     state.values.upsetMoment ? `Upset moment: ${state.values.upsetMoment}` : "",
-    state.values.upsetWhy ? `Why it mattered: ${state.values.upsetWhy}` : "",
-  ].filter(Boolean).join("\n");
-
-  const pillarsText = [
-    `Selected Pillars: ${state.pillars.selected.join(", ")}`,
     state.pillars.bestMoment ? `Best moment: ${state.pillars.bestMoment}` : "",
-    state.pillars.bestWhy ? `Why it mattered: ${state.pillars.bestWhy}` : "",
-  ].filter(Boolean).join("\n");
+    state.idealEmotion.why ? `Why ideal emotion: ${state.idealEmotion.why}` : "",
+    state.trigger.response ? `Trigger response: ${state.trigger.response}` : "",
+    state.trigger.notes ? `Trigger notes: ${state.trigger.notes}` : "",
+    state.values.notes ? `Values notes: ${state.values.notes}` : "",
+    state.pillars.notes ? `Pillars notes: ${state.pillars.notes}` : "",
+    state.comments ? `Final comments: ${state.comments}` : "",
+  ].filter(Boolean).join("\n\n");
 
-  const idealEmotionText = [
-    state.idealEmotion.emotion ? `Ideal Emotion: ${state.idealEmotion.emotion}` : "",
-    `Target: ${Number(state.idealEmotion.desire || 8)}/10`,
-    state.idealEmotion.why ? `Why: ${state.idealEmotion.why}` : "",
-  ].filter(Boolean).join("\n");
+  fd.append(GOOGLE_FORM.entries.comments, combinedComments);
 
-  const triggerText = [
-    state.trigger.trigger ? `Trigger: ${state.trigger.trigger}` : "",
-    state.trigger.response ? `Preferred response: ${state.trigger.response}` : "",
-    state.trigger.notes ? `Notes: ${state.trigger.notes}` : "",
-  ].filter(Boolean).join("\n");
-
-  return {
-    name: (state.user.name || "").trim(),
-    email: (state.user.email || "").trim(),
-    values: valuesText,
-    pillars: pillarsText,
-    idealEmotion: idealEmotionText,
-    triggers: triggerText,
-    comments: (state.comments || "").trim(),
-  };
-}
-
-/* ===================== UI HELPERS ===================== */
-function pill(action, label, selected) {
-  return `
-    <button type="button" class="pill ${selected ? "on" : ""}"
-      data-action="${escapeHtmlAttr(action)}"
-      data-value="${escapeHtmlAttr(label)}">
-      ${escapeHtml(label)}
-    </button>
-  `;
-}
-
-/* ===================== STORAGE ===================== */
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultState();
-    const parsed = JSON.parse(raw);
-    return { ...defaultState(), ...parsed };
-  } catch {
-    return defaultState();
+    // no-cors: browser won’t show success/failure, but it WILL send it.
+    await fetch(GOOGLE_FORM.formResponseUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: fd,
+    });
+
+    // Because no-cors is “blind”, we assume success.
+    state.submitStatus.ok = true;
+    state.submitStatus.error = "";
+  } catch (err) {
+    state.submitStatus.ok = false;
+    state.submitStatus.error =
+      "Submission failed. Check Google Form URL and entry IDs.";
   }
 }
 
-/* ===================== ESCAPE ===================== */
+/** =======================
+ *  10) HELPERS
+ *  ======================= */
+
+function renderPills(list, selected, type, singleSelect = false) {
+  const selectedSet = new Set(selected || []);
+  return list.map(label => {
+    const active = selectedSet.has(label) ? "pillActive" : "";
+    return `
+      <button
+        type="button"
+        class="pill ${active}"
+        data-pill-type="${type}"
+        data-pill-label="${escapeAttr(label)}"
+        aria-pressed="${active ? "true" : "false"}"
+      >${escapeHtml(label)}</button>
+    `;
+  }).join("");
+}
+
+// Multi-select toggle with max cap
+function toggleMulti(arr, label, max) {
+  const idx = arr.indexOf(label);
+  if (idx >= 0) {
+    arr.splice(idx, 1);
+    return;
+  }
+  if (arr.length >= max) return;
+  arr.push(label);
+}
+
+// Storage
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return structuredClone(DEFAULT_STATE);
+    const parsed = JSON.parse(raw);
+    return deepMerge(structuredClone(DEFAULT_STATE), parsed);
+  } catch {
+    return structuredClone(DEFAULT_STATE);
+  }
+}
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {}
+}
+function hardReset() {
+  localStorage.removeItem(STORAGE_KEY);
+  state = structuredClone(DEFAULT_STATE);
+  render();
+}
+
+// Merge helper
+function deepMerge(base, incoming) {
+  if (typeof incoming !== "object" || incoming === null) return base;
+  for (const k of Object.keys(incoming)) {
+    const v = incoming[k];
+    if (Array.isArray(v)) base[k] = v.slice();
+    else if (typeof v === "object" && v !== null) base[k] = deepMerge(base[k] ?? {}, v);
+    else base[k] = v;
+  }
+  return base;
+}
+
+// Escape
 function escapeHtml(s) {
   return String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
-function escapeHtmlAttr(s) {
-  return escapeHtml(s).replaceAll("\n"," ");
+function escapeAttr(s) {
+  return escapeHtml(s).replaceAll("\n", " ");
 }
