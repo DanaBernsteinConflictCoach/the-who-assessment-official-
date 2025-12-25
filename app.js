@@ -20,17 +20,16 @@ const STORAGE_KEY = "who_assessment_official_pdf_v1";
    (from your prefilled link)
    ========================= */
 const GOOGLE_FORM = {
-  enabled: true,
   formResponseUrl:
     "https://docs.google.com/forms/d/e/1FAIpQLSdbX-tdTyMU6ad9rWum1rcO83TqYwXRwXs4GKE7x1AJECvKaw/formResponse",
   entry: {
-    name: "entry.2005620554",
-    email: "entry.1045781291",
-    values: "entry.1065046570",
-    pillars: "entry.1010525839",
-    idealEmotion: "entry.1060481030",
-    triggers: "entry.2079481635",
-    comments: "entry.839337160",
+  name: "entry.2005620554",
+  email: "entry.1045781291",
+  values: "entry.1065046570",
+  pillars: "entry.1010525839",
+  idealEmotion: "entry.1060481030",
+  triggers: "entry.2079481635",
+  comments: "entry.839337160",
   },
 };
 
