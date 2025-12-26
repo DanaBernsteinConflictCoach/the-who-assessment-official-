@@ -1,14 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>The WHO Assessment (Official)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>The WHO Assessment — Official</title>
+  <meta name="description" content="Discover your Values, Pillars, Ideal Emotion, and Trigger — then submit a snapshot." />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="wrap topbarInner">
+  <header class="top">
+    <div class="topInner">
       <div class="brand">
         <div class="logo">WHO</div>
         <div class="brandText">
@@ -17,21 +18,20 @@
         </div>
       </div>
 
-      <div class="topActions">
-        <button id="btnReset" class="ghost" type="button" title="Reset all answers">Reset</button>
-      </div>
+      <button id="btnReset" class="btn ghost" type="button" title="Reset all answers">Reset</button>
     </div>
   </header>
 
   <main class="wrap">
     <div id="app"></div>
+
+    <footer class="foot">
+      <div class="footInner">
+        <div class="muted">© <span id="year"></span> • Dana Bernstein Conflict Coach</div>
+      </div>
+    </footer>
   </main>
 
-  <footer class="wrap footer">
-    <div class="small">© <span id="year"></span> • Dana Bernstein Conflict Coach</div>
-  </footer>
-
-  <!-- IMPORTANT: put script at bottom (not defer) so it always finds #app -->
   <script src="./app.js"></script>
 </body>
 </html>
