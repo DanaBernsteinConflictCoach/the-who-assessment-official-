@@ -287,7 +287,7 @@ function stepDefine(){
     "What you want to feel each day. Living your Values and being your Pillars allows you to feel your Ideal Emotion."));
   grid.appendChild(op("+"));
 
-  grid.appendChild(box("Trigger — Your warning signal",
+  grid.appendChild(box("Trigger — Your inner critic",
     "One loud “I’m not…” story that pulls you off course. Recognize it quickly so it doesn’t hijack your response."));
 
   wrap.appendChild(grid);
@@ -689,10 +689,10 @@ function stepSnapshot(){
   wrap.appendChild(summaryMini("Pillars — Your energy source", confirmedPillars.length ? confirmedPillars : ["—"]));
   wrap.appendChild(summaryMini("Ideal Emotion — Your compass", emotions.length ? emotions : ["—"]));
   wrap.appendChild(summaryMini("Ideal Emotion rating (target: 8/10)", [`${state.idealEmotionRating}/10`]));
-  wrap.appendChild(summaryMini("Trigger — Your warning signal", [trig]));
+  wrap.appendChild(summaryMini("Trigger — Your inner critic", [trig]));
 
   wrap.appendChild(hr());
-  wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
+  wrap.appendChild(field("Comments on the WHO assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
 
   const submitBox = document.createElement("div");
   submitBox.className = "smallBox";
