@@ -8,16 +8,19 @@
  * - Ideal Emotion dropdown list: PDF page 6
  * - Trigger "I'm not..." list: PDF page 7
  *
- * NEW CHANGE:
- * - Open a PREFILLED Google Form (user just presses Submit)
- * - Uses the exact URL you provided (with entry IDs)
+ * Features:
+ * - Boxed UI
+ * - Progress dots + bar
+ * - Road tests + remove buttons
+ * - Prefilled Google Form submit (user presses Submit)
+ * - RESET button (top-right) clears local answers + restarts
  */
 
-const STORAGE_KEY = "who_assessment_pdf_locked_v5";
+const STORAGE_KEY = "who_assessment_pdf_locked_v6";
 
 /**
- * ✅ Prefilled Google Form template URL you provided.
- * We overwrite the query parameter values with the user's actual answers.
+ * ✅ Prefilled Google Form template URL (provided by you).
+ * We overwrite the entry values with the user's actual answers.
  */
 const PREFILLED_FORM_TEMPLATE =
   "https://docs.google.com/forms/d/e/1FAIpQLSdbX-tdTyMU6ad9rWum1rcO83TqYwXRwXs4GKE7x1AJECvKaw/viewform?usp=pp_url&entry.2005620554=name&entry.1045781291=email@gmail.com&entry.1065046570=values&entry.1010525839=pillars&entry.1060481030=ideal+emotion&entry.2079481635=trigger&entry.839337160=comments";
@@ -152,6 +155,13 @@ function renderTop(){
 
   const right = document.createElement("div");
   right.className = "progressWrap";
+
+  // Reset button (top-right)
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "btn";
+  resetBtn.textContent = "Reset";
+  resetBtn.onclick = resetAssessment;
+  right.appendChild(resetBtn);
 
   const dots = document.createElement("div");
   dots.className = "progressDots";
@@ -308,12 +318,11 @@ function stepStart(){
 
   wrap.appendChild(hr());
 
-  // Prefilled form submit button (Start page)
   const boxy = document.createElement("div");
   boxy.className = "smallBox";
   boxy.innerHTML = `<div class="miniTitle">Submit</div>
     <div class="helpText" style="color:var(--ink); margin:0;">
-      When ready, you can submit your info and results via a prefilled Google Form (you’ll just press Submit).
+      Open a prefilled Google Form (you’ll just press Submit).
     </div>`;
   const btn = document.createElement("button");
   btn.className = "btn";
@@ -350,7 +359,6 @@ function stepValuesDiscover(){
 
   wrap.appendChild(chipPicker(VALUE_OPTIONS, state.valueCandidates, (next) => {
     state.valueCandidates = next;
-    // clear any tests for removed candidates
     for(const k of Object.keys(state.valueTest)){
       if(!next.includes(k)) delete state.valueTest[k];
     }
@@ -610,7 +618,6 @@ function stepPillarsRoadTest(){
 
   wrap.appendChild(hr());
   wrap.appendChild(summaryMini("Confirmed Pillars", confirmedPillars));
-  wrap.appendChild(summaryMini("Moved to Values", movedToValues));
   wrap.appendChild(summaryMini("Confirmed Values", confirmedValues));
   wrap.appendChild(help("Practical Application: Lead from your unique strengths."));
 
@@ -644,15 +651,6 @@ function stepIdealEmotion(){
 
   wrap.appendChild(field("If you have two Ideal Emotions, list the second one.", select(["", ...IDEAL_EMOTION_OPTIONS], state.idealEmotion2, v => state.idealEmotion2 = v)));
 
-  wrap.appendChild(help(
-    "Practical Application: Use your Ideal Emotion as a compass to determine choices and responses.\n\n" +
-    "Alignment Check\nWhen your Ideal Emotion dips, ask:\n" +
-    "• Which Value did I compromise?\n" +
-    "• Which Pillar am I not embodying?\n" +
-    "• Is my Trigger leading (more on that)?\n" +
-    "• What action realigns me?"
-  ));
-
   return wrap;
 }
 
@@ -661,8 +659,6 @@ function stepTrigger(){
 
   wrap.appendChild(sectionTitle("Page 7 — Step 6 of 6: Trigger (Anti-WHO)"));
   wrap.appendChild(help(
-    "Just as important as knowing your Values and Pillars, is recognizing the inner critic voice that makes you feel demoralized, pulls you off course, and causes you to react. That’s your Trigger.\n" +
-    "Your Trigger is one loud “I’m not...” story that surfaces when you feel under pressure. We all have one.\n\n" +
     "Pick one from the list OR add a custom one."
   ));
 
@@ -675,10 +671,6 @@ function stepTrigger(){
   wrap.appendChild(field("Choose or add your “I’m not” Trigger.", inputText(state.triggerCustom, v => state.triggerCustom = v)));
   wrap.appendChild(field("Name how it makes you feel.", inputText(state.triggerFeel, v => state.triggerFeel = v)));
   wrap.appendChild(field("Optional Reset Script: When my Trigger appears, how will you pivot to your WHO? (simple plan)", textarea(state.resetScript, v => state.resetScript = v)));
-
-  wrap.appendChild(help(
-    "Practical Application: Recognize the Trigger quickly so it doesn’t hijack your response — reactive vs intentional response."
-  ));
 
   return wrap;
 }
@@ -702,13 +694,12 @@ function stepSnapshot(){
   wrap.appendChild(hr());
   wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
 
-  // Prefilled form submit button (Snapshot page)
   const submitBox = document.createElement("div");
   submitBox.className = "smallBox";
   submitBox.style.marginTop = "12px";
   submitBox.innerHTML = `<div class="miniTitle">Submit via Google Form</div>
     <div class="helpText" style="color:var(--ink); margin:0;">
-      This opens a prefilled form with your name/email and results — you just press Submit.
+      Opens a prefilled form with your results — you just press Submit.
     </div>`;
 
   const btn = document.createElement("button");
@@ -725,17 +716,9 @@ function stepSnapshot(){
 
 function stepEnd(){
   const wrap = document.createElement("div");
-
   wrap.appendChild(sectionTitle("Page 9 — Next Step"));
+  wrap.appendChild(help("You’re done. If you haven’t submitted yet, use the button below."));
 
-  wrap.appendChild(help(
-    "This week, lead with:\n" +
-    "• One Value\n" +
-    "• One Pillar\n\n" +
-    "If your Ideal Emotion dips, check what you compromised."
-  ));
-
-  // Also include submit button on final step
   const submitBox = document.createElement("div");
   submitBox.className = "smallBox";
   submitBox.style.marginTop = "12px";
@@ -768,7 +751,7 @@ function openPrefilledForm(){
 function buildPrefilledFormUrl(){
   const u = new URL(PREFILLED_FORM_TEMPLATE);
 
-  // Entry IDs from your provided URL
+  // Entry IDs (from your provided URL)
   const ENTRY_NAME = "entry.2005620554";
   const ENTRY_EMAIL = "entry.1045781291";
   const ENTRY_VALUES = "entry.1065046570";
@@ -780,6 +763,7 @@ function buildPrefilledFormUrl(){
   const confirmedValues = confirmedValuesList();
   const confirmedPillars = confirmedPillarsList();
   const emotions = [state.idealEmotion1, state.idealEmotion2].filter(Boolean);
+
   const idealEmotionText = emotions.length
     ? `${emotions.join(", ")} (target: ${state.idealEmotionRating}/10)`
     : "";
@@ -794,9 +778,7 @@ function buildPrefilledFormUrl(){
   u.searchParams.set(ENTRY_TRIGGER, triggerText);
   u.searchParams.set(ENTRY_COMMENTS, state.comments || "");
 
-  // Ensure prefill mode remains on
   u.searchParams.set("usp", "pp_url");
-
   return u.toString();
 }
 
@@ -821,6 +803,18 @@ function confirmedPillarsList(){
     }
   }
   return confirmed;
+}
+
+/* ------------------------ RESET (Minimal Effort) ------------------------ */
+
+function resetAssessment(){
+  const ok = confirm("Reset the assessment? This will clear all your answers on this device.");
+  if(!ok) return;
+
+  try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  state = structuredClone(DEFAULTS);
+  stepIndex = 0;
+  render();
 }
 
 /* ----------------------------- UI Helpers ----------------------------- */
