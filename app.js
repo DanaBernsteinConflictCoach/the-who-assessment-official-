@@ -659,7 +659,7 @@ function stepTrigger(){
 
   wrap.appendChild(sectionTitle("Page 7 — Step 6 of 6: Trigger (Anti-WHO)"));
   wrap.appendChild(help(
-    "Pick one from the list OR add a custom one."
+    "Just as important as knowing your Values and Pillars, is recognizing the loud inner critic voice that makes you feel demoralized, pulls you off course, and causes you to react. Pick one from the list OR add a custom one."
   ));
 
   const chipList = TRIGGER_OPTIONS.map(x => `I’m not ${x}`);
