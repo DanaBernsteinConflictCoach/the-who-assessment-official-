@@ -8,15 +8,19 @@
  * - Ideal Emotion dropdown list: PDF page 6
  * - Trigger "I'm not..." list: PDF page 7
  *
- * UI style matches the boxed layout PDF (boxes grid).
+ * NEW CHANGE:
+ * - Open a PREFILLED Google Form (user just presses Submit)
+ * - Uses the exact URL you provided (with entry IDs)
  */
 
-const STORAGE_KEY = "who_assessment_pdf_locked_v3";
+const STORAGE_KEY = "who_assessment_pdf_locked_v5";
 
-// Provided (PDF): users info needs to be sent to this Google Form link.
-// PDF does NOT provide entry IDs, so we cannot fabricate a hidden POST.
-// We therefore offer a button that opens the exact provided URL.
-const GOOGLE_FORM_URL = "https://forms.gle/1PCPTs2FKaiCartf8";
+/**
+ * ✅ Prefilled Google Form template URL you provided.
+ * We overwrite the query parameter values with the user's actual answers.
+ */
+const PREFILLED_FORM_TEMPLATE =
+  "https://docs.google.com/forms/d/e/1FAIpQLSdbX-tdTyMU6ad9rWum1rcO83TqYwXRwXs4GKE7x1AJECvKaw/viewform?usp=pp_url&entry.2005620554=name&entry.1045781291=email@gmail.com&entry.1065046570=values&entry.1010525839=pillars&entry.1060481030=ideal+emotion&entry.2079481635=trigger&entry.839337160=comments";
 
 /* ----------- EXACT WORD BANKS (DO NOT EDIT / DO NOT ADD) ----------- */
 
@@ -75,7 +79,7 @@ const DEFAULTS = {
   valueCustom: "",
 
   // Values Road Test
-  valueTest: {}, // { [value]: 'yes'|'no' } only for candidates
+  valueTest: {}, // { [value]: 'yes'|'no' }
 
   // Pillars (Discover)
   pillarsBestSelf: "",
@@ -83,8 +87,8 @@ const DEFAULTS = {
   pillarCustom: "",
 
   // Pillars Road Test
-  pillarTest1: {}, // { [pillar]: 'yes'|'no'|'remove' } yes->move to values, no->keep pillar
-  pillarTest2: {}, // { [pillar]: 'yes'|'no'|'remove' } yes->keep pillar, no->remove
+  pillarTest1: {}, // { [pillar]: 'yes'|'no' } yes->move to values, no->keep pillar
+  pillarTest2: {}, // { [pillar]: 'yes'|'no' } yes->keep pillar, no->remove
 
   // Ideal Emotion
   idealEmotion1: "",
@@ -92,12 +96,12 @@ const DEFAULTS = {
   idealEmotion2: "",
 
   // Trigger
-  triggerPicked: "",     // stores full "I'm not …" string
-  triggerCustom: "",     // free text (expects "I'm not ...")
+  triggerPicked: "",     // stores full "I’m not …" string
+  triggerCustom: "",     // free text
   triggerFeel: "",
   resetScript: "That’s my Trigger talking. I’m choosing [Pillar] and honoring [Value].",
 
-  // End comments (moved to end)
+  // End comments
   comments: "",
 };
 
@@ -258,7 +262,6 @@ function stepDefine(){
     "Conflict happens when you believe your WHO has been threatened."
   ));
 
-  // Boxed visual (like the “other PDF”)
   const grid = document.createElement("div");
   grid.className = "boxGrid";
 
@@ -305,23 +308,21 @@ function stepStart(){
 
   wrap.appendChild(hr());
 
-  // Compliant “send to Google Form” (no invented entry IDs)
-  const formBox = document.createElement("div");
-  formBox.className = "smallBox";
-  formBox.innerHTML = `
-    <div class="miniTitle">Google Form</div>
+  // Prefilled form submit button (Start page)
+  const boxy = document.createElement("div");
+  boxy.className = "smallBox";
+  boxy.innerHTML = `<div class="miniTitle">Submit</div>
     <div class="helpText" style="color:var(--ink); margin:0;">
-      The PDF specifies this Google Form link for collecting user info. This app can open it for submission:
-    </div>
-  `;
+      When ready, you can submit your info and results via a prefilled Google Form (you’ll just press Submit).
+    </div>`;
   const btn = document.createElement("button");
   btn.className = "btn";
   btn.style.marginTop = "10px";
-  btn.textContent = "Send my info to Google Form";
-  btn.onclick = () => window.open(GOOGLE_FORM_URL, "_blank", "noopener,noreferrer");
-  formBox.appendChild(btn);
+  btn.textContent = "Open prefilled Google Form";
+  btn.onclick = () => openPrefilledForm();
+  boxy.appendChild(btn);
 
-  wrap.appendChild(formBox);
+  wrap.appendChild(boxy);
 
   return wrap;
 }
@@ -391,9 +392,7 @@ function stepValuesRoadTest(){
     return wrap;
   }
 
-  const live = {
-    confirmed: [],
-  };
+  const confirmed = [];
 
   candidates.forEach(val => {
     const card = document.createElement("div");
@@ -434,12 +433,11 @@ function stepValuesRoadTest(){
     card.appendChild(top);
     wrap.appendChild(card);
 
-    if(state.valueTest[val] === "yes") live.confirmed.push(val);
+    if(state.valueTest[val] === "yes") confirmed.push(val);
   });
 
   wrap.appendChild(hr());
-
-  wrap.appendChild(summaryMini("Live results — Confirmed Values", live.confirmed));
+  wrap.appendChild(summaryMini("Live results — Confirmed Values", confirmed));
   wrap.appendChild(help("Practical Application: By identifying these candidates, you can more easily de-escalate your emotions."));
   return wrap;
 }
@@ -455,13 +453,10 @@ function stepPillarsDiscover(){
 
   wrap.appendChild(field("Prompt: Happiest / Best Self — When were you your happiest and most YOU? (Where / with who / doing what?)", textarea(state.pillarsBestSelf, v => state.pillarsBestSelf = v)));
 
-  wrap.appendChild(help(
-    "Rules: Tap to select 3–6 of your Pillars OR add custom ones. We’ll road-test on the next step."
-  ));
+  wrap.appendChild(help("Rules: Tap to select 3–6 of your Pillars OR add custom ones. We’ll road-test on the next step."));
 
   wrap.appendChild(chipPicker(PILLAR_OPTIONS, state.pillarCandidates, (next) => {
     state.pillarCandidates = next;
-    // clear removed tests
     for(const k of Object.keys(state.pillarTest1)){
       if(!next.includes(k)) delete state.pillarTest1[k];
     }
@@ -505,7 +500,6 @@ function stepPillarsRoadTest(){
     return wrap;
   }
 
-  // Road Test 1
   candidates.forEach(p => {
     const card = document.createElement("div");
     card.className = "qaCard";
@@ -547,10 +541,8 @@ function stepPillarsRoadTest(){
     wrap.appendChild(card);
   });
 
-  // Derive moved-to-values and remaining pillars after test1 decisions
   const movedToValues = [];
   const remainingAfter1 = [];
-
   for(const p of candidates){
     if(state.pillarTest1[p] === "yes") movedToValues.push(p);
     if(state.pillarTest1[p] === "no") remainingAfter1.push(p);
@@ -558,7 +550,6 @@ function stepPillarsRoadTest(){
 
   wrap.appendChild(hr());
 
-  // Live results box (like screenshot)
   const liveBox = document.createElement("div");
   liveBox.className = "smallBox";
   liveBox.innerHTML = `<div class="miniTitle">Live results</div>`;
@@ -573,7 +564,6 @@ function stepPillarsRoadTest(){
     "• YES = Keep as a Pillar\n• NO = Remove"
   ));
 
-  // Road Test 2 only for remainingAfter1
   remainingAfter1.forEach(p => {
     const card = document.createElement("div");
     card.className = "qaCard";
@@ -599,7 +589,6 @@ function stepPillarsRoadTest(){
     });
 
     const remove = chipBtn("Remove", false, () => {
-      // Remove from candidates entirely
       state.pillarCandidates = state.pillarCandidates.filter(x => x !== p);
       delete state.pillarTest1[p];
       delete state.pillarTest2[p];
@@ -616,21 +605,15 @@ function stepPillarsRoadTest(){
     wrap.appendChild(card);
   });
 
-  // Confirmed Pillars after test2
-  const confirmedPillars = [];
-  for(const p of remainingAfter1){
-    if(state.pillarTest2[p] === "yes") confirmedPillars.push(p);
-  }
-
-  // Confirmed Values = valuesTest yes + movedToValues (from pillars test1 yes)
+  const confirmedPillars = confirmedPillarsList();
   const confirmedValues = confirmedValuesList();
 
   wrap.appendChild(hr());
   wrap.appendChild(summaryMini("Confirmed Pillars", confirmedPillars));
   wrap.appendChild(summaryMini("Moved to Values", movedToValues));
   wrap.appendChild(summaryMini("Confirmed Values", confirmedValues));
-
   wrap.appendChild(help("Practical Application: Lead from your unique strengths."));
+
   return wrap;
 }
 
@@ -643,9 +626,8 @@ function stepIdealEmotion(){
     "When you’re not feeling that emotion, revisit your Values and Pillars to see where you are not aligned with the WHO words that you selected."
   ));
 
-  wrap.appendChild(field("Pick one (or your closest)", select(IDEAL_EMOTION_OPTIONS, state.idealEmotion1, v => state.idealEmotion1 = v)));
+  wrap.appendChild(field("Pick one (or your closest)", select(["", ...IDEAL_EMOTION_OPTIONS], state.idealEmotion1, v => state.idealEmotion1 = v)));
 
-  // Slider 1–10
   const sliderBox = document.createElement("div");
   sliderBox.className = "smallBox";
   sliderBox.innerHTML = `<div class="miniTitle">How much do you want to feel your Ideal Emotion (be realistic)?</div>
@@ -684,7 +666,6 @@ function stepTrigger(){
     "Pick one from the list OR add a custom one."
   ));
 
-  // Chips with “I’m not …”
   const chipList = TRIGGER_OPTIONS.map(x => `I’m not ${x}`);
   wrap.appendChild(chipPicker(chipList, state.triggerPicked ? [state.triggerPicked] : [], (next) => {
     state.triggerPicked = next[0] || "";
@@ -718,18 +699,26 @@ function stepSnapshot(){
   wrap.appendChild(summaryMini("Ideal Emotion rating (target: 8/10)", [`${state.idealEmotionRating}/10`]));
   wrap.appendChild(summaryMini("Trigger — Your warning signal", [trig]));
 
-  wrap.appendChild(help(
-    "Values - Revisit your values when you feel conflicted to determine if you are honoring them.\n" +
-    "Pillars - When feeling depleted, do an external activity or self-care to feed one/more of your Pillars.\n" +
-    "Ideal Emotion - When you are not at the level you desire, look at your Values and Pillars, then determine how to re-align.\n" +
-    "Trigger (Anti-WHO) - Silently identify to yourself when your Trigger shows up (“That’s my Trigger talking”). Then purposely create distance and do a pausing technique.\n\n" +
-    "Refine over time. Awareness builds self-command. Test your Values and Pillars in real situations, notice what holds or shifts, and refine your list over time."
-  ));
-
   wrap.appendChild(hr());
-
-  // Comments at end (per request)
   wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
+
+  // Prefilled form submit button (Snapshot page)
+  const submitBox = document.createElement("div");
+  submitBox.className = "smallBox";
+  submitBox.style.marginTop = "12px";
+  submitBox.innerHTML = `<div class="miniTitle">Submit via Google Form</div>
+    <div class="helpText" style="color:var(--ink); margin:0;">
+      This opens a prefilled form with your name/email and results — you just press Submit.
+    </div>`;
+
+  const btn = document.createElement("button");
+  btn.className = "btn";
+  btn.style.marginTop = "10px";
+  btn.textContent = "Open prefilled Google Form";
+  btn.onclick = () => openPrefilledForm();
+
+  submitBox.appendChild(btn);
+  wrap.appendChild(submitBox);
 
   return wrap;
 }
@@ -743,56 +732,81 @@ function stepEnd(){
     "This week, lead with:\n" +
     "• One Value\n" +
     "• One Pillar\n\n" +
-    "If your Ideal Emotion dips, check what you compromised.\n\n" +
-    "Hoping you enjoyed this assessment. For additional insights and tips, grab a copy of my book.\n\n" +
-    "Make the World a Better Place*,\nDana Lynn Bernstein, PMP, PCC\nThe Conflict Resolution Coach\nLinkedIn - https://www.linkedin.com/in/danabernstein/\n*Girl Scouts motto • Portion of book proceeds support Girl Scouts"
+    "If your Ideal Emotion dips, check what you compromised."
   ));
 
-  // Email preview (no backend emails in GH Pages)
-  const emailBox = document.createElement("div");
-  emailBox.className = "smallBox";
-  emailBox.innerHTML = `<div class="miniTitle">Email (Preview)</div>
+  // Also include submit button on final step
+  const submitBox = document.createElement("div");
+  submitBox.className = "smallBox";
+  submitBox.style.marginTop = "12px";
+  submitBox.innerHTML = `<div class="miniTitle">Submit</div>
     <div class="helpText" style="color:var(--ink); margin:0;">
-      This is a preview of the results email text specified in the PDF. (Sending requires a backend or a Google Forms entry-id setup.)
+      Open the prefilled Google Form (you’ll just press Submit).
     </div>`;
-
-  const pre = document.createElement("div");
-  pre.className = "helpText";
-  pre.style.whiteSpace = "pre-wrap";
-  pre.style.marginTop = "10px";
-  pre.style.color = "var(--ink)";
-  pre.textContent = buildEmailBody();
-  emailBox.appendChild(pre);
-
-  const copyBtn = document.createElement("button");
-  copyBtn.className = "btn";
-  copyBtn.style.marginTop = "10px";
-  copyBtn.textContent = "Copy email text";
-  copyBtn.onclick = async () => {
-    try{
-      await navigator.clipboard.writeText(buildEmailBody());
-      copyBtn.textContent = "Copied!";
-      setTimeout(()=> copyBtn.textContent = "Copy email text", 1200);
-    }catch{
-      alert("Copy failed on this device/browser.");
-    }
-  };
-
-  emailBox.appendChild(copyBtn);
-  wrap.appendChild(emailBox);
+  const btn = document.createElement("button");
+  btn.className = "btn";
+  btn.style.marginTop = "10px";
+  btn.textContent = "Open prefilled Google Form";
+  btn.onclick = () => openPrefilledForm();
+  submitBox.appendChild(btn);
+  wrap.appendChild(submitBox);
 
   return wrap;
+}
+
+/* ------------------------ Prefilled Form Logic ------------------------ */
+
+function openPrefilledForm(){
+  if(!PREFILLED_FORM_TEMPLATE){
+    alert("Prefilled Google Form URL is missing in app.js.");
+    return;
+  }
+  const url = buildPrefilledFormUrl();
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function buildPrefilledFormUrl(){
+  const u = new URL(PREFILLED_FORM_TEMPLATE);
+
+  // Entry IDs from your provided URL
+  const ENTRY_NAME = "entry.2005620554";
+  const ENTRY_EMAIL = "entry.1045781291";
+  const ENTRY_VALUES = "entry.1065046570";
+  const ENTRY_PILLARS = "entry.1010525839";
+  const ENTRY_IDEAL = "entry.1060481030";
+  const ENTRY_TRIGGER = "entry.2079481635";
+  const ENTRY_COMMENTS = "entry.839337160";
+
+  const confirmedValues = confirmedValuesList();
+  const confirmedPillars = confirmedPillarsList();
+  const emotions = [state.idealEmotion1, state.idealEmotion2].filter(Boolean);
+  const idealEmotionText = emotions.length
+    ? `${emotions.join(", ")} (target: ${state.idealEmotionRating}/10)`
+    : "";
+
+  const triggerText = (state.triggerPicked || state.triggerCustom || "");
+
+  u.searchParams.set(ENTRY_NAME, state.name || "");
+  u.searchParams.set(ENTRY_EMAIL, state.email || "");
+  u.searchParams.set(ENTRY_VALUES, confirmedValues.join(", "));
+  u.searchParams.set(ENTRY_PILLARS, confirmedPillars.join(", "));
+  u.searchParams.set(ENTRY_IDEAL, idealEmotionText);
+  u.searchParams.set(ENTRY_TRIGGER, triggerText);
+  u.searchParams.set(ENTRY_COMMENTS, state.comments || "");
+
+  // Ensure prefill mode remains on
+  u.searchParams.set("usp", "pp_url");
+
+  return u.toString();
 }
 
 /* ------------------------ Derived Results Logic ------------------------ */
 
 function confirmedValuesList(){
   const confirmed = [];
-  // from values road test
   for(const v of state.valueCandidates){
     if(state.valueTest[v] === "yes") confirmed.push(v);
   }
-  // add pillars moved to values (road test 1 yes)
   for(const p of state.pillarCandidates){
     if(state.pillarTest1[p] === "yes" && !confirmed.includes(p)) confirmed.push(p);
   }
@@ -801,7 +815,6 @@ function confirmedValuesList(){
 
 function confirmedPillarsList(){
   const confirmed = [];
-  // only pillars that are NO in test1 and YES in test2
   for(const p of state.pillarCandidates){
     if(state.pillarTest1[p] === "no" && state.pillarTest2[p] === "yes"){
       confirmed.push(p);
@@ -1002,66 +1015,6 @@ function op(symbol){
   d.className = "op";
   d.textContent = symbol;
   return d;
-}
-
-/* ----------------------------- Email Text ----------------------------- */
-
-function buildEmailBody(){
-  const name = state.name?.trim() ? state.name.trim() : "there";
-
-  const confirmedValues = confirmedValuesList();
-  const confirmedPillars = confirmedPillarsList();
-  const emotions = [state.idealEmotion1, state.idealEmotion2].filter(Boolean);
-  const trig = (state.triggerPicked || state.triggerCustom || "—");
-
-  return [
-    `Dear ${name}`,
-    ``,
-    `Thank you for taking the WHO Thoughts Assessment™.`,
-    `Take a moment to imagine what’s possible when you stay anchored in your Values, operate from your best self, and recognize the thoughts that quietly pull you off course.`,
-    ``,
-    `When your nervous system is regulated, you are powerful. You respond instead of react. You choose instead of spiral.`,
-    ``,
-    `Self-command isn’t about perfection — it’s about awareness. It’s about noticing when you’ve drifted from your WHO and knowing how to return.`,
-    ``,
-    `My goal is to help you uncover and celebrate the best parts of what make you you — the strengths and natural qualities that already exist within you — and show you how to use them to move through conflict with clarity and confidence.`,
-    ``,
-    `Now imagine a world where more of us faced challenges this way: grounded, intentional, and self-led.`,
-    ``,
-    `These are the results of your WHO Thoughts Assessment™. Reflect, reconnect, and reclaim the thoughts that shape your life.`,
-    ``,
-    `Your Results`,
-    `Values: ${confirmedValues.length ? confirmedValues.join(", ") : "—"}`,
-    `Pillars: ${confirmedPillars.length ? confirmedPillars.join(", ") : "—"}`,
-    `Ideal Emotion: ${emotions.length ? emotions.join(", ") : "—"} (target: ${state.idealEmotionRating}/10)`,
-    `Trigger: ${trig}`,
-    ``,
-    `Internal Conflict & Choice`,
-    `Internal conflict comes from`,
-    `1. Competing WHO traits. You can be:`,
-    `• Independent and community-oriented`,
-    `• Passionate and peaceful`,
-    `When something happens that evokes an emotion, intentionally choose which Value or Pillar to be your response team.`,
-    ``,
-    `2. Values “over used”. Examples:`,
-    `• If “excellence” is your Value, you may feel stuck when starting a new endeavor. Choose another Value to lead with, then bring “excellence” in as a guide.`,
-    `• A “perseverance” value can be singularly focused. Instead, face perseverance towards balance.`,
-    ``,
-    `3. Dialing down your WHO to an unsustainable level:`,
-    `• Know when your WHO is too low for too long. Add self care to the list (and help others).`,
-    `• Situations calls for a different WHO to be used and at various levels. Choose with intention.`,
-    ``,
-    `Live clean between your ears.`,
-    `— Dana Lynn Bernstein, PMP, PCC`,
-    `The Conflict Resolution Coach`,
-    `Additional exercises and reflections in my book, It’s the Thought That Counts: Mastering the Art of YOU vs You`,
-    `A portion of book proceeds support Girl Scouts`,
-    ``,
-    `© ${new Date().getFullYear()} My WHO Thoughts Assessment™ — All rights reserved`,
-    `www.MyWHOthoughts.com • Book link https://bit.ly/3PxJ3MD`,
-    ``,
-    `(Add Unsubscribe button)`,
-  ].join("\n");
 }
 
 /* ----------------------------- State ----------------------------- */
