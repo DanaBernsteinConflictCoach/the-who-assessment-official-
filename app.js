@@ -268,7 +268,7 @@ function stepDefine(){
     "Values — Your guardrails\n" +
     "Pillars — Your energy source\n" +
     "Ideal Emotion — Your compass\n" +
-    "Trigger — Your warning signal\n\n" +
+    "Trigger — Your inner critic\n\n" +
     "Conflict happens when you believe your WHO has been threatened."
   ));
 
