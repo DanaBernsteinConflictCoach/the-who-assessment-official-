@@ -1,34 +1,20 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <title>The WHO Assessment (Official)</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>My WHO Thoughts Assessment</title>
+  <link rel="stylesheet" href="./style.css" />
 </head>
-
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">WHO</div>
-      <div class="titles">
-        <div class="title">The WHO Assessment</div>
-        <div class="subtitle">Official</div>
-      </div>
-    </div>
-
-    <button id="resetBtn" class="btn btn-ghost" type="button" aria-label="Reset">Reset</button>
-  </header>
-
-  <main class="wrap">
-    <section class="card" id="app"></section>
+  <main class="page">
+    <section class="card" id="app" aria-live="polite"></section>
 
     <footer class="footer">
-      <span>© <span id="year"></span> • Dana Bernstein Conflict Coach</span>
+      <div class="footerInner">© <span id="year"></span> Dana Bernstein Conflict Coach</div>
     </footer>
   </main>
 
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
