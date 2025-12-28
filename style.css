@@ -335,3 +335,26 @@ html,body{
 }
 .footerLink:hover{ border-bottom-style:solid; }
 .footerSep{ margin:0 6px; opacity:.6; }
+
+/* -------- Mobile fix: prevent progress bar overlapping title -------- */
+@media (max-width: 480px) {
+
+  .topRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .progressWrap {
+    width: 100%;
+  }
+
+  .brandTitle {
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  .progressDots {
+    margin-top: 6px;
+  }
+}
