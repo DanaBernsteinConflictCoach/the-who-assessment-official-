@@ -325,8 +325,8 @@ function stepValuesDiscover(){
 
   wrap.appendChild(hr());
   wrap.appendChild(help(
-    "Build your Values candidate list\n" +
-    "Reflect. What are the non-negotiable rules that drive your success?\n" +
+    "Reflect\n" +
+    "What are the non-negotiable rules that drive your success?\n" +
     "Rules: Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step."
   ));
 
@@ -362,7 +362,7 @@ function stepValuesRoadTest(){
 
   wrap.appendChild(sectionTitle("Step 2 of 6: Values Evoke Emotions (Road Test)"));
   wrap.appendChild(help(
-    "Road test each candidate. Values, when crossed, evoke an emotion.\n\n" +
+    "Values, when crossed, evoke an emotion.\n\n" +
     "Instructions\n• YES = it’s a Value (keep)\n• NO = it’s not a Value (remove from the list)."
   ));
 
@@ -428,7 +428,7 @@ function stepPillarsDiscover(){
 
   wrap.appendChild(sectionTitle("Page 5 — Step 3 of 6: Pillars (Discover)"));
   wrap.appendChild(help(
-    "Are positive core characteristics that describe you at your best (they are not tied to accomplishment or how you think you \"should be\"). You are great as you are!\n\n" +
+    "Are positive core characteristics that describe you at your best. Pillars are not tied to accomplishment or how you think you \"should be\". You are great as you are!\n\n" +
     "Find your Pillars by recalling any time in your life when you just felt so \"you,\" when time melted away, and you felt freedom from judgment (self or others)."
   ));
 
