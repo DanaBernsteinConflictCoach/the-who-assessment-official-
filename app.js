@@ -36,7 +36,7 @@ const VALUE_OPTIONS = [
 
 const PILLAR_OPTIONS = [
   "Adventurer","Bold","Builder","Caretaker","Community","Compassion","Confident","Connection",
-  "Connector","Considerate","Creative","Earthy","Empathy","Explorer","Faith","Family","Fierce",
+  "Connector","Considerate","Creative","Earthy","Empathy","Easy-going","Explorer","Faith","Family","Fierce",
   "Fun","Goofy","Grounded","Gratitude","Helper","Humor","Introspective","Impact","Kind",
   "Laughter","Limitless","Listener","Love","Nerdy","Open Mind","Optimist","Passion","Patient",
   "Peace","Playful","Present","Problem Solver","Sarcastic","Service"
@@ -261,13 +261,13 @@ function stepDefine(){
   wrap.appendChild(sectionTitle("Page 2 — Define Your WHO"));
 
   wrap.appendChild(help(
-    "Conflict is best solved by breaking it into smaller parts. External conflict (tacticals about what to do/how to do something) and internal conflict (your thoughts about why you labeled something a conflict).\n\n" +
+    "Conflict is best solved by breaking it into smaller parts. External conflict (what to do/how to do something) and internal conflict (the thoughts that stop you).\n\n" +
     "Identity also has an external (physical attributes, roles, titles, achievements) and internal component (your WHO).\n\n" +
     "Your WHO is defined by:\n" +
     "Values — Your guardrails\n" +
     "Pillars — Your energy source\n" +
     "Ideal Emotion — Your compass\n" +
-    "Trigger — Your warning signal\n\n" +
+    "Trigger — Your inner critic\n\n" +
     "Conflict happens when you believe your WHO has been threatened."
   ));
 
@@ -286,7 +286,7 @@ function stepDefine(){
     "What you want to feel each day. Living your Values and being your Pillars allows you to feel your Ideal Emotion."));
   grid.appendChild(op("+"));
 
-  grid.appendChild(box("Trigger — Your warning signal",
+  grid.appendChild(box("Trigger — Your inner critic",
     "One loud “I’m not…” story that pulls you off course. Recognize it quickly so it doesn’t hijack your response."));
 
   wrap.appendChild(grid);
@@ -314,7 +314,7 @@ function stepValuesDiscover(){
 
   wrap.appendChild(sectionTitle("Page 4 — Step 1 of 6: Values (Discover)"));
   wrap.appendChild(help(
-    "There are two ways to uncover your Values (1) what is your proudest moment at any point in your life, and (2) what makes you upset. We’ll discover candidates from your proudest moments first, then road-test them."
+    "There are two ways to uncover your Values (1) what is your proudest moment at any point in your life, and (2) what makes you upset."
   ));
 
   wrap.appendChild(field("Prompt A: Proud Moment — At any point in your life, when were you most proud of yourself?", textarea(state.valuesProudWhen, v => state.valuesProudWhen = v)));
@@ -326,7 +326,7 @@ function stepValuesDiscover(){
   wrap.appendChild(hr());
   wrap.appendChild(help(
     "Build your Values candidate list\n" +
-    "Reflect on what matters to you. What are the non-negotiable rules that drive your success?\n" +
+    "Reflect. What are the non-negotiable rules that drive your success?\n" +
     "Rules: Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step."
   ));
 
@@ -429,7 +429,7 @@ function stepPillarsDiscover(){
   wrap.appendChild(sectionTitle("Page 5 — Step 3 of 6: Pillars (Discover)"));
   wrap.appendChild(help(
     "Are positive core characteristics that describe you at your best (they are not tied to accomplishment or how you think you \"should be\"). You are great as you are!\n\n" +
-    "You can find your Pillars by recalling any time in your life when you just felt so \"you,\" when time melted away, and you felt freedom from judgment (self or others)."
+    "Find your Pillars by recalling any time in your life when you just felt so \"you,\" when time melted away, and you felt freedom from judgment (self or others)."
   ));
 
   wrap.appendChild(field("Prompt: Happiest / Best Self — When were you your happiest and most YOU? (Where / with who / doing what?)", textarea(state.pillarsBestSelf, v => state.pillarsBestSelf = v)));
@@ -631,7 +631,7 @@ function stepTrigger(){
   const wrap = document.createElement("div");
 
   wrap.appendChild(sectionTitle("Page 7 — Step 6 of 6: Trigger (Anti-WHO)"));
-  wrap.appendChild(help("Pick one from the list OR add a custom one."));
+  wrap.appendChild(help("Just as important as knowing your Values and Pillars, is recognizing the inner critic that makes you feel demoralized. Pick one from the list OR add a custom one."));
 
   const chipList = TRIGGER_OPTIONS.map(x => `I’m not ${x}`);
   wrap.appendChild(chipPicker(chipList, state.triggerPicked ? [state.triggerPicked] : [], (next) => {
@@ -660,7 +660,7 @@ function stepSnapshot(){
   wrap.appendChild(summaryMini("Pillars — Your energy source", confirmedPillars.length ? confirmedPillars : ["—"]));
   wrap.appendChild(summaryMini("Ideal Emotion — Your compass", emotions.length ? emotions : ["—"]));
   wrap.appendChild(summaryMini("Ideal Emotion rating (target: 8/10)", [`${state.idealEmotionRating}/10`]));
-  wrap.appendChild(summaryMini("Trigger — Your warning signal", [trig]));
+  wrap.appendChild(summaryMini("Trigger — Your inner critic", [trig]));
 
   wrap.appendChild(hr());
   wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
