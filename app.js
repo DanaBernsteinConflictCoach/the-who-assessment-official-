@@ -12,11 +12,11 @@
  * - Boxed UI
  * - Progress dots + bar
  * - Road tests + remove buttons
- * - Prefilled Google Form submit (user presses Submit)
+ * - Prefilled Google Form submit (LAST PAGE ONLY)
  * - RESET button (top-right) clears local answers + restarts
  */
 
-const STORAGE_KEY = "who_assessment_pdf_locked_v6";
+const STORAGE_KEY = "who_assessment_pdf_locked_v7";
 
 /**
  * ✅ Prefilled Google Form template URL (provided by you).
@@ -71,7 +71,6 @@ const STEPS = [
 const DEFAULTS = {
   name: "",
   email: "",
-  emailOptIn: true,
 
   // Values (Discover)
   valuesProudWhen: "",
@@ -268,7 +267,7 @@ function stepDefine(){
     "Values — Your guardrails\n" +
     "Pillars — Your energy source\n" +
     "Ideal Emotion — Your compass\n" +
-    "Trigger — Your inner critic\n\n" +
+    "Trigger — Your warning signal\n\n" +
     "Conflict happens when you believe your WHO has been threatened."
   ));
 
@@ -287,7 +286,7 @@ function stepDefine(){
     "What you want to feel each day. Living your Values and being your Pillars allows you to feel your Ideal Emotion."));
   grid.appendChild(op("+"));
 
-  grid.appendChild(box("Trigger — Your inner critic",
+  grid.appendChild(box("Trigger — Your warning signal",
     "One loud “I’m not…” story that pulls you off course. Recognize it quickly so it doesn’t hijack your response."));
 
   wrap.appendChild(grid);
@@ -306,33 +305,7 @@ function stepStart(){
   grid.appendChild(field("Your email", inputText(state.email, v => state.email = v)));
   wrap.appendChild(grid);
 
-  const cb = document.createElement("label");
-  cb.className = "helpText";
-  cb.style.display = "flex";
-  cb.style.gap = "10px";
-  cb.style.alignItems = "center";
-  cb.innerHTML = `<input type="checkbox" ${state.emailOptIn ? "checked":""} />
-    Email my results and bonus content. Email is optional.`;
-  cb.querySelector("input").onchange = (e) => { state.emailOptIn = e.target.checked; saveState(); };
-  wrap.appendChild(cb);
-
-  wrap.appendChild(hr());
-
-  const boxy = document.createElement("div");
-  boxy.className = "smallBox";
-  boxy.innerHTML = `<div class="miniTitle">Submit</div>
-    <div class="helpText" style="color:var(--ink); margin:0;">
-      Open a prefilled Google Form (you’ll just press Submit).
-    </div>`;
-  const btn = document.createElement("button");
-  btn.className = "btn";
-  btn.style.marginTop = "10px";
-  btn.textContent = "Open prefilled Google Form";
-  btn.onclick = () => openPrefilledForm();
-  boxy.appendChild(btn);
-
-  wrap.appendChild(boxy);
-
+  // no submit button here (LAST PAGE ONLY)
   return wrap;
 }
 
@@ -658,9 +631,7 @@ function stepTrigger(){
   const wrap = document.createElement("div");
 
   wrap.appendChild(sectionTitle("Page 7 — Step 6 of 6: Trigger (Anti-WHO)"));
-  wrap.appendChild(help(
-    "Just as important as knowing your Values and Pillars, is recognizing the loud inner critic voice that makes you feel demoralized, pulls you off course, and causes you to react. Pick one from the list OR add a custom one."
-  ));
+  wrap.appendChild(help("Pick one from the list OR add a custom one."));
 
   const chipList = TRIGGER_OPTIONS.map(x => `I’m not ${x}`);
   wrap.appendChild(chipPicker(chipList, state.triggerPicked ? [state.triggerPicked] : [], (next) => {
@@ -689,48 +660,39 @@ function stepSnapshot(){
   wrap.appendChild(summaryMini("Pillars — Your energy source", confirmedPillars.length ? confirmedPillars : ["—"]));
   wrap.appendChild(summaryMini("Ideal Emotion — Your compass", emotions.length ? emotions : ["—"]));
   wrap.appendChild(summaryMini("Ideal Emotion rating (target: 8/10)", [`${state.idealEmotionRating}/10`]));
-  wrap.appendChild(summaryMini("Trigger — Your inner critic", [trig]));
+  wrap.appendChild(summaryMini("Trigger — Your warning signal", [trig]));
 
   wrap.appendChild(hr());
-  wrap.appendChild(field("Comments on the WHO assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
+  wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
 
-  const submitBox = document.createElement("div");
-  submitBox.className = "smallBox";
-  submitBox.style.marginTop = "12px";
-  submitBox.innerHTML = `<div class="miniTitle">Submit via Google Form</div>
-    <div class="helpText" style="color:var(--ink); margin:0;">
-      Opens a prefilled form with your results — you just press Submit.
-    </div>`;
-
-  const btn = document.createElement("button");
-  btn.className = "btn";
-  btn.style.marginTop = "10px";
-  btn.textContent = "Open prefilled Google Form";
-  btn.onclick = () => openPrefilledForm();
-
-  submitBox.appendChild(btn);
-  wrap.appendChild(submitBox);
-
+  // no submit button here (LAST PAGE ONLY)
   return wrap;
 }
 
 function stepEnd(){
   const wrap = document.createElement("div");
   wrap.appendChild(sectionTitle("Page 9 — Next Step"));
-  wrap.appendChild(help("You’re done. If you haven’t submitted yet, use the button below."));
+
+  wrap.appendChild(help(
+    "Completed.\n\n" +
+    "When you’re ready, click the button below to submit your results. " +
+    "It opens a prefilled Google Form — you just press Submit."
+  ));
 
   const submitBox = document.createElement("div");
   submitBox.className = "smallBox";
   submitBox.style.marginTop = "12px";
   submitBox.innerHTML = `<div class="miniTitle">Submit</div>
     <div class="helpText" style="color:var(--ink); margin:0;">
-      Open the prefilled Google Form (you’ll just press Submit).
+      Opens the prefilled Google Form (then press Submit).
     </div>`;
+
   const btn = document.createElement("button");
   btn.className = "btn";
   btn.style.marginTop = "10px";
   btn.textContent = "Open prefilled Google Form";
   btn.onclick = () => openPrefilledForm();
+
   submitBox.appendChild(btn);
   wrap.appendChild(submitBox);
 
