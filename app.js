@@ -631,7 +631,7 @@ function stepTrigger(){
   const wrap = document.createElement("div");
 
   wrap.appendChild(sectionTitle("Step 6 of 6: Trigger (Anti-WHO)"));
-  wrap.appendChild(help("Just as important as knowing your Values and Pillars, is recognizing the inner critic that makes you feel demoralized. Life is thematic. Look at the list below and reflect on what your inner critic told you when you faced blame inwards or felt like you were not enough in some way. OR add a custom one."));
+  wrap.appendChild(help("Just as important as knowing your Values and Pillars, is recognizing the inner critic that makes you feel demoralized or demotivated. Life is thematic. Look at the list below and reflect on what your inner critic told you when you faced blame inwards or felt like you were not enough in some way. OR add a custom Trigger."));
 
   const chipList = TRIGGER_OPTIONS.map(x => `I’m not ${x}`);
   wrap.appendChild(chipPicker(chipList, state.triggerPicked ? [state.triggerPicked] : [], (next) => {
