@@ -201,6 +201,13 @@ function renderNav(){
   next.className = "btnPrimary";
   next.textContent = stepIndex === STEPS.length - 1 ? "Done" : "Next";
   next.onclick = () => {
+
+    // Require name on Page 3 (Start)
+    if(STEPS[stepIndex].key === "start" && !state.name.trim()){
+      alert("Please enter your name to continue.");
+      return;
+    }
+
     if(stepIndex < STEPS.length - 1){
       stepIndex++;
       saveState();
@@ -301,7 +308,7 @@ function stepStart(){
 
   const grid = document.createElement("div");
   grid.className = "grid2";
-  grid.appendChild(field("Your name", inputText(state.name, v => state.name = v)));
+  grid.appendChild(field("Your name", inputText(state.name, v => state.name = v, true)));
   grid.appendChild(field("Your email", inputText(state.email, v => state.email = v)));
   wrap.appendChild(grid);
 
@@ -815,11 +822,12 @@ function field(labelText, control){
   return wrap;
 }
 
-function inputText(value, onChange){
+function inputText(value, onChange, required=false){
   const i = document.createElement("input");
   i.className = "input";
   i.type = "text";
   i.value = value || "";
+  if(required) i.required = true;
   i.oninput = (e) => { onChange(e.target.value); saveState(); };
   return i;
 }
