@@ -384,7 +384,7 @@ function stepValuesRoadTest(){
 
     const left = document.createElement("div");
     left.innerHTML = `<div class="qaWord">${escapeHtml(val)}</div>
-      <div class="qaQ">If someone violates this, do you feel upset / angry / frustrated?</div>`;
+      <div class="qaQ">If someone crosses this Values, do you feel upset / angry / frustrated?</div>`;
 
     const btns = document.createElement("div");
     btns.className = "btnRow";
@@ -419,7 +419,7 @@ function stepValuesRoadTest(){
 
   wrap.appendChild(hr());
   wrap.appendChild(summaryMini("Live results — Confirmed Values", confirmed));
-  wrap.appendChild(help("Practical Application: By identifying these candidates, you can more easily de-escalate your emotions."));
+  wrap.appendChild(help("Practical Application: By identifying these candidates, you increase self-awareness and can more easily de-escalate your emotions."));
   return wrap;
 }
 
