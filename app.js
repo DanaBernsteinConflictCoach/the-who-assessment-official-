@@ -312,7 +312,7 @@ function stepStart(){
 function stepValuesDiscover(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 4 — Step 1 of 6: Values (Discover)"));
+  wrap.appendChild(sectionTitle("Step 1 of 6: Values (Discover)"));
   wrap.appendChild(help(
     "There are two ways to uncover your Values (1) what is your proudest moment at any point in your life, and (2) what makes you upset."
   ));
@@ -363,7 +363,7 @@ function stepValuesRoadTest(){
   wrap.appendChild(sectionTitle("Step 2 of 6: Values Evoke Emotions (Road Test)"));
   wrap.appendChild(help(
     "Values, when crossed, evoke an emotion.\n\n" +
-    "Instructions\n• YES = it’s a Value (keep)\n• NO = it’s not a Value (remove from the list)."
+    "Instructions\n• YES = it’s a Value (keep)\n• NO = it’s not a Value. Or select REMOVE to delete from the list."
   ));
 
   const candidates = [...state.valueCandidates];
@@ -426,7 +426,7 @@ function stepValuesRoadTest(){
 function stepPillarsDiscover(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 5 — Step 3 of 6: Pillars (Discover)"));
+  wrap.appendChild(sectionTitle("Step 3 of 6: Pillars (Discover)"));
   wrap.appendChild(help(
     "Are positive core characteristics that describe you at your best. Pillars are not tied to accomplishment or how you think you \"should be\". You are great as you are!\n\n" +
     "Find your Pillars by recalling any time in your life when you just felt so \"you,\" when time melted away, and you felt freedom from judgment (self or others)."
@@ -600,7 +600,7 @@ function stepPillarsRoadTest(){
 function stepIdealEmotion(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 6 — Step 5 of 6: Ideal Emotion"));
+  wrap.appendChild(sectionTitle("Step 5 of 6: Ideal Emotion"));
   wrap.appendChild(help(
     "Your Ideal Emotion is what you want to feel each day (yes, it is ok to have 2 Ideal Emotions).\n" +
     "When you’re not feeling that emotion, revisit your Values and Pillars to see where you are not aligned with the WHO words that you selected."
@@ -630,8 +630,8 @@ function stepIdealEmotion(){
 function stepTrigger(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 7 — Step 6 of 6: Trigger (Anti-WHO)"));
-  wrap.appendChild(help("Just as important as knowing your Values and Pillars, is recognizing the inner critic that makes you feel demoralized. Pick one from the list OR add a custom one."));
+  wrap.appendChild(sectionTitle("Step 6 of 6: Trigger (Anti-WHO)"));
+  wrap.appendChild(help("Just as important as knowing your Values and Pillars, is recognizing the inner critic that makes you feel demoralized. Life is thematic. Look at the list below and reflect on what your inner critic told you when you faced blame inwards or felt like you were not enough in some way. OR add a custom one."));
 
   const chipList = TRIGGER_OPTIONS.map(x => `I’m not ${x}`);
   wrap.appendChild(chipPicker(chipList, state.triggerPicked ? [state.triggerPicked] : [], (next) => {
@@ -663,7 +663,7 @@ function stepSnapshot(){
   wrap.appendChild(summaryMini("Trigger — Your inner critic", [trig]));
 
   wrap.appendChild(hr());
-  wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
+  wrap.appendChild(field("Comments or personal insights on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
 
   // no submit button here (LAST PAGE ONLY)
   return wrap;
