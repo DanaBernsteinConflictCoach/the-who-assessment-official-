@@ -261,14 +261,14 @@ function stepDefine(){
   wrap.appendChild(sectionTitle("Page 2 — Define Your WHO"));
 
   wrap.appendChild(help(
-    "Conflict is best solved by breaking it into smaller parts. External conflict (what to do/how to do something) and internal conflict (the thoughts that stop you).\n\n" +
-    "Identity also has an external (physical attributes, roles, titles, achievements) and internal component (your WHO).\n\n" +
+    "Conflict is best solved by breaking it into smaller parts. External conflict (what to do/how to do something) and internal conflict (the thoughts that stop you from doing the what and how).\n\n" +
+    "Identity also has an external (physical attributes, roles, titles, achievements) and an internal component (your WHO).\n\n" +
     "Your WHO is defined by:\n" +
     "Values — Your guardrails\n" +
     "Pillars — Your energy source\n" +
     "Ideal Emotion — Your compass\n" +
-    "Trigger — Your inner critic that stops your WHO\n\n" +
-    "Conflict happens when you believe your WHO has been threatened."
+    "Trigger — Your inner critic that makes you doubt your WHO\n\n" +
+    "Conflict happens when you believe your Values were crossed, you were not acting as your Pillars, or you believed your Trigger."
   ));
 
   const grid = document.createElement("div");
@@ -314,7 +314,7 @@ function stepValuesDiscover(){
 
   wrap.appendChild(sectionTitle("Step 1 of 6: Values (Discover)"));
   wrap.appendChild(help(
-    "There are two ways to uncover your Values (1) what is your proudest moment at any point in your life, and (2) what makes you upset."
+    "These two prompts will uncover your Values."
   ));
 
   wrap.appendChild(field("Prompt A: Proud Moment — At any point in your life, when were you most proud of yourself?", textarea(state.valuesProudWhen, v => state.valuesProudWhen = v)));
@@ -326,7 +326,7 @@ function stepValuesDiscover(){
   wrap.appendChild(hr());
   wrap.appendChild(help(
     "Reflect\n" +
-    "What are the non-negotiable rules that drive your success?\n" +
+    "What are the non-negotiable Values that drive your success? Or, which Values, when crossed, evoke an emotion.\n" +
     "Rules: Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step."
   ));
 
@@ -663,7 +663,7 @@ function stepSnapshot(){
   wrap.appendChild(summaryMini("Trigger — Your inner critic", [trig]));
 
   wrap.appendChild(hr());
-  wrap.appendChild(field("Comments or personal insights on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
+  wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
 
   // no submit button here (LAST PAGE ONLY)
   return wrap;
