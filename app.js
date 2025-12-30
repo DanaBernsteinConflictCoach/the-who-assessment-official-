@@ -324,16 +324,16 @@ function stepValuesDiscover(){
     "These two prompts will uncover your Values."
   ));
 
-  wrap.appendChild(field("Prompt A: Proud Moment — At any point in your life, when were you most proud of yourself?", textarea(state.valuesProudWhen, v => state.valuesProudWhen = v)));
+  wrap.appendChild(field("<b>Prompt A</b>: Proud Moment — At any point in your life, when were you most proud of yourself?", textarea(state.valuesProudWhen, v => state.valuesProudWhen = v)));
   wrap.appendChild(field("Why were you proud?", textarea(state.valuesProudWhy, v => state.valuesProudWhy = v)));
 
-  wrap.appendChild(field("Prompt B: Upset / Anger / Frustrated Moment — When were you most angry, frustrated, or furious (person or situation)?", textarea(state.valuesUpsetWhen, v => state.valuesUpsetWhen = v)));
+  wrap.appendChild(field("<b>Prompt B</b>: Upset / Anger / Frustrated Moment — When were you most angry, frustrated, or furious (person or situation)?", textarea(state.valuesUpsetWhen, v => state.valuesUpsetWhen = v)));
   wrap.appendChild(field("What exactly bothered you / Why did the behavior bother you?", textarea(state.valuesUpsetWhy, v => state.valuesUpsetWhy = v)));
 
   wrap.appendChild(hr());
   wrap.appendChild(help(
     "Reflect\n" +
-    "What are the non-negotiable Values that drive your success? Or, which Values, when crossed, evoke an emotion.\n" +
+    "What are the <b>non-negotiable</b> Values that drive your success? Or, which Values, when crossed or acted against, evoke an emotion.\n" +
     "Rules: Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step."
   ));
 
@@ -391,7 +391,7 @@ function stepValuesRoadTest(){
 
     const left = document.createElement("div");
     left.innerHTML = `<div class="qaWord">${escapeHtml(val)}</div>
-      <div class="qaQ">If someone crosses this Values, do you feel upset / angry / frustrated?</div>`;
+      <div class="qaQ">If someone acts against this Value, do you feel upset / angry / frustrated?</div>`;
 
     const btns = document.createElement("div");
     btns.className = "btnRow";
@@ -426,7 +426,7 @@ function stepValuesRoadTest(){
 
   wrap.appendChild(hr());
   wrap.appendChild(summaryMini("Live results — Confirmed Values", confirmed));
-  wrap.appendChild(help("Practical Application: By identifying these candidates, you increase self-awareness and can more easily de-escalate your emotions."));
+  wrap.appendChild(help("<b>Practical Application</b>: By identifying these candidates, you increase self-awareness and can more easily de-escalate your emotions."));
   return wrap;
 }
 
@@ -435,7 +435,7 @@ function stepPillarsDiscover(){
 
   wrap.appendChild(sectionTitle("Step 3 of 6: Pillars (Discover)"));
   wrap.appendChild(help(
-    "Are positive core characteristics that describe you at your best. Pillars are not tied to accomplishment or how you think you \"should be\". You are great as you are!\n\n" +
+    "Are positive core characteristics that describe you at your best. Pillars are not tied to accomplishment or how you think you \"should be\". <b>You are great as you are!</b>\n\n" +
     "Find your Pillars by recalling any time in your life when you just felt so \"you,\" when time melted away, and you felt freedom from judgment (self or others)."
   ));
 
@@ -478,7 +478,7 @@ function stepPillarsRoadTest(){
 
   wrap.appendChild(sectionTitle("Step 4 of 6: Pillars (Road Test)"));
   wrap.appendChild(help(
-    "Road Test 1\nIf someone crosses this characteristic, do you get angry/frustrated/upset?\n" +
+    "<b>Road Test 1</b>\nIf someone crosses this characteristic, do you get angry/frustrated/upset?\n" +
     "• YES = Move to Values\n• NO = Keep as a Pillar"
   ));
 
@@ -548,7 +548,7 @@ function stepPillarsRoadTest(){
   wrap.appendChild(hr());
 
   wrap.appendChild(help(
-    "Road Test 2\nIf you took these characteristics away, would you be a shell of yourself?\n" +
+    "<b>Road Test 2</b>\nIf you took these characteristics away, would you feel empty or disconnected from who you are?\n" +
     "• YES = Keep as a Pillar\n• NO = Remove"
   ));
 
@@ -561,7 +561,7 @@ function stepPillarsRoadTest(){
 
     const left = document.createElement("div");
     left.innerHTML = `<div class="qaWord">${escapeHtml(p)}</div>
-      <div class="qaQ">If you took this characteristic away, would you be a shell of yourself?</div>`;
+      <div class="qaQ">If you took this characteristic away, would you feel empty or disconnected from who you are?</div>`;
 
     const btns = document.createElement("div");
     btns.className = "btnRow";
@@ -599,7 +599,7 @@ function stepPillarsRoadTest(){
   wrap.appendChild(hr());
   wrap.appendChild(summaryMini("Confirmed Pillars", confirmedPillars));
   wrap.appendChild(summaryMini("Confirmed Values", confirmedValues));
-  wrap.appendChild(help("Practical Application: Lead from your unique strengths."));
+  wrap.appendChild(help("<b>Practical Application</b>: Wear these Pillars as jackets to reframe yourself when feeling off course to remind you who you are. Lead from your unique strengths."));
 
   return wrap;
 }
@@ -670,7 +670,7 @@ function stepSnapshot(){
   wrap.appendChild(summaryMini("Trigger — Your inner critic", [trig]));
 
   wrap.appendChild(hr());
-  wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi”", textarea(state.comments, v => state.comments = v)));
+  wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi, I want to keep in touch”", textarea(state.comments, v => state.comments = v)));
 
   // no submit button here (LAST PAGE ONLY)
   return wrap;
