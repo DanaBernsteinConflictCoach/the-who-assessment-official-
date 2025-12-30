@@ -273,7 +273,7 @@ function stepDefine(){
     "Your WHO is defined by:\n" +
     "Values — Your guardrails\n" +
     "Pillars — Your energy source\n" +
-    "Ideal Emotion — Your compass\n" +
+    "Ideal Emotion — Your compass\n"
     "Trigger — Your inner critic that makes you doubt your WHO\n\n" +
     "Conflict happens when you believe your Values were crossed, you were not acting as your Pillars, or you believed your Trigger."
   ));
