@@ -478,7 +478,7 @@ function stepPillarsRoadTest(){
 
   wrap.appendChild(sectionTitle("Step 4 of 6: Pillars (Road Test)"));
   wrap.appendChild(help(
-    "<b>Road Test 1</b>\nIf someone crosses this characteristic, do you get angry/frustrated/upset?\n" +
+    "Road Test 1\nIf someone crosses this characteristic, do you get angry/frustrated/upset?\n" +
     "• YES = Move to Values\n• NO = Keep as a Pillar"
   ));
 
@@ -548,7 +548,7 @@ function stepPillarsRoadTest(){
   wrap.appendChild(hr());
 
   wrap.appendChild(help(
-    "<b>Road Test 2</b>\nIf you took these characteristics away, would you feel empty or disconnected from who you are?\n" +
+    "Road Test 2\nIf you took these characteristics away, would you feel empty or disconnected from who you are?\n" +
     "• YES = Keep as a Pillar\n• NO = Remove"
   ));
 
