@@ -435,7 +435,7 @@ function stepPillarsDiscover(){
 
   wrap.appendChild(sectionTitle("Step 3 of 6: Pillars (Discover)"));
   wrap.appendChild(help(
-    "Are positive core characteristics that describe you at your best. Pillars are not tied to accomplishment or how you think you \"should be\". <b>You are great as you are!</b>\n\n" +
+    "Are positive core characteristics that describe you at your best. Pillars are not tied to accomplishment or how you think you \"should be\". You are great as you are!\n\n" +
     "Find your Pillars by recalling any time in your life when you just felt so \"you,\" when time melted away, and you felt freedom from judgment (self or others)."
   ));
 
@@ -599,7 +599,7 @@ function stepPillarsRoadTest(){
   wrap.appendChild(hr());
   wrap.appendChild(summaryMini("Confirmed Pillars", confirmedPillars));
   wrap.appendChild(summaryMini("Confirmed Values", confirmedValues));
-  wrap.appendChild(help("<b>Practical Application</b>: Wear these Pillars as jackets to reframe yourself when feeling off course to remind you who you are. Lead from your unique strengths."));
+  wrap.appendChild(help("Practical Application: Wear these Pillars as jackets to reframe yourself when feeling off course to remind you who you are. Lead from your unique strengths."));
 
   return wrap;
 }
