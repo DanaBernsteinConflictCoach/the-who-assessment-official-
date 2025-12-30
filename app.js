@@ -324,16 +324,16 @@ function stepValuesDiscover(){
     "These two prompts will uncover your Values."
   ));
 
-  wrap.appendChild(field("<b>Prompt A</b>: Proud Moment — At any point in your life, when were you most proud of yourself?", textarea(state.valuesProudWhen, v => state.valuesProudWhen = v)));
+  wrap.appendChild(field("Prompt A: Proud Moment — At any point in your life, when were you most proud of yourself?", textarea(state.valuesProudWhen, v => state.valuesProudWhen = v)));
   wrap.appendChild(field("Why were you proud?", textarea(state.valuesProudWhy, v => state.valuesProudWhy = v)));
 
-  wrap.appendChild(field("<b>Prompt B</b>: Upset / Anger / Frustrated Moment — When were you most angry, frustrated, or furious (person or situation)?", textarea(state.valuesUpsetWhen, v => state.valuesUpsetWhen = v)));
+  wrap.appendChild(field("Prompt B: Upset / Anger / Frustrated Moment — When were you most angry, frustrated, or furious (person or situation)?", textarea(state.valuesUpsetWhen, v => state.valuesUpsetWhen = v)));
   wrap.appendChild(field("What exactly bothered you / Why did the behavior bother you?", textarea(state.valuesUpsetWhy, v => state.valuesUpsetWhy = v)));
 
   wrap.appendChild(hr());
   wrap.appendChild(help(
     "Reflect\n" +
-    "What are the <b>non-negotiable</b> Values that drive your success? Or, which Values, when crossed or acted against, evoke an emotion.\n" +
+    "What are the non-negotiable Values that drive your success? Or, which Values, when crossed or acted against, evoke an emotion.\n" +
     "Rules: Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step."
   ));
 
