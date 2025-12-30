@@ -426,7 +426,7 @@ function stepValuesRoadTest(){
 
   wrap.appendChild(hr());
   wrap.appendChild(summaryMini("Live results — Confirmed Values", confirmed));
-  wrap.appendChild(help("<b>Practical Application</b>: By identifying these candidates, you increase self-awareness and can more easily de-escalate your emotions."));
+  wrap.appendChild(help("Practical Application: By identifying these candidates, you increase self-awareness and can more easily de-escalate your emotions."));
   return wrap;
 }
 
