@@ -682,8 +682,8 @@ function stepEnd(){
 
   wrap.appendChild(help(
     "Completed.\n\n" +
-    "When you’re ready, click the button below to submit your results. " +
-    "It opens a prefilled Google Form — you just press Submit."
+    "Click the button — open the prefilled Google form — to see your results." +
+    "Enjoy the bonus content on the Google form."
   ));
 
   const submitBox = document.createElement("div");
