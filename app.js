@@ -479,7 +479,7 @@ function stepPillarsRoadTest(){
   wrap.appendChild(sectionTitle("Step 4 of 6: Pillars (Road Test)"));
   wrap.appendChild(help(
     "Road Test 1\nIf someone crosses this characteristic, do you get angry/frustrated/upset?\n" +
-    "• YES = Move to Values\n• NO = Keep as a Pillar"
+    "• YES = Move to Values because it evokes an emotion\n• NO = Keep as a Pillar"
   ));
 
   const candidates = [...state.pillarCandidates];
@@ -507,7 +507,7 @@ function stepPillarsRoadTest(){
       saveState(); render();
     });
 
-    const no = chipBtn("NO. Keep as Pillar.", state.pillarTest1[p] === "no", () => {
+    const no = chipBtn("Keep as Pillar.", state.pillarTest1[p] === "no", () => {
       state.pillarTest1[p] = "no";
       saveState(); render();
     });
@@ -549,7 +549,7 @@ function stepPillarsRoadTest(){
 
   wrap.appendChild(help(
     "Road Test 2\nIf you took these characteristics away, would you feel empty or disconnected from who you are?\n" +
-    "• YES = Keep as a Pillar\n• NO = Remove"
+    "• YES = Keep as a Pillar because I would not be me without this attribute\n• NO = Remove"
   ));
 
   remainingAfter1.forEach(p => {
