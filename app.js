@@ -502,12 +502,12 @@ function stepPillarsRoadTest(){
     const btns = document.createElement("div");
     btns.className = "btnRow";
 
-    const yes = chipBtn("YES", state.pillarTest1[p] === "yes", () => {
+    const yes = chipBtn("YES. move to Values.", state.pillarTest1[p] === "yes", () => {
       state.pillarTest1[p] = "yes";
       saveState(); render();
     });
 
-    const no = chipBtn("NO", state.pillarTest1[p] === "no", () => {
+    const no = chipBtn("NO. Keep as Pillar.", state.pillarTest1[p] === "no", () => {
       state.pillarTest1[p] = "no";
       saveState(); render();
     });
@@ -566,7 +566,7 @@ function stepPillarsRoadTest(){
     const btns = document.createElement("div");
     btns.className = "btnRow";
 
-    const yes = chipBtn("YES", state.pillarTest2[p] === "yes", () => {
+    const yes = chipBtn("YES. It's a Pillar", state.pillarTest2[p] === "yes", () => {
       state.pillarTest2[p] = "yes";
       saveState(); render();
     });
