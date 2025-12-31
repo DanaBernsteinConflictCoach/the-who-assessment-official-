@@ -683,7 +683,7 @@ function stepEnd(){
   wrap.appendChild(help(
     "Completed.\n\n" +
     "Click the button — open the prefilled Google form — to see your results." +
-    "Enjoy the bonus content on the Google form."
+     "Thank you for taking the WHO Thoughts Assessment."
   ));
 
   const submitBox = document.createElement("div");
@@ -691,7 +691,7 @@ function stepEnd(){
   submitBox.style.marginTop = "12px";
   submitBox.innerHTML = `<div class="miniTitle">Submit</div>
     <div class="helpText" style="color:var(--ink); margin:0;">
-      Opens the prefilled Google Form (then press Submit).
+      Enjoy the bonus content on the prefilled Google Form.
     </div>`;
 
   const btn = document.createElement("button");
