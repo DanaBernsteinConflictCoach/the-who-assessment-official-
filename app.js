@@ -502,7 +502,7 @@ function stepPillarsRoadTest(){
     const btns = document.createElement("div");
     btns.className = "btnRow";
 
-    const yes = chipBtn("YES. move to Values.", state.pillarTest1[p] === "yes", () => {
+    const yes = chipBtn("YES. Move to Values.", state.pillarTest1[p] === "yes", () => {
       state.pillarTest1[p] = "yes";
       saveState(); render();
     });
