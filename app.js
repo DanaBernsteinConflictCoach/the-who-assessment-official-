@@ -28,8 +28,8 @@ const PREFILLED_FORM_TEMPLATE =
 /* ----------- EXACT WORD BANKS (DO NOT EDIT / DO NOT ADD) ----------- */
 
 const VALUE_OPTIONS = [
-  "Accountability","Adventure","Authenticity","Considerate","Curiosity","Do-er","Efficient",
-  "Empathy","Ethics","Excellence","Fairness","Gratitude","Honesty","Impact","Independence",
+  "Accountability","Adventure","Authenticity","Challenges","Considerate","Curiosity","Do-er","Efficient",
+  "Empathy","Ethics","Excellence","Fairness","Gratitude","Honesty","Humility","Impact","Independence",
   "Inclusivity","Integrity","Justice","Kind","Loyalty","Open Mind","Perseverance","Reliability",
   "Resilience","Respect","Self-Reliance","Service","Structure","Transparency"
 ];
