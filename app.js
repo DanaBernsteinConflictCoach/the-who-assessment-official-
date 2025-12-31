@@ -682,7 +682,7 @@ function stepEnd(){
 
   wrap.appendChild(help(
     "Completed.\n\n" +
-    "Click the button — open the prefilled Google form — to see your results." +
+    "Click the button — open the prefilled Google form — to see your results. " +
      "Thank you for taking the WHO Thoughts Assessment."
   ));
 
