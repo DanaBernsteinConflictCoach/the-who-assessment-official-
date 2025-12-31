@@ -291,7 +291,7 @@ function stepDefine(){
 
   grid.appendChild(box("Ideal Emotion — Your compass",
     "What you want to feel each day. Living your Values and being your Pillars allows you to feel your Ideal Emotion."));
-  grid.appendChild(op("+"));
+  grid.appendChild(op("≠"));
 
   grid.appendChild(box("Trigger — Your inner critic",
     "One loud “I’m not…” story that pulls you off course. Recognize it quickly so it doesn’t hijack your response."));
