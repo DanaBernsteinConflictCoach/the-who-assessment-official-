@@ -667,7 +667,7 @@ function stepSnapshot(){
   wrap.appendChild(summaryMini("Pillars — Your energy source and what makes you unique", confirmedPillars.length ? confirmedPillars : ["—"]));
   wrap.appendChild(summaryMini("Ideal Emotion — Your compass that indicates if you are living your Values and being your Pillars at your target amount", emotions.length ? emotions : ["—"]));
   wrap.appendChild(summaryMini("Ideal Emotion rating (target: 8/10)", [`${state.idealEmotionRating}/10`]));
-  wrap.appendChild(summaryMini("Trigger — Your inner critic that runs contrary to your WHO", [trig]));
+  wrap.appendChild(summaryMini("Trigger — Your inner critic that runs contrary to your Values and Pillars", [trig]));
 
   wrap.appendChild(hr());
   wrap.appendChild(field("Comments on the assessment, share a learning, or just say “hi, I want to keep in touch”", textarea(state.comments, v => state.comments = v)));
