@@ -282,7 +282,7 @@ function stepDefine(){
   grid.className = "boxGrid";
 
   grid.appendChild(box("Values — Your guardrails",
-    "Values are your rules, boundaries, and causes upset if others cross these non-negotiables. Use them as guardrails when making decisions."));
+    "Values are your rules, boundaries, and what causes upset if others cross these non-negotiables. Use them as guardrails when making decisions."));
   grid.appendChild(op("+"));
 
   grid.appendChild(box("Pillars — Your energy source",
