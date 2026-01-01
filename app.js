@@ -369,7 +369,7 @@ function stepValuesRoadTest(){
 
   wrap.appendChild(sectionTitle("Step 2 of 6: Values Evoke Emotions (Road Test)"));
   wrap.appendChild(help(
-    "Values are ONLY when you have a negative emotion if it is crossed. You can have high integrity, but not be bothered if others do not have it, so it would NOT be labeled a Value. Internal conflict starts to get resolved when you can label the upset. The Values exercise allows you to pinpoint the reason so you can start the de-escalation process.\n\n" +
+    "Values are ONLY when you have a negative emotion if it is crossed. You can have high integrity, but not be bothered if others do not have it, so it would NOT be labeled a Value. This Values exercise allows you to pinpoint the reason for the upset.\n\n" +
     "Instructions\n• YES = it’s a Value (reflect on what emotion arises when it is crossed)\n• NO = it’s not a Value. Or select REMOVE to delete from the list."
   ));
 
