@@ -30,7 +30,7 @@ const PREFILLED_FORM_TEMPLATE =
 const VALUE_OPTIONS = [
   "Accountability","Adventure","Authenticity","Challenges","Considerate","Curiosity","Do-er","Efficient",
   "Empathy","Ethics","Excellence","Fairness","Gratitude","Honesty","Humility","Impact","Independence",
-  "Inclusivity","Integrity","Justice","Kind","Loyalty","Open Mind","Perseverance","Reliability",
+  "Inclusivity","Integrity","Justice","Kindness","Loyalty","Open Mind","Perseverance","Reliability",
   "Resilience","Respect","Self-Reliance","Service","Structure","Transparency"
 ];
 
@@ -268,8 +268,8 @@ function stepDefine(){
   wrap.appendChild(sectionTitle("Page 2 — Define Your WHO"));
 
   wrap.appendChild(help(
-    "Conflict is best solved by breaking it into smaller parts. External conflict (what to do/how to do something) and internal conflict (the thoughts that stop you from doing the what and how).\n\n" +
-    "Identity also has an external (physical attributes, roles, titles, achievements) and an internal component (your WHO).\n\n" +
+    "Conflict is manageable when we separate its components and see each clearly. There’s external conflict - what to do and how to do it. And internal conflict - the thoughts and beliefs that quietly block (or undermine or prevent) the action.\n\n" +
+    "The same is true for identity. There’s the external identity: roles, titles, achievements, and labels. And the internal identity: your WHO - the inner driver shaping every choice and reaction.\n\n" +
     "Your WHO is defined by:\n" +
     "Values — Your guardrails\n" +
     "Pillars — Your energy source\n" +
@@ -369,7 +369,7 @@ function stepValuesRoadTest(){
 
   wrap.appendChild(sectionTitle("Step 2 of 6: Values Evoke Emotions (Road Test)"));
   wrap.appendChild(help(
-    "Values are ONLY when you have a negative emotion if it is crossed. You can have high integrity, but not be bothered if others do not have it, so it would NOT be labeled a Value. This Values exercise allows you to pinpoint the reason for the upset.\n\n" +
+    "A Value is ONLY considered as such when it elicits a negative emotion if it is crossed. You may have integrity, but if others lacking it doesn’t upset you, it isn’t a core Value. Conflict starts to get resolved when you can label the upset. Conflict begins to resolve once you can name what was crossed; the Values exercise helps pinpoint the source of the upset so de-escalation can begin.\n\n" +
     "Instructions\n• YES = it’s a Value (reflect on what emotion arises when it is crossed)\n• NO = it’s not a Value. Or select REMOVE to delete from the list."
   ));
 
