@@ -369,7 +369,7 @@ function stepValuesRoadTest(){
 
   wrap.appendChild(sectionTitle("Step 2 of 6: Values Evoke Emotions (Road Test)"));
   wrap.appendChild(help(
-    "A Value is ONLY considered as such when it elicits a negative emotion if it is crossed. You may believe integrity is important, but if you don't get upset if others lack it, it isn’t a core Value. The Values exercise helps pinpoint the source of the upset so de-escalation can begin.\n\n" +
+    "A Value is ONLY considered as such when it elicits a negative emotion if it is crossed. You may believe integrity is important, but it isn't a core value if you don't get upset when others lack it. The Values exercise helps pinpoint the source of the upset so de-escalation can begin.\n\n" +
     "Instructions\n• YES = it’s a Value (reflect on what emotion arises when it is crossed)\n• NO = it’s not a Value. Or select REMOVE to delete from the list."
   ));
 
