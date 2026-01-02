@@ -269,7 +269,7 @@ function stepDefine(){
 
   wrap.appendChild(help(
     "Conflict is manageable when we separate its components and see each clearly. There’s external conflict - what to do and how to do it. And internal conflict - the thoughts that quietly undermine or prevent the action.\n\n" +
-    "The same is true for identity. There’s the external identity: roles, titles, achievements, and labels. And the internal identity: your WHO - the inner driver shaping every choice and reaction.\n\n" +
+    "The same is true for identity. There’s the external identity: roles, titles, achievements, and labels. And the internal identity: your WHO - the inner driver shaping every choice and response.\n\n" +
     "Your WHO is defined by:\n" +
     "Values — Your guardrails\n" +
     "Pillars — Your energy source\n" +
