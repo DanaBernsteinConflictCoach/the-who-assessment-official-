@@ -268,7 +268,7 @@ function stepDefine(){
   wrap.appendChild(sectionTitle("Page 2 — Define Your WHO"));
 
   wrap.appendChild(help(
-    "Conflict is manageable when we separate its components and see each clearly. There’s external conflict - what to do and how to do it. And internal conflict - the thoughts that quietly undermine or prevent the action.\n\n" +
+    "Conflict is manageable when we separate its components into smaller parts to reduce overwhelm. With a calmer mind, we can more clearly see a path forward. Start with external vs internal. There’s external conflict - what to do and how to do it. And internal conflict - the thoughts that quietly undermine or prevent the action.\n\n" +
     "The same is true for identity. There’s the external identity: roles, titles, achievements, and labels. And the internal identity: your WHO - the positive inner driver shaping every choice and response.\n\n" +
     "Your WHO is defined by:\n" +
     "Values — Your guardrails\n" +
