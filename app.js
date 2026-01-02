@@ -610,14 +610,14 @@ function stepIdealEmotion(){
   wrap.appendChild(sectionTitle("Step 5 of 6: Ideal Emotion"));
   wrap.appendChild(help(
     "Your Ideal Emotion is what you want to feel each day (yes, it is ok to have 2 Ideal Emotions).\n" +
-    "When you’re not feeling that emotion, revisit your Values and Pillars to see where you are not aligned with the WHO words that you selected."
+    "When you’re not feeling that emotion at the level you select below, revisit your Values and Pillars to see where you are not aligned."
   ));
 
   wrap.appendChild(field("Pick one (or your closest)", select(["", ...IDEAL_EMOTION_OPTIONS], state.idealEmotion1, v => state.idealEmotion1 = v)));
 
   const sliderBox = document.createElement("div");
   sliderBox.className = "smallBox";
-  sliderBox.innerHTML = `<div class="miniTitle">How much do you want to feel your Ideal Emotion (be realistic)?</div>
+  sliderBox.innerHTML = `<div class="miniTitle">On a scale of 1-10 (10 being the most), how much do you REALISTICALLY want to feel your Ideal Emotion daily?</div>
     <div class="helpText" style="color:var(--ink); margin:0 0 10px;">Current: ${state.idealEmotionRating}/10</div>`;
   const range = document.createElement("input");
   range.type = "range";
