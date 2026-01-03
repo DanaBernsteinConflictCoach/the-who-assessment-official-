@@ -656,7 +656,7 @@ function stepTrigger(){
 function stepSnapshot(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 8 — Your WHO Snapshot. Click NEXT to have these results sent to your e-mail"));
+  wrap.appendChild(sectionTitle("Page 8 — Click NEXT to have your WHO Snapshot sent to your e-mail"));
 
   const confirmedValues = confirmedValuesList();
   const confirmedPillars = confirmedPillarsList();
@@ -682,7 +682,7 @@ function stepEnd(){
 
   wrap.appendChild(help(
     "Thank you for taking the WHO Thoughts Assessment.\n\n" +
-    "To see your results, click the button: open the prefilled Google form. " +
+    "To see your results, click the button: WHO Results. " +
      "My book (link below) is your personal roadmap on how to apply your WHO, "
   ));
 
@@ -691,13 +691,13 @@ function stepEnd(){
   submitBox.style.marginTop = "12px";
   submitBox.innerHTML = `<div class="miniTitle">Submit</div>
     <div class="helpText" style="color:var(--ink); margin:0;">
-      Enjoy the bonus content on the prefilled Google Form.
+      Enjoy the bonus content along with your results.
     </div>`;
 
   const btn = document.createElement("button");
   btn.className = "btn";
   btn.style.marginTop = "10px";
-  btn.textContent = "Open prefilled Google Form";
+  btn.textContent = "WHO Results";
   btn.onclick = () => openPrefilledForm();
 
   submitBox.appendChild(btn);
