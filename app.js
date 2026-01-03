@@ -678,11 +678,11 @@ function stepSnapshot(){
 
 function stepEnd(){
   const wrap = document.createElement("div");
-  wrap.appendChild(sectionTitle("Page 9 — Last Step"));
+  wrap.appendChild(sectionTitle("Page 9 — Click WHO Results"));
 
   wrap.appendChild(help(
     "Thank you for taking the WHO Thoughts Assessment.\n\n" +
-    "To see your results, click the button: WHO Results. " +
+    "Use your WHO with intention. " +
      "It's the Thought that Counts: Mastering the Art of YOU vs you is your personal roadmap on how to apply your WHO when navigating uncertainty (link below). "
   ));
 
