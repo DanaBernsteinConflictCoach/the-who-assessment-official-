@@ -656,7 +656,7 @@ function stepTrigger(){
 function stepSnapshot(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 8 — Your WHO Snapshot"));
+  wrap.appendChild(sectionTitle("Page 8 — Your WHO Snapshot -= click NEXT to have these results sent to your e-mail"));
 
   const confirmedValues = confirmedValuesList();
   const confirmedPillars = confirmedPillarsList();
@@ -678,7 +678,7 @@ function stepSnapshot(){
 
 function stepEnd(){
   const wrap = document.createElement("div");
-  wrap.appendChild(sectionTitle("Page 9 — Next Step"));
+  wrap.appendChild(sectionTitle("Page 9 — Last Step"));
 
   wrap.appendChild(help(
     "Thank you for taking the WHO Thoughts Assessment.\n\n" +
