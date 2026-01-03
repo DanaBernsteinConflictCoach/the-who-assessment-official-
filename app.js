@@ -250,12 +250,12 @@ function stepWelcome(){
 
   wrap.appendChild(help(
     "Thank you for taking the WHO Thoughts Assessment™.\n\n" +
-    "Take a moment to imagine what’s possible when you stay anchored in your Values, operate from your best self, and recognize the thoughts that quietly pull you off course.\n\n" +
+    "Imagine what’s possible when you stay anchored in your Values, operate from your best self, and recognize the thoughts that quietly pull you off course.\n\n" +
     "When your nervous system is regulated, you are powerful. You respond instead of react. You choose instead of spiral.\n\n" +
     "Self-command isn’t about perfection — it’s about awareness. It’s about noticing when you’ve drifted from your WHO and knowing how to return.\n\n" +
     "My goal is to help you uncover and celebrate the best parts of what make you you — the strengths and natural qualities that already exist within you — and show you how to use them to move through conflict with clarity and confidence.\n\n" +
     "Now imagine a world where more of us faced challenges this way: grounded, intentional, and self-led.\n\n" +
-    "The WHO Thoughts Assessment™ is your invitation to reflect, reconnect, and reclaim the thoughts that shape your life.\n\n" +
+    "The WHO Thoughts Assessment™ is your invitation to reflect on WHO you are. My book (link below) is your personalized roadmap to reconnect and reclaim the thoughts that shape your life.\n\n" +
     "— Dana Lynn Bernstein, PMP, PCC\nThe Conflict Resolution Coach"
   ));
 
@@ -681,9 +681,9 @@ function stepEnd(){
   wrap.appendChild(sectionTitle("Page 9 — Next Step"));
 
   wrap.appendChild(help(
-    "Completed.\n\n" +
+    "I hope you found your WHO.\n\n" +
     "To see your results, click the button: open the prefilled Google form. " +
-     "Thank you for taking the WHO Thoughts Assessment."
+     "Thank you for taking the WHO Thoughts Assessment. My book (link below) is your personal roadmap on how to apply your WHO, "
   ));
 
   const submitBox = document.createElement("div");
