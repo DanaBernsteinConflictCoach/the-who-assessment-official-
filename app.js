@@ -656,7 +656,7 @@ function stepTrigger(){
 function stepSnapshot(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 8 — Your WHO Snapshot -= click NEXT to have these results sent to your e-mail"));
+  wrap.appendChild(sectionTitle("Page 8 — Your WHO Snapshot. Click NEXT to have these results sent to your e-mail"));
 
   const confirmedValues = confirmedValuesList();
   const confirmedPillars = confirmedPillarsList();
