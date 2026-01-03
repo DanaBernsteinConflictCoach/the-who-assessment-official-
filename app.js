@@ -681,9 +681,9 @@ function stepEnd(){
   wrap.appendChild(sectionTitle("Page 9 — Next Step"));
 
   wrap.appendChild(help(
-    "I hope you found your WHO.\n\n" +
+    "Thank you for taking the WHO Thoughts Assessment.\n\n" +
     "To see your results, click the button: open the prefilled Google form. " +
-     "Thank you for taking the WHO Thoughts Assessment. My book (link below) is your personal roadmap on how to apply your WHO, "
+     "My book (link below) is your personal roadmap on how to apply your WHO, "
   ));
 
   const submitBox = document.createElement("div");
