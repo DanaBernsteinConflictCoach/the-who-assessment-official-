@@ -683,7 +683,7 @@ function stepEnd(){
   wrap.appendChild(help(
     "Thank you for taking the WHO Thoughts Assessment.\n\n" +
     "To see your results, click the button: WHO Results. " +
-     "My book (link below) is your personal roadmap on how to apply your WHO, "
+     "It's the Thought that Counts: Mastering the Art of YOU vs you is your personal roadmap on how to apply your WHO when navigating uncertainty (link below). "
   ));
 
   const submitBox = document.createElement("div");
