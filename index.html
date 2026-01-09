@@ -1,36 +1,111 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6R7CDMXZ2Z"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-6R7CDMXZ2Z');
-</script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My WHO Thoughts Assessment™</title>
-  <link rel="stylesheet" href="./style.css" />
-</head>
-<body>
-  <main class="page">
-    <section class="card" id="app" aria-live="polite"></section>
 
-    <footer class="footer">
-      <div class="footerInner">
-        © <span id="year"></span> My WHO Thoughts Assessment™ — All rights reserved
-        <span class="footerSep">•</span>
-        <a class="footerLink" href="https://mywhothoughts.com" target="_blank" rel="noreferrer">www.MyWHOthoughts.com</a>
-        <span class="footerSep">•</span>
-        <a class="footerLink" href="https://bit.ly/3PxJ3MD" target="_blank" rel="noreferrer">Book: It's the Thought That Counts: Mastering the Art of YOU vs you</a>
-      </div>
-    </footer>
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6R7CDMXZ2Z"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-6R7CDMXZ2Z', { send_page_view: false });
+  </script>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f6f7f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background: #1f7a4d;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card" id="app">
+    <h1>My WHO Thoughts Assessment™</h1>
+
+    <p id="step-text">
+      Welcome. Click next to begin the assessment.
+    </p>
+
+    <button id="next-btn">Next</button>
   </main>
 
-  <script src="./app.js"></script>
+  <script>
+    // ---------- ANALYTICS LOGIC ----------
+
+    let started = false;
+    let step = 1;
+    const TOTAL_STEPS = 5;
+
+    // Track session start once
+    function trackStart() {
+      if (!started && typeof gtag === 'function') {
+        gtag('event', 'assessment_started');
+        started = true;
+      }
+    }
+
+    // Track step progress
+    function trackStep(stepNumber) {
+      if (typeof gtag === 'function') {
+        gtag('event', 'assessment_step', {
+          step_number: stepNumber
+        });
+      }
+    }
+
+    // Track completion
+    function trackComplete() {
+      if (typeof gtag === 'function') {
+        gtag('event', 'assessment_completed');
+      }
+    }
+
+    // ---------- APP FLOW ----------
+
+    const text = document.getElementById('step-text');
+    const btn = document.getElementById('next-btn');
+
+    btn.addEventListener('click', () => {
+      trackStart();
+      trackStep(step);
+
+      if (step < TOTAL_STEPS) {
+        step++;
+        text.innerText = `Step ${step} of ${TOTAL_STEPS}`;
+      } else {
+        text.innerText = 'Assessment complete. Thank you!';
+        btn.style.display = 'none';
+        trackComplete();
+      }
+    });
+
+    // Track initial page view manually
+    gtag('event', 'page_view', {
+      page_title: 'WHO Assessment',
+      page_location: window.location.href
+    });
+  </script>
 </body>
 </html>
-
