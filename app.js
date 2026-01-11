@@ -142,11 +142,11 @@ function renderTop(){
 
   const sub = document.createElement("p");
   sub.className = "brandSub";
-  sub.textContent = "Live aligned with your WHO";
+  sub.textContent = " Quick clarity. No fluff";
 
   const quick = document.createElement("p");
   quick.className = "quickLine";
-  quick.textContent = "Quick clarity. No fluff.";
+  quick.textContent = "Live aligned as your WHO.";
 
   left.appendChild(title);
   left.appendChild(sub);
