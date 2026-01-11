@@ -260,6 +260,7 @@ function stepWelcome(){
     "- quiet the thought loop\n" +
     "- re-center yourself\n" +
     "- master high-stakes conversations and navigate uncertainty\n" +
+    "\n\n" +
     "— Dana Lynn Bernstein, PMP, PCC\nThe Conflict Resolution Coach"
   ));
 
