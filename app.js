@@ -256,7 +256,10 @@ function stepWelcome(){
     "Self-command isn’t about perfection — it’s about awareness. It’s about noticing when you’ve drifted from your WHO and knowing how to return.\n\n" +
     "Uncover and celebrate the best parts of what make you you — the strengths and natural qualities that already exist within you — then use those WHO words to navigate conflict with clarity and confidence.\n\n" +
     "Be grounded, intentional, and self-led.\n\n" +
-    "My interactive conflict-resolution book, It's the Thought That Counts: Mastering the Art of YOU vs you, gives you practical steps on using your WHO to quiet the thought loop, re-centering yourself, then mastering having difficult conversations.\n\n" +
+    "My interactive conflict-resolution book, It's the Thought That Counts: Mastering the Art of YOU vs you, gives you practical steps on using your WHO to:\n\n" +
+    "- quiet the thought loop\n" +
+    "- re-center yourself\n" +
+    "- master high-stakes conversations and navigate uncertainty\n" +
     "— Dana Lynn Bernstein, PMP, PCC\nThe Conflict Resolution Coach"
   ));
 
@@ -271,11 +274,7 @@ function stepDefine(){
   wrap.appendChild(help(
     "Conflict is manageable when we separate its components into smaller parts to reduce overwhelm. With a calmer mind, we can more clearly see a path forward. Start with external vs internal. There’s external conflict - what to do and how to do it. And internal conflict - the thoughts that quietly undermine or prevent the action.\n\n" +
     "The same is true for identity. There’s the external identity: roles, titles, achievements, and labels. And the internal identity: your WHO - the positive inner driver shaping every choice and response.\n\n" +
-    "Your WHO is defined by:\n" +
-    "Values — Your guardrails\n" +
-    "Pillars — Your energy source\n" +
-    "Ideal Emotion — Your compass\n" +
-    "Trigger — Your inner critic that makes you doubt your WHO\n\n" +
+    "Your WHO is defined by your Values, Pillars, and Ideal Emotion. You also have a Trigger, that makes you doubt your WHO\n" +
     "Conflict happens when you believe your Values were crossed, you were not acting as your Pillars, or you believed your Trigger."
   ));
 
