@@ -142,7 +142,7 @@ function renderTop(){
 
   const sub = document.createElement("p");
   sub.className = "brandSub";
-  sub.textContent = " Quick clarity. No fluff";
+  sub.textContent = " Quick clarity. No fluff.";
 
   const quick = document.createElement("p");
   quick.className = "quickLine";
@@ -335,8 +335,9 @@ function stepValuesDiscover(){
   wrap.appendChild(hr());
   wrap.appendChild(help(
     "Reflect\n" +
-    "What are the non-negotiable Values that drive your success? Or, which Values, when crossed or acted against, evoke an emotion.\n" +
-    "Rules: Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step."
+    "1. What are the non-negotiable Values that drive your success?\n" +
+    "2. Which Values, when crossed or acted against, evoke an emotion?\n" +
+    "Rules: Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step."\n" +
   ));
 
   wrap.appendChild(chipPicker(VALUE_OPTIONS, state.valueCandidates, (next) => {
