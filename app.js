@@ -349,7 +349,7 @@ function stepValuesDiscover(){
     render();
   }, 6));
 
-  wrap.appendChild(field("Add a Value, then press Enter)", inputEnter(state.valueCustom, (val) => {
+  wrap.appendChild(field("Add a candidate, then press Enter)", inputEnter(state.valueCustom, (val) => {
     const cleaned = cleanWord(val);
     if(!cleaned) return;
 
