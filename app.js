@@ -249,6 +249,8 @@ function stepWelcome(){
   wrap.appendChild(sectionTitle("Page 1 — Thank you for taking the WHO Thoughts Assessment™"));
 
   wrap.appendChild(help(
+    
+    "Welcome\n\n" +
     "Self-mastery begins with understanding WHO you are and how you operate in times of uncertainty. You restore self-command when you intentionally apply your Values, lead from your best self, and identify—and then steady—the thoughts that take you off course.\n\n" +
     "Naming your WHO is the first step to reclaiming your power. When you recognize that your distress comes from a perceived threat to your WHO, you can regulate your nervous system and choose to respond rather than react.\n\n" +
     "Self-command isn’t about perfection — it’s about awareness. It’s about noticing when you’ve drifted from your WHO and knowing how to return.\n\n" +
