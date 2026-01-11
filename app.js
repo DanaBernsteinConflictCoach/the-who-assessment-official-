@@ -274,10 +274,11 @@ function stepDefine(){
 
   wrap.appendChild(help(
     "Conflict is manageable when we separate its components into smaller parts to reduce overwhelm. With a calmer mind, we can more clearly see a path forward. Start with external vs internal. There’s external conflict - what to do and how to do it. And internal conflict - the thoughts that quietly undermine or prevent the action.\n\n" +
+     "\n\n" +
+    "Start with external vs internal. There’s external conflict - what to do and how to do something. And internal conflict - the thoughts that quietly undermine or prevent the action.\n\n" +
     "The same is true for identity. There’s the external identity: roles, titles, achievements, and labels.\n\n" +
      "Your  WHO is your internal identity: Values, Pillars, and Ideal Emotion. These positive inner drivers shape every choice and response.\n\n" +
-     "\n\n" +
-    "Conflict happens when you believe your Values were crossed, you were not acting as your Pillars, or you believed your Trigger."
+     "Conflict happens when you believe your Values were crossed, you were not acting as your Pillars, or you believed your Trigger."
   ));
 
   const grid = document.createElement("div");
