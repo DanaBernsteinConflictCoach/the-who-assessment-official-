@@ -246,7 +246,7 @@ function renderStep(){
 function stepWelcome(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 1 — Thank you for taking the WHO Thoughts Assessment™"));
+  wrap.appendChild(sectionTitle("Thank you for taking the WHO Thoughts Assessment™"));
 
   wrap.appendChild(help(
     
@@ -266,7 +266,7 @@ function stepWelcome(){
 function stepDefine(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 2 — Define Your WHO"));
+  wrap.appendChild(sectionTitle("Define Your WHO"));
 
   wrap.appendChild(help(
     "Conflict is manageable when we separate its components into smaller parts to reduce overwhelm. With a calmer mind, we can more clearly see a path forward. Start with external vs internal. There’s external conflict - what to do and how to do it. And internal conflict - the thoughts that quietly undermine or prevent the action.\n\n" +
@@ -305,7 +305,7 @@ function stepDefine(){
 function stepStart(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 3 — Start"));
+  wrap.appendChild(sectionTitle("Start"));
 
   const grid = document.createElement("div");
   grid.className = "grid2";
@@ -657,7 +657,7 @@ function stepTrigger(){
 function stepSnapshot(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 8 — Click NEXT to send this WHO Snapshot to your e-mail - then join the mailing list"));
+  wrap.appendChild(sectionTitle("Click NEXT to send this WHO Snapshot to your e-mail - then join the mailing list"));
 
   const confirmedValues = confirmedValuesList();
   const confirmedPillars = confirmedPillarsList();
@@ -679,12 +679,12 @@ function stepSnapshot(){
 
 function stepEnd(){
   const wrap = document.createElement("div");
-  wrap.appendChild(sectionTitle("Page 9 — Click WHO Results and to continue the conversation by joining the mailing list"));
+  wrap.appendChild(sectionTitle("Click WHO Results. To continue the conversation, join the mailing list"));
 
   wrap.appendChild(help(
     "Thank you for taking the WHO Thoughts Assessment.\n\n" +
     "Use your WHO with intention. " +
-     "Your WHO is a personal roadmap to navigate uncertainty (Get the book and find out how). "
+     "Your WHO is a personal roadmap to navigate uncertainty (To find out how to use your WHO, get the book: It's the Thought that Counts: Mastering the Art of YOU vs you). "
   ));
 
   const submitBox = document.createElement("div");
