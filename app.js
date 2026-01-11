@@ -305,7 +305,7 @@ function stepDefine(){
 function stepStart(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Start"));
+  wrap.appendChild(sectionTitle("Let's meet"));
 
   const grid = document.createElement("div");
   grid.className = "grid2";
