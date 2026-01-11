@@ -250,12 +250,12 @@ function stepWelcome(){
 
   wrap.appendChild(help(
     "Thank you for taking the WHO Thoughts Assessment™.\n\n" +
-    "Imagine what’s possible when you stay anchored in your Values, operate from your best self, and recognize the thoughts that quietly pull you off course.\n\n" +
-    "When your nervous system is regulated, you are powerful. You respond instead of react. You choose instead of spiral.\n\n" +
+    "Self-mastery begins with understanding WHO you are and how you operate in times of uncertainty. You restore self-command when you intentionally apply your Values, lead from your best self, and identify—and then steady—the thoughts that take you off course.\n\n" +
+    "Naming your WHO is the first step to reclaiming your power. When you recognize that your distress comes from a perceived threat to your WHO, you can regulate your nervous system and choose to respond rather than react.\n\n" +
     "Self-command isn’t about perfection — it’s about awareness. It’s about noticing when you’ve drifted from your WHO and knowing how to return.\n\n" +
-    "My goal is to help you uncover and celebrate the best parts of what make you you — the strengths and natural qualities that already exist within you — and show you how to use them to move through conflict with clarity and confidence.\n\n" +
-    "Now imagine a world where more of us faced challenges this way: grounded, intentional, and self-led.\n\n" +
-    "The WHO Thoughts Assessment™ is your invitation to reflect on WHO you are. My book (link below) is your personalized roadmap to reconnect and reclaim the thoughts that shape your life.\n\n" +
+    "Uncover and celebrate the best parts of what make you you — the strengths and natural qualities that already exist within you — then use those WHO words to navigate conflict with clarity and confidence.\n\n" +
+    "Be grounded, intentional, and self-led.\n\n" +
+    "My interactive conflict-resolution book shows you how to use your WHO to master difficult conversations, quiet the thought loop, and center yourself on your own terms.\n\n" +
     "— Dana Lynn Bernstein, PMP, PCC\nThe Conflict Resolution Coach"
   ));
 
