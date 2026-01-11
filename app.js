@@ -142,7 +142,7 @@ function renderTop(){
 
   const sub = document.createElement("p");
   sub.className = "brandSub";
-  sub.textContent = "Define Your WHO";
+  sub.textContent = "Live aligned with your WHO";
 
   const quick = document.createElement("p");
   quick.className = "quickLine";
