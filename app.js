@@ -349,7 +349,7 @@ function stepValuesDiscover(){
     render();
   }, 6));
 
-  wrap.appendChild(field("Add a candidate (press Enter)", inputEnter(state.valueCustom, (val) => {
+  wrap.appendChild(field("Add a Value, then press Enter)", inputEnter(state.valueCustom, (val) => {
     const cleaned = cleanWord(val);
     if(!cleaned) return;
 
@@ -429,7 +429,7 @@ function stepValuesRoadTest(){
 
   wrap.appendChild(hr());
   wrap.appendChild(summaryMini("Live results — Confirmed Values", confirmed));
-  wrap.appendChild(help("Practical Application: By identifying these candidates, you increase self-awareness and can more easily de-escalate your emotions."));
+  wrap.appendChild(help("Practical Application: By identifying your Values, you increase self-awareness and can more easily de-escalate your emotions."));
   return wrap;
 }
 
