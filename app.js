@@ -246,16 +246,15 @@ function renderStep(){
 function stepWelcome(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Page 1 — Welcome"));
+  wrap.appendChild(sectionTitle("Page 1 — Thank you for taking the WHO Thoughts Assessment™"));
 
   wrap.appendChild(help(
-    "Thank you for taking the WHO Thoughts Assessment™.\n\n" +
     "Self-mastery begins with understanding WHO you are and how you operate in times of uncertainty. You restore self-command when you intentionally apply your Values, lead from your best self, and identify—and then steady—the thoughts that take you off course.\n\n" +
     "Naming your WHO is the first step to reclaiming your power. When you recognize that your distress comes from a perceived threat to your WHO, you can regulate your nervous system and choose to respond rather than react.\n\n" +
     "Self-command isn’t about perfection — it’s about awareness. It’s about noticing when you’ve drifted from your WHO and knowing how to return.\n\n" +
     "Uncover and celebrate the best parts of what make you you — the strengths and natural qualities that already exist within you — then use those WHO words to navigate conflict with clarity and confidence.\n\n" +
     "Be grounded, intentional, and self-led.\n\n" +
-    "My interactive conflict-resolution book shows you how to use your WHO to master difficult conversations, quiet the thought loop, and center yourself on your own terms.\n\n" +
+    "My interactive conflict-resolution book, It's the Thought That Counts: Mastering the Art of YOU vs you, gives you practical steps on using your WHO to quiet the thought loop, re-centering yourself, then mastering having difficult conversations.\n\n" +
     "— Dana Lynn Bernstein, PMP, PCC\nThe Conflict Resolution Coach"
   ));
 
