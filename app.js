@@ -458,7 +458,7 @@ function stepPillarsDiscover(){
     render();
   }, 6));
 
-  wrap.appendChild(field("Add Pillar candidates (add a trait, then press enter)", inputEnter(state.pillarCustom, (val) => {
+  wrap.appendChild(field("Add a customized Pillar, then press enter", inputEnter(state.pillarCustom, (val) => {
     const cleaned = cleanWord(val);
     if(!cleaned) return;
 
