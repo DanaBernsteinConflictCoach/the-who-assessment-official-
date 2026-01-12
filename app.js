@@ -612,7 +612,7 @@ function stepIdealEmotion(){
 
   wrap.appendChild(sectionTitle("Step 5 of 6: Ideal Emotion"));
   wrap.appendChild(help(
-    "Your Ideal Emotion is what you want to feel each day (yes, it is ok to have 2 Ideal Emotions).\n" +
+    "Your Ideal Emotion is what you want to feel each day (yes, it is ok to have 2 Ideal Emotions).\n\n" +
     "When you’re not feeling that emotion at the level you select below, revisit your Values and Pillars to see where you are not aligned."
   ));
 
