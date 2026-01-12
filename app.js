@@ -334,9 +334,9 @@ function stepValuesDiscover(){
 
   wrap.appendChild(hr());
   wrap.appendChild(help(
-    "Reflect\n" +
-    "1. What are the non-negotiable Values that drive your success?\n" +
-    "2. Which Values, when crossed or acted against, evoke an emotion?\n" +
+    "Reflect<br><br>" +
+    "1. What are the non-negotiable Values that drive your success?<br><br>" +
+    "2. Which Values, when crossed or acted against, evoke an emotion?<br><br>" +
     "Rules: Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step.\n"
   ));
 
@@ -349,7 +349,7 @@ function stepValuesDiscover(){
     render();
   }, 6));
 
-  wrap.appendChild(field("Add a candidate, then press Enter)", inputEnter(state.valueCustom, (val) => {
+  wrap.appendChild(field("Add a Value, then press Enter", inputEnter(state.valueCustom, (val) => {
     const cleaned = cleanWord(val);
     if(!cleaned) return;
 
