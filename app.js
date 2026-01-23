@@ -679,7 +679,7 @@ function stepEnd(){
   wrap.appendChild(help(
     "Thank you for taking the WHO Thoughts Assessment.\n\n" +
     "Use your WHO with intention. " +
-     "Your WHO is a personal roadmap to navigate uncertainty (To find out how to use your WHO, get the book: It's the Thought that Counts: Mastering the Art of YOU vs you). "
+     "My book, It's the Thought that Counts: Mastering the Art of YOU vs you, is your personal roadmap on how to intentionally use your WHO. "
   ));
 
   const submitBox = document.createElement("div");
