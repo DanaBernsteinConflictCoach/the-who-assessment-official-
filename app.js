@@ -253,7 +253,7 @@ function stepWelcome(){
     "\n\n" +
     "Conflict is a story we tell ourselves.\n\n" +
     "Now is the time to create a more empowering story.\n\n" +
-        "— Dana Lynn Bernstein, PMP, PCC\nThe Conflict Resolution Coach"
+        "— Dana Lynn Bernstein, PMP, PCC\nThe Conflict Resolution Coach"\n\n" +
     "Author: It's the Thought That Counts: Mastering the Art of YOU vs you.\n\n" +
   ));
 
