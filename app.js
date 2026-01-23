@@ -246,21 +246,14 @@ function renderStep(){
 function stepWelcome(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Welcome"));
+  wrap.appendChild(sectionTitle("Mastering the Art of YOU vs you"));
 
   wrap.appendChild(help(
     
     "\n\n" +
-    "Self-mastery begins with understanding WHO you are and how you operate in times of uncertainty. You restore self-command when you intentionally apply your Values, lead from your best self, and identify—and then steady—the thoughts that take you off course.\n\n" +
-    "Naming your WHO is the first step to reclaiming your power. When you recognize that your distress comes from a perceived threat to your WHO, you can regulate your nervous system and choose to respond rather than react.\n\n" +
-    "Self-command isn’t about perfection — it’s about awareness. It’s about noticing when you’ve drifted from your WHO and knowing how to return.\n\n" +
-    "Uncover and celebrate the best parts of what make you you — the strengths and natural qualities that already exist within you — then use those WHO words to navigate conflict with clarity and confidence.\n\n" +
-    "Be grounded, intentional, and self-led.\n\n" +
-    "My interactive conflict-resolution book, It's the Thought That Counts: Mastering the Art of YOU vs you, gives you practical steps on using your WHO to:\n\n" +
-    "- quiet the thought loop\n" +
-    "- re-center yourself\n" +
-    "- master high-stakes conversations and navigate uncertainty\n" +
-    "\n\n" +
+    "Conflict is a story we tell ourselves.\n\n" +
+    "Now is the time to create a more empowering story.\n\n" +
+      "\n\n" +
     "— Dana Lynn Bernstein, PMP, PCC\nThe Conflict Resolution Coach"
   ));
 
@@ -270,7 +263,7 @@ function stepWelcome(){
 function stepDefine(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Define Your WHO"));
+  wrap.appendChild(sectionTitle("The words that make you tick are the same words that tick you off"));
 
   wrap.appendChild(help(
     "Conflict is manageable when we separate its components into smaller parts to reduce overwhelm. With a calmer mind, we can more clearly see a path forward.\n\n" +
