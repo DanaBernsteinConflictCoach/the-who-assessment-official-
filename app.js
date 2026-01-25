@@ -678,8 +678,12 @@ function stepEnd(){
 
   wrap.appendChild(help(
     "Thank you for taking the WHO Thoughts Assessment.\n\n" +
-    "Use your WHO with intention. " +
-     "My book, It's the Thought that Counts: Mastering the Art of YOU vs you, is your personal roadmap on how to intentionally use your WHO. "
+    "My fun, interactive book, It's the Thought that Counts: Mastering the Art of YOU vs you, is your personal roadmap that gives you a step-by-step guide on how to break down YOUR conflicts and use your best self as the response team. " +
+    "• There are conflict resolution worksheets and check-ins throughout the book.\n\n" +
+    "• You'll meet your Thought Committee -the characters that tell you if something is a conflict.\n\n" +
+    "• You'll master your internal negotiations - yes, you negotiate with yourself ALL the time.\n\n" +
+    "• And a portion of the net proceeds supports Girl Scouts.\n\n" +
+    "Most importantly, you will re-ground yourself when facing uncertainty. "
   ));
 
   const submitBox = document.createElement("div");
