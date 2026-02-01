@@ -142,7 +142,7 @@ function renderTop(){
 
   const sub = document.createElement("p");
   sub.className = "brandSub";
-  sub.textContent = " Quick clarity. No fluff.";
+  sub.textContent = " Reflect on your patterns.";
 
   const quick = document.createElement("p");
   quick.className = "quickLine";
@@ -251,10 +251,9 @@ function stepWelcome(){
   wrap.appendChild(help(
     
     "\n\n" +
-    "Conflict is a story we tell ourselves.\n\n" +
-    "Now is the time to create a more empowering story.\n\n" +
-        "— Dana Lynn Bernstein, PMP, PCC, The Conflict Resolution Coach\n\n" +
-    "Author: It's the Thought That Counts: Mastering the Art of YOU vs you\n\n"
+    "Most conflict feels external. It isn’t.\n\n" +
+    "This 8-minute assessment identifies the pattern driving your reactions.\n\n" +
+        "— Dana Lynn Bernstein, PMP, PCC, The Conflict Resolution Coach\n\n"
   ));
 
   return wrap;
@@ -266,7 +265,7 @@ function stepDefine(){
   wrap.appendChild(sectionTitle("The words that make you tick are the same words that tick you off"));
 
   wrap.appendChild(help(
-        "Your WHO is your authentic internal identity, built from your Values, Pillars, and Ideal Emotion. These powerful internal drivers shape every choice and response.\n\n" +
+        "Your WHO is your internal identity, built from your Values, Pillars, and Ideal Emotion.\n\n" +
     "Conflict is born the moment your identity feels threatened. Peace arrives when you remember WHO you are."
   ));
 
