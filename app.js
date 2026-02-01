@@ -146,7 +146,7 @@ function renderTop(){
 
   const quick = document.createElement("p");
   quick.className = "quickLine";
-  quick.textContent = "WHO you are matters more than what you do.";
+  quick.textContent = "Then break them.";
 
   left.appendChild(title);
   left.appendChild(sub);
