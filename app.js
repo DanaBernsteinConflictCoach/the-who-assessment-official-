@@ -311,7 +311,7 @@ function stepStart(){
 function stepValuesDiscover(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Step 1 of 6: Values (Discover)"));
+  wrap.appendChild(sectionTitle("Step 1 of 6: Values"));
   wrap.appendChild(help(
     "These two prompts will uncover your Values."
   ));
@@ -426,7 +426,7 @@ function stepValuesRoadTest(){
 function stepPillarsDiscover(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Step 3 of 6: Pillars (Discover)"));
+  wrap.appendChild(sectionTitle("Step 3 of 6: Pillars"));
   wrap.appendChild(help(
     "Are positive core characteristics that describe you at your best. Pillars are not tied to accomplishment or how you think you \"should be\". You are great as you are!\n\n" +
     "Find your Pillars by recalling any time in your life when you just felt so \"you,\" when time melted away, and you felt freedom from judgment (self or others)."
