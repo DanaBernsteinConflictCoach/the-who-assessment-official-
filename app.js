@@ -246,13 +246,14 @@ function renderStep(){
 function stepWelcome(){
   const wrap = document.createElement("div");
 
-  wrap.appendChild(sectionTitle("Mastering the Art of YOU vs you"));
+  wrap.appendChild(sectionTitle("Conflict is just a story"));
 
   wrap.appendChild(help(
     
     "\n\n" +
     "Most conflict feels external. It isn’t.\n\n" +
-    "This 8-minute assessment identifies the pattern driving your reactions.\n\n" +
+    "Take the WHO Assessment and identify your internal patterns in 5 minutes.\n\n" +
+    "Then take off the thought jackets that don't belong to you and live a life that is led by YOUR values.\n\n" +
         "— Dana Lynn Bernstein, PMP, PCC, The Conflict Resolution Coach\n\n"
   ));
 
