@@ -251,9 +251,15 @@ function stepWelcome(){
   wrap.appendChild(help(
     
     "\n\n" +
-    "Most conflict feels external. It isn’t.\n\n" +
-    "Take the WHO Assessment and identify your internal patterns in 5 minutes.\n\n" +
-    "Then take off the thought jackets that don't belong to you and live a life that is led by YOUR values.\n\n" +
+    "When conflict shows up in your life, what story are you telling yourself about it?\n\n" +
+    "That story matters — because it shapes how you think, feel, and respond.\n\n" +
+    "When your nervous system is regulated, you don’t spiral.\n\n" +
+    "You respond instead of react.\n\n" +
+    "You choose instead of spiral.\n\n" +
+    "You regain access to your clarity, confidence, and power.\n\n" +
+    "The WHO Thoughts Assessment™ is a brief, guided reflection designed to help you notice the thought patterns driving your decision-making — often without your awareness.\n\n" +
+    "Understanding WHO you are gives you agency over your thoughts and increases self-command.\n\n" +
+    "And this is when change becomes possible.\n\n" +
         "— Dana Lynn Bernstein, PMP, PCC, The Conflict Resolution Coach\n\n"
   ));
 
