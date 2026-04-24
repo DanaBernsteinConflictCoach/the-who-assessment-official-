@@ -49,7 +49,7 @@ const IDEAL_EMOTION_OPTIONS = [
 
 const TRIGGER_OPTIONS = [
   "Capable","Enough","Fast Enough","Good Enough","Heard","Listened to","Respected","Seen",
-  "Smart Enough","Valued","Wanted"
+  "Smart Enough","Valued","Wanted","Appreciated"
 ];
 
 /* ------------------------------- FLOW ------------------------------- */
