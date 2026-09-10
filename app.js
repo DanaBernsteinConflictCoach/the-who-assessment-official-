@@ -251,8 +251,7 @@ function stepWelcome(){
   wrap.appendChild(help(
     
     "\n\n" +
-    "Conflict is a construct.\n\n" +
-    "The stories you tell yourself shapes how you think, feel, and respond.\n\n" +
+    "Those stories you tell yourself shape how you think, feel, and respond when something happens.\n\n" +
     "The WHO Thoughts Assessment™ is a 5-minute guided reflection designed to help you think about your thoughts.\n\n" +
             "— Dana Lynn Bernstein, Master Certified Coach\n\n"
   ));
