@@ -274,7 +274,7 @@ function stepDefine(){
   grid.className = "boxGrid";
 
   grid.appendChild(box("Values — Your guardrails",
-    "Values are duel-sided. They operate as your line-in-the-sand AND, when crossed, they are also the only reason you get upset."));
+    "Values are dual-sided. They operate as your line-in-the-sand AND, when crossed, they are also the only reason you get upset."));
   grid.appendChild(op("+"));
 
   grid.appendChild(box("Pillars — Your energy source",
