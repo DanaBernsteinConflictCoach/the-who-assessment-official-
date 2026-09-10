@@ -251,8 +251,9 @@ function stepWelcome(){
   wrap.appendChild(help(
     
     "\n\n" +
-    "Those stories you tell yourself shape how you think, feel, and respond when something happens.\n\n" +
-    "The WHO Thoughts Assessment™ is a 5-minute guided reflection designed to help you think about your thoughts.\n\n" +
+    "When something happens, the stories you tell yourself shape how you think, feel, and react.\n\n" +
+    "The WHO Thoughts Assessment™ is a 5-minute guided reflection that helps you uncover the thought patterns that drive those reactions.\n\n" + 
+    "By naming WHO you are at your best, then deploying that person, you restore your power to choose your response.\n\n" +
             "— Dana Lynn Bernstein, Master Certified Coach\n\n"
   ));
 
