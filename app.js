@@ -274,7 +274,7 @@ function stepDefine(){
   grid.className = "boxGrid";
 
   grid.appendChild(box("Values — Your guardrails",
-    "Values are dueal sided. They operate as your line-in-the-sand AND, when crossed, they are also the only reason you get upset."));
+    "Values are duel-sided. They operate as your line-in-the-sand AND, when crossed, they are also the only reason you get upset."));
   grid.appendChild(op("+"));
 
   grid.appendChild(box("Pillars — Your energy source",
@@ -325,7 +325,7 @@ function stepValuesDiscover(){
   wrap.appendChild(hr());
   wrap.appendChild(help(
     "Reflect.\n\n" +
-    "1. What are the non-negotiable Values that drive your success?.\n\n" +
+    "1. What are the non-negotiable Values that drive your success?\n\n" +
     "2. Which Values, when crossed or acted against, evoke an emotion?.\n\n" +
     "Rules: Tap to select 3–6 of your Values OR add custom ones. We’ll road-test on the next step.\n"
   ));
@@ -631,7 +631,7 @@ function stepTrigger(){
   const wrap = document.createElement("div");
 
   wrap.appendChild(sectionTitle("Step 6 of 6: Trigger (Anti-WHO)"));
-  wrap.appendChild(help("Look for the themes of when your feelings were hurt. That "I'm not" inner critic makes you feel demoralized or demotivated. Options below OR add a custom Trigger."));
+  wrap.appendChild(help("Look for the themes of when your feelings were hurt. The I'm not inner critic makes you feel demoralized or demotivated. Options below OR add a custom Trigger."));
 
   const chipList = TRIGGER_OPTIONS.map(x => `I’m not ${x}`);
   wrap.appendChild(chipPicker(chipList, state.triggerPicked ? [state.triggerPicked] : [], (next) => {
