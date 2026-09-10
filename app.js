@@ -251,16 +251,10 @@ function stepWelcome(){
   wrap.appendChild(help(
     
     "\n\n" +
-    "When conflict shows up in your life, what story are you telling yourself about it?\n\n" +
-    "That story matters — because it shapes how you think, feel, and respond.\n\n" +
-    "When your nervous system is regulated, you don’t spiral.\n\n" +
-    "You respond instead of react.\n\n" +
-    "You choose instead of spiral.\n\n" +
-    "You regain access to your clarity, confidence, and power.\n\n" +
-    "The WHO Thoughts Assessment™ is a brief, guided reflection designed to help you notice the thought patterns driving your decision-making — often without your awareness.\n\n" +
-    "Understanding WHO you are gives you agency over your thoughts and increases self-command.\n\n" +
-    "And this is when change becomes possible.\n\n" +
-        "— Dana Lynn Bernstein, PMP, PCC, The Conflict Resolution Coach\n\n"
+    "Conflict is a construct.\n\n" +
+    "The stories you tell yourself shapes how you think, feel, and respond.\n\n" +
+    "The WHO Thoughts Assessment™ is a 5-minute guided reflection designed to help you think about your thoughts.\n\n" +
+            "— Dana Lynn Bernstein, Master Certified Coach\n\n"
   ));
 
   return wrap;
@@ -280,15 +274,15 @@ function stepDefine(){
   grid.className = "boxGrid";
 
   grid.appendChild(box("Values — Your guardrails",
-    "Values are your rules, boundaries, and what causes upset if others cross these non-negotiables. Use them as guardrails when making decisions."));
+    "Values are dueal sided. They operate as your line-in-the-sand AND, when crossed, they are also the only reason you get upset."));
   grid.appendChild(op("+"));
 
   grid.appendChild(box("Pillars — Your energy source",
-    "Pillars are your strengths and when you are in a flow state. Draw on them when feeling depleted."));
+    "Pillars are the characteristics that describe your best self."));
   grid.appendChild(op("="));
 
   grid.appendChild(box("Ideal Emotion — Your compass",
-    "What you want to feel each day. Living your Values and being your Pillars allows you to feel your Ideal Emotion."));
+    "What you want to feel each day. Only by living your Values and being your Pillars can you feel your Ideal Emotion."));
   grid.appendChild(op("≠"));
 
   grid.appendChild(box("Trigger — Your inner critic",
@@ -326,7 +320,7 @@ function stepValuesDiscover(){
   wrap.appendChild(field("Why were you proud?", textarea(state.valuesProudWhy, v => state.valuesProudWhy = v)));
 
   wrap.appendChild(field("Prompt B: Upset / Anger / Frustrated Moment — When were you most angry, frustrated, or furious (person or situation)?", textarea(state.valuesUpsetWhen, v => state.valuesUpsetWhen = v)));
-  wrap.appendChild(field("What exactly bothered you / Why did the behavior bother you?", textarea(state.valuesUpsetWhy, v => state.valuesUpsetWhy = v)));
+  wrap.appendChild(field("Why were you bothered?", textarea(state.valuesUpsetWhy, v => state.valuesUpsetWhy = v)));
 
   wrap.appendChild(hr());
   wrap.appendChild(help(
@@ -598,7 +592,7 @@ function stepPillarsRoadTest(){
   wrap.appendChild(hr());
   wrap.appendChild(summaryMini("Confirmed Pillars", confirmedPillars));
   wrap.appendChild(summaryMini("Confirmed Values", confirmedValues));
-  wrap.appendChild(help("Practical Application: Wear these Pillars as jackets to reframe yourself when feeling off course to remind you who you are. Lead from your unique strengths."));
+  wrap.appendChild(help("Practical Application: Wear these Pillars as jackets to reframe yourself when feeling off course to remind you who you are."));
 
   return wrap;
 }
@@ -637,7 +631,7 @@ function stepTrigger(){
   const wrap = document.createElement("div");
 
   wrap.appendChild(sectionTitle("Step 6 of 6: Trigger (Anti-WHO)"));
-  wrap.appendChild(help("Just as important as knowing your Values and Pillars, is recognizing the inner critic that makes you feel demoralized or demotivated. Life is thematic. Look at the list below and reflect on what your inner critic told you when you faced blame inwards or felt like you were not enough in some way. OR add a custom Trigger."));
+  wrap.appendChild(help("Look for the themes of when your feelings were hurt. That "I'm not" inner critic makes you feel demoralized or demotivated. Options below OR add a custom Trigger."));
 
   const chipList = TRIGGER_OPTIONS.map(x => `I’m not ${x}`);
   wrap.appendChild(chipPicker(chipList, state.triggerPicked ? [state.triggerPicked] : [], (next) => {
@@ -647,7 +641,7 @@ function stepTrigger(){
 
   wrap.appendChild(field("Choose or add your “I’m not” Trigger.", inputText(state.triggerCustom, v => state.triggerCustom = v)));
   wrap.appendChild(field("Name how it makes you feel.", inputText(state.triggerFeel, v => state.triggerFeel = v)));
-  wrap.appendChild(field("Optional Reset Script: When my Trigger appears, how will you pivot to your WHO? (simple plan)", textarea(state.resetScript, v => state.resetScript = v)));
+  wrap.appendChild(field("Optional Reset Script: Notice when your Trigger is loud and pause. Then choose how you will pivot to your WHO. (simple plan)", textarea(state.resetScript, v => state.resetScript = v)));
 
   return wrap;
 }
@@ -683,7 +677,7 @@ function stepEnd(){
     "Thank you for taking the WHO Thoughts Assessment.\n\n" +
     "My fun, interactive book, It's the Thought that Counts: Mastering the Art of YOU vs you, is your personal roadmap that gives you a step-by-step guide on how to break down YOUR conflicts and use your best self as the response team.\n\n" +
     "• There are conflict resolution worksheets and check-ins throughout the book.\n\n" +
-    "• You'll meet your Thought Committee -the characters that tell you if something is a conflict.\n\n" +
+    "• You'll meet your Thought Committee - the characters that tell you if something is a conflict.\n\n" +
     "• You'll master your internal negotiations - yes, you negotiate with yourself ALL the time.\n\n" +
     "• And a portion of the net proceeds supports Girl Scouts.\n\n" +
     "Most importantly, you will re-ground yourself when facing uncertainty. "
